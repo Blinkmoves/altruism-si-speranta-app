@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import CheckBox from 'expo-checkbox';
+import { Ionicons } from '@expo/vector-icons';
+import commonStyles from './styles';
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([
@@ -24,6 +26,30 @@ export default function TasksPage() {
     },
     {
       name: 'Task 3',
+      description: 'Description 3',
+      deadline: '2024-03-01',
+      responsible: 'Person C',
+      tag: ['casual', 'event X'],
+      isChecked: false,
+    },
+    {
+      name: 'Task 4',
+      description: 'Description 3',
+      deadline: '2024-03-01',
+      responsible: 'Person C',
+      tag: ['casual', 'event X'],
+      isChecked: false,
+    },
+    {
+      name: 'Task 5',
+      description: 'Description 3',
+      deadline: '2024-03-01',
+      responsible: 'Person C',
+      tag: ['casual', 'event X'],
+      isChecked: false,
+    },
+    {
+      name: 'Task 6',
       description: 'Description 3',
       deadline: '2024-03-01',
       responsible: 'Person C',
@@ -70,7 +96,7 @@ export default function TasksPage() {
             </View>
           </View>
           <TouchableOpacity onPress={() => deleteTask(index)}>
-            <Text style={styles.deleteButton}>🗑</Text>
+                <Ionicons name="trash" size={24} color="red" />
           </TouchableOpacity>
         </View>
         <View style={styles.divider} />
@@ -79,24 +105,21 @@ export default function TasksPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.container}>
       <FlatList
         data={tasks}
         renderItem={renderTask}
         keyExtractor={(item, index) => index.toString()}
+        showsVerticalScrollIndicator={false}
       />
-      <TouchableOpacity style={styles.addButton} onPress={() => console.log('Add Task')}>
-        <Text style={styles.addButtonText}>Adaugă Task</Text>
+      <TouchableOpacity style={commonStyles.Button} onPress={() => console.log('Add Task')}>
+        <Text style={commonStyles.ButtonText}>Adaugă Task</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    flex: 1,
-  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -132,15 +155,5 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#ccc',
     marginVertical: 8,
-  },
-  addButton: {
-    backgroundColor: 'teal',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  addButtonText: {
-    color: 'white',
-    fontSize: 16,
   },
 });

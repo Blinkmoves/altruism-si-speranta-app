@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import CheckBox from 'expo-checkbox';
 import { Ionicons } from '@expo/vector-icons';
+import commonStyles from './styles';
 
 export default function TaskWidget() {
   const [tasks, setTasks] = useState([
@@ -31,6 +32,22 @@ export default function TaskWidget() {
       tag: ['casual', 'event X'],
       isChecked: false,
     },
+    {
+      name: 'Task 4',
+      description: 'Description 3',
+      deadline: '2024-03-01',
+      responsible: 'Person C',
+      tag: ['casual', 'event X'],
+      isChecked: false,
+    },
+    {
+      name: 'Task 5',
+      description: 'Description 3',
+      deadline: '2024-03-01',
+      responsible: 'Person C',
+      tag: ['casual', 'event X'],
+      isChecked: false,
+    },
   ]);
 
   // Delete task function
@@ -40,6 +57,8 @@ export default function TaskWidget() {
     setTasks(newTasks);
   };
 
+  // TODO: add backend connection to delete task in DB
+
   // Toggle task completion function
   const toggleTask = (index) => {
     const newTasks = [...tasks];
@@ -47,9 +66,15 @@ export default function TaskWidget() {
     setTasks(newTasks);
   };
 
+  // TODO: add backend connection to update task completion in DB
+  
+  // TODO: add animations for both of these
+
   return (
-    <SafeAreaView>
-      <Text style={styles.title}>Agenda (Task-uri)</Text>
+    <View>
+      <View>
+        <Text style={commonStyles.title}>Task-uri</Text>
+      </View>
       <FlatList
         data={tasks}
         renderItem={({ item, index }) => (
@@ -86,17 +111,11 @@ export default function TaskWidget() {
         )}
         keyExtractor={(item, index) => index.toString()}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 16,
-  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

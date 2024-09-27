@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import commonStyles from './styles';
 
 export default function EventsPage() {
   const [selectedDay, setSelectedDay] = useState(Date.now());
 
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.container}>
       <Calendar
         // Set the minimum and maximum selectable dates
         minDate={'2020-01-01'}
@@ -19,38 +20,17 @@ export default function EventsPage() {
           [selectedDay]: { selected: true, selectedColor: 'teal' },
         }}
       />
-      <View style={styles.padding}>
+      <View>
         <TouchableOpacity
           onPress={() => {
-            // TODO: Add your onPress function here
+            // TODO: Add Accept / Decline event buttons (also make sure answer can be edited after)
             console.log('Event added!');
           }}
-          style={styles.button}
+          style={commonStyles.Button}
         >
-          <Text style={styles.buttonText}>Adaugă Eveniment</Text>
+          <Text style={commonStyles.ButtonText}>Adaugă Eveniment</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 20,
-  },
-  padding: {
-    paddingVertical: 8,
-    alignItems: 'center',
-  },
-  button: {
-    backgroundColor: 'teal',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-});
