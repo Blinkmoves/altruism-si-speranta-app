@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native
 import CheckBox from 'expo-checkbox';
 import { Ionicons } from '@expo/vector-icons';
 import commonStyles from './styles';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function TaskWidget() {
   const [tasks, setTasks] = useState([
@@ -50,6 +51,7 @@ export default function TaskWidget() {
     },
   ]);
 
+  // TODO: add functionality to swipe/pan left to delete task
   // Delete task function
   const deleteTask = (index) => {
     const newTasks = [...tasks];
@@ -58,6 +60,8 @@ export default function TaskWidget() {
   };
 
   // TODO: add backend connection to delete task in DB
+
+  // TODO: fix toggleTask function
 
   // Toggle task completion function
   const toggleTask = (index) => {
@@ -72,9 +76,6 @@ export default function TaskWidget() {
 
   return (
     <View>
-      <View>
-        <Text style={commonStyles.title}>Task-uri</Text>
-      </View>
       <FlatList
         data={tasks}
         renderItem={({ item, index }) => (
@@ -83,6 +84,8 @@ export default function TaskWidget() {
               <CheckBox
                 value={item.isChecked}
                 onValueChange={() => toggleTask(index)}
+                color={item.isChecked ? 'teal' : 'grey'}
+                style={styles.checkboxTask}
               />
               {/* Task Details */}
               <View style={styles.taskDetails}>
@@ -97,13 +100,14 @@ export default function TaskWidget() {
                 </View>
                 {/* Deadline and Responsible Person */}
                 <View style={styles.taskInfoRow}>
-                  <Text>Deadline: {item.deadline}</Text>
-                  <Text>Responsabil: {item.responsible}</Text>
+                  <Text style={styles.taskInfoText}>Deadline: {item.deadline}</Text>
+                  <Text style={styles.taskInfoText}>Responsabil: 
+                    <Text style={styles.taskResponsabil}> {item.responsible}</Text></Text>
                 </View>
               </View>
               {/* Delete Button */}
               <TouchableOpacity onPress={() => deleteTask(index)}>
-                <Ionicons name="trash" size={24} color="red" />
+                <MaterialCommunityIcons name="trash-can-outline" size={24} color="red" />
               </TouchableOpacity>
             </View>
             <View style={styles.divider} />
@@ -130,10 +134,12 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   chip: {
-    backgroundColor: 'teal',
-    padding: 4,
-    borderRadius: 4,
+    backgroundColor: '#60908C',
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 20,
     marginRight: 4,
+    marginTop: 4,
   },
   chipText: {
     color: 'white',
@@ -142,10 +148,24 @@ const styles = StyleSheet.create({
   taskInfoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  taskResponsabil: {
+    color: 'black',
+  },
+  taskInfoText: {
+    fontSize: 12,
+    color: 'grey',
+    fontWeight: 'bold',
   },
   divider: {
     height: 1,
     backgroundColor: '#ccc',
     marginVertical: 8,
+  },
+  checkboxTask: {
+    alignSelf: 'top',
+    width: 18,
+    height: 18,
   },
 });

@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import commonStyles from './styles';
 
+// TODO: Import EventWidget from './Events' and use it to display events (get rid of redundant code)
+
 export default function EventsPage() {
   const [selectedDay, setSelectedDay] = useState(Date.now());
 

@@ -11,6 +11,7 @@ import EventsPage from './EventsPage';
 import SettingsPage from './SettingsPage';
 import PrivacyPolicyPage from './PrivacyPolicyPage';
 import { Ionicons } from '@expo/vector-icons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -58,7 +59,7 @@ export default function Altruism_si_Speranta() {
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: '#F5F7F7',
-          tabBarInactiveTintColor: '#AAC6A8',
+          tabBarInactiveTintColor: '#a0a3a3',
           tabBarStyle: { backgroundColor: '#093A3E', paddingTop: 10 },
           headerStyle: { backgroundColor: '#093A3E' }, // Set header background color
           headerTintColor: '#F5F7F7', // Set header text color
