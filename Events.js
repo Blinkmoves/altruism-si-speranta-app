@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import commonStyles from './styles';
 
-export default function Events() {
+export default function EventsWidget() {
   return (
     <View style={styles.container}>
       <Calendar
@@ -24,7 +24,7 @@ export default function Events() {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },

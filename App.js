@@ -2,14 +2,13 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { AppRegistry } from 'react-native';
-
-import { Text, View } from 'react-native';
+import { AppRegistry, Text, View } from 'react-native';
 import HomePage from './HomePage';
 import TasksPage from './TasksPage';
 import EventsPage from './EventsPage';
 import SettingsPage from './SettingsPage';
 import PrivacyPolicyPage from './PrivacyPolicyPage';
+import Login from './login';
 import { Ionicons } from '@expo/vector-icons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
@@ -53,6 +52,8 @@ export default function Altruism_si_Speranta() {
               iconName = focused ? 'calendar' : 'calendar-outline';
             } else if (route.name === 'Setări') {
               iconName = focused ? 'settings' : 'settings-outline';
+            } else if (route.name === 'Login') {
+              iconName = focused ? 'login' : 'login-outline';
             }
 
             // You can return any component that you like here!
@@ -70,6 +71,7 @@ export default function Altruism_si_Speranta() {
         <Tab.Screen name="Task-uri" component={TasksPage} options={{ tabBarLabel: 'Task-uri' }} />
         <Tab.Screen name="Evenimente" component={EventsPage} options={{ tabBarLabel: 'Evenimente' }} />
         <Tab.Screen name="Setări" component={SettingsStack} options={{ tabBarLabel: 'Setări' }} />
+        <Tab.Screen name="Login" component={Login} options={{ tabBarLabel: 'Login' }} />
       </Tab.Navigator>
     </NavigationContainer>
   );

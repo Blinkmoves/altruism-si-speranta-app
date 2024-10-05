@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import TaskWidget from './Tasks';
-import Events from './Events';
+import EventsWidget from './Events';
 import commonStyles from './styles';
 
 export default function HomePage() {
@@ -20,7 +20,7 @@ export default function HomePage() {
           <Text style={commonStyles.title}>Evenimente</Text>
         </View>
         <View>
-          <Events />
+          <EventsWidget />
         </View>
       </View>
     </ScrollView>
