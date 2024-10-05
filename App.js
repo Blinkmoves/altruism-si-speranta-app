@@ -52,6 +52,7 @@ export default function Altruism_si_Speranta() {
               iconName = focused ? 'calendar' : 'calendar-outline';
             } else if (route.name === 'Setări') {
               iconName = focused ? 'settings' : 'settings-outline';
+            // TODO: remove this once backend logic is finished
             } else if (route.name === 'Login') {
               iconName = focused ? 'login' : 'login-outline';
             }
@@ -71,6 +72,7 @@ export default function Altruism_si_Speranta() {
         <Tab.Screen name="Task-uri" component={TasksPage} options={{ tabBarLabel: 'Task-uri' }} />
         <Tab.Screen name="Evenimente" component={EventsPage} options={{ tabBarLabel: 'Evenimente' }} />
         <Tab.Screen name="Setări" component={SettingsStack} options={{ tabBarLabel: 'Setări' }} />
+        {/* TODO: remove this once backend logic is finished */}
         <Tab.Screen name="Login" component={Login} options={{ tabBarLabel: 'Login' }} />
       </Tab.Navigator>
     </NavigationContainer>
