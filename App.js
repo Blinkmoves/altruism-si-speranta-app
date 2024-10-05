@@ -10,7 +10,7 @@ import SettingsPage from './SettingsPage';
 import PrivacyPolicyPage from './PrivacyPolicyPage';
 import Login from './login';
 import { Ionicons } from '@expo/vector-icons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -47,20 +47,20 @@ export default function Altruism_si_Speranta() {
             if (route.name === 'Home') {
               iconName = focused ? 'home' : 'home-outline';
             } else if (route.name === 'Task-uri') {
-              iconName = focused ? 'list' : 'list-outline';
+              iconName = focused ? 'format-list-bulleted-type' : 'format-list-bulleted-type';
             } else if (route.name === 'Evenimente') {
-              iconName = focused ? 'calendar' : 'calendar-outline';
+              iconName = focused ? 'calendar-check' : 'calendar-check-outline';
             } else if (route.name === 'Setări') {
-              iconName = focused ? 'settings' : 'settings-outline';
+              iconName = focused ? 'cog' : 'cog-outline';
             // TODO: remove this once backend logic is finished
             } else if (route.name === 'Login') {
-              iconName = focused ? 'login' : 'login-outline';
+              iconName = focused ? 'login' : 'login';
             }
 
             // You can return any component that you like here!
-            return <Ionicons name={iconName} size={size} color={color} />;
+            return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#F5F7F7',
+          tabBarActiveTintColor: 'white',
           tabBarInactiveTintColor: '#a0a3a3',
           tabBarStyle: { backgroundColor: '#093A3E', paddingTop: 10 },
           headerStyle: { backgroundColor: '#093A3E' }, // Set header background color
@@ -81,3 +81,5 @@ export default function Altruism_si_Speranta() {
 
 // Register the main component
 AppRegistry.registerComponent('main', () => Altruism_si_Speranta);
+
+// TODO: remove the headertext from all pages

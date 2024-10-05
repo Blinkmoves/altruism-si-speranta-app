@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   upperContainer: {
     padding: 20,
-    backgroundColor: '#FDFFFC',
+    backgroundColor: '#F5F7F7',
     borderRadius: 10,
   },
 });
