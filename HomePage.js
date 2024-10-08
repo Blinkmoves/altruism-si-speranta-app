@@ -6,8 +6,9 @@ import commonStyles from './styles';
 
 export default function HomePage() {
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={commonStyles.container}>
+    <View style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+      <View>
         <View>
           <Text style={commonStyles.title}>Task-uri</Text>
         </View>
@@ -23,6 +24,14 @@ export default function HomePage() {
           <EventsWidget />
         </View>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+});

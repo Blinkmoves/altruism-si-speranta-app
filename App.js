@@ -2,7 +2,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { AppRegistry, Text, View } from 'react-native';
+import { AppRegistry, Text, View, Image } from 'react-native';
 import HomePage from './HomePage';
 import TasksPage from './TasksPage';
 import EventsPage from './EventsPage';
@@ -14,6 +14,27 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+// TODO: do sth with the logo
+
+const LogoImage = () => {
+  return (
+    <View style={{ 
+      justifyContent: 'center', 
+      alignItems: 'center',
+      shadowColor: '#fff', // Set the shadow color here
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.5,
+      shadowRadius: 1,
+      elevation: 5, // For Android shadow
+    }}>
+      <Image
+        style={{ width: 50, height: 40 }}
+        source={require('./assets/logo.png')}
+      />
+    </View>
+  );
+};
 
 function SettingsStack() {
   return (
@@ -64,8 +85,11 @@ export default function Altruism_si_Speranta() {
           tabBarInactiveTintColor: '#a0a3a3',
           tabBarStyle: { backgroundColor: '#093A3E', paddingTop: 10 },
           headerStyle: { backgroundColor: '#093A3E' }, // Set header background color
-          headerTintColor: '#F5F7F7', // Set header text color
-          headerTitleStyle: { fontWeight: 'bold', fontSize: 20 }, // Set header text style
+          headerTitle: () => (
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+              <LogoImage />
+            </View>
+          ),
         })}
       >
         <Tab.Screen name="Home" component={HomePage} options={{ tabBarLabel: 'Home' }} />

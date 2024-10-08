@@ -7,13 +7,13 @@ import MaskedView from '@react-native-masked-view/masked-view';
 
 export default function TasksPage() {
   return (
-    <View style={commonStyles.container}>
+    <View style={styles.container}>
       <MaskedView
         style={styles.maskedView}
         maskElement={
           <LinearGradient
             colors={['rgba(0, 0, 0, 1)', 'rgba(0, 0, 0, 0)']}
-            locations={[0.8, 0.9]} // 80% to 100%
+            locations={[0.95, 1]} // 80% to 100%
             style={styles.gradient}
           />
         }
@@ -32,18 +32,25 @@ export default function TasksPage() {
 }
 
 export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   maskedView: {
     flex: 1,
+    height: '90%',
   },
   gradient: {
     flex: 1,
   },
   addButtonArea: {
-    marginTop: 4,
+    alignItems: 'center',
+    marginVertical: 8,
+    height: '10%',
   },
   addButton: {
     position: 'absolute',
-    width: '100%',
+    width: '50%',
     bottom: 0,
     padding: 16,
     borderRadius: 8,

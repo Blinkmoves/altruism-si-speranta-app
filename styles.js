@@ -20,7 +20,7 @@ const commonStyles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 16,
+        marginVertical: 16,
         textAlign: 'center',
       },
 });
