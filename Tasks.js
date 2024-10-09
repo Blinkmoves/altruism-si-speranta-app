@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import CheckBox from 'expo-checkbox';
 import { Ionicons } from '@expo/vector-icons';
 import commonStyles from './styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -62,6 +61,8 @@ export default function TaskWidget() {
     },
   ]);
 
+  const swipeableRefs = useRef([]);
+
   // Delete task function
   const deleteTask = (index) => {
     const newTasks = [...tasks];
@@ -69,17 +70,16 @@ export default function TaskWidget() {
     setTasks(newTasks);
   };
   // TODO: add backend connection to delete task in DB
-
-  // TODO: check why toggleTask isn't working
   
   // Toggle task completion function
-  const toggleTask = (index) => {
+  const completeTask = (index) => {
+    // console.log(`Toggling task at index: ${index}`);
     setTasks((prevTasks) => {
       const newTasks = [...prevTasks];
       if (newTasks[index]) {
-        newTasks[index].isChecked = !newTasks[index].isChecked;
-        newTasks.splice(index, 1);
-        newTasks.push(newTasks[index]);
+        newTasks.splice(index, 1); // Remove the task from the list
+        // newTasks[index].isChecked = !newTasks[index].isChecked;
+        // console.log(`Task ${index} isChecked: ${newTasks[index].isChecked}`);
       }
       return newTasks;
     });
@@ -98,7 +98,15 @@ export default function TaskWidget() {
 
     return (
       <Reanimated.View style={styleAnimation}>
-        <TouchableOpacity onPress={() => toggleTask(index)} style={styles.leftAction}>
+        <TouchableOpacity
+          onPress={() => {
+            // Close the swipeable
+            if (swipeableRefs.current[index]) {
+              swipeableRefs.current[index].close();
+            }
+            completeTask(index);
+          }}
+          style={styles.leftAction}>
           <Ionicons name="checkmark-circle" size={24} color="white" />
         </TouchableOpacity>
       </Reanimated.View>
@@ -118,7 +126,15 @@ export default function TaskWidget() {
 
     return (
       <Reanimated.View style={styleAnimation}>
-        <TouchableOpacity onPress={() => deleteTask(index)} style={styles.rightAction}>
+        <TouchableOpacity
+          onPress={() => {
+            // Close the swipeable
+            if (swipeableRefs.current[index]) {
+              swipeableRefs.current[index].close();
+            }          
+            deleteTask(index);
+          }}
+            style={styles.rightAction}>
           <MaterialCommunityIcons name="trash-can-outline" size={24} color="white" />
         </TouchableOpacity>
       </Reanimated.View>
@@ -127,21 +143,30 @@ export default function TaskWidget() {
 
   // TODO: add backend connection to update task completion in DB
   
-  // TODO: check why left isn't working
 
   return (
     <View>
       <FlatList
         data={tasks}
         renderItem={({ item, index }) => (
+        // console.log(`Rendering task at index: ${index}, isChecked: ${item.isChecked}`),
           <GestureHandlerRootView>
             <ReanimatedSwipeable
+              ref={(ref) => (swipeableRefs.current[index] = ref)}
               friction={3}
               enableTrackpadTwoFingerGesture
               overshootLeft={false}
               overshootRight={false}
-              renderRightActions={renderRightActions}
-              renderLeftActions={renderLeftActions}
+              renderRightActions={(progress, drag) => renderRightActions(progress, drag, index)}
+              renderLeftActions={(progress, drag) => renderLeftActions(progress, drag, index)}
+              onSwipeableWillOpen={() => {
+                // Close other swipeables
+                swipeableRefs.current.forEach((ref, i) => {
+                  if (i !== index && ref) {
+                    ref.close();
+                  }
+                });
+              }}
               >
               <View>
                 <View style={styles.row}>
