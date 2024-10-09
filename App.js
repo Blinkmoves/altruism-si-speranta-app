@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -11,9 +11,38 @@ import PrivacyPolicyPage from './PrivacyPolicyPage';
 import Login from './login';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { app, db } from './firebaseConfig';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+// TODO: make this work with firebase
+// TODO: define the tasks schema in db
+
+// Use firebase for state management
+export default function Altruism_si_Speranta() {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const snapshot = await db.ref('tasks').once('value');
+      const tasksData = snapshot.val();
+      const tasksArray = tasksData ? Object.keys(tasksData).map(key => ({ id: key, ...tasksData[key] })) : [];
+      setTasks(tasksArray);
+    };
+
+    fetchTasks();
+  }, []);
+
+  const completeTask = async (taskId) => {
+    await db.ref(`tasks/${taskId}`).remove();
+    setTasks(tasks.filter(task => task.id !== taskId));
+  };
+
+  const deleteTask = async (taskId) => {
+    await db.ref(`tasks/${taskId}`).remove();
+    setTasks(tasks.filter(task => task.id !== taskId));
+  };
 
 // TODO: do sth with the logo
 
@@ -56,7 +85,6 @@ function SettingsStack() {
   );
 }
 
-export default function Altruism_si_Speranta() {
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -78,7 +106,7 @@ export default function Altruism_si_Speranta() {
               iconName = focused ? 'login' : 'login';
             }
 
-            // You can return any component that you like here!
+            // You can return any icon component that you like here!
             return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: 'white',
@@ -92,8 +120,12 @@ export default function Altruism_si_Speranta() {
           ),
         })}
       >
-        <Tab.Screen name="Home" component={HomePage} options={{ tabBarLabel: 'Home' }} />
-        <Tab.Screen name="Task-uri" component={TasksPage} options={{ tabBarLabel: 'Task-uri' }} />
+        <Tab.Screen name="Home" options={{ tabBarLabel: 'Home' }}>
+          {props => <HomePage {...props} tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} />}
+        </Tab.Screen>
+        <Tab.Screen name="Task-uri" options={{ tabBarLabel: 'Task-uri' }}>
+          {props => <TasksPage {...props} tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} />}
+        </Tab.Screen>
         <Tab.Screen name="Evenimente" component={EventsPage} options={{ tabBarLabel: 'Evenimente' }} />
         <Tab.Screen name="Setări" component={SettingsStack} options={{ tabBarLabel: 'Setări' }} />
         {/* TODO: remove this once backend logic is finished */}
@@ -101,9 +133,10 @@ export default function Altruism_si_Speranta() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-}
+};
 
-// Register the main component
-AppRegistry.registerComponent('main', () => Altruism_si_Speranta);
-
-// TODO: remove the headertext from all pages
+// // The entry point of the app
+// AppRegistry.runApplication('main', {
+//   initialProps: {},
+//   rootTag: document.getElementById('app-root'),
+// });
