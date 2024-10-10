@@ -112,7 +112,7 @@ export default function SettingsPage({ navigation }) {
           </View>
         </View>
         {/* BOTTOM BUTTONS SECTION */}
-        <View style={styles.notificationContainer}>
+        <View style={[styles.notificationContainer, { paddingVertical: 20 }]}>
           {/* PRIVACY POLICY */}
           <TouchableOpacity style={styles.bottomButtons} onPress={() => navigation.navigate('PrivacyPolicyPage')}>
             <View style={styles.iconTextArea}>
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     width: '80%',
     alignSelf: 'center',
     backgroundColor: '#ccc',
-    marginVertical: 10,
+    marginVertical: 8,
     marginLeft: 10,
   },
 });
