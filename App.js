@@ -25,7 +25,7 @@ export default function Altruism_si_Speranta() {
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const snapshot = await db.ref('tasks').once('value');
+      const snapshot = await ref(db, 'tasks').once('value');
       const tasksData = snapshot.val();
       const tasksArray = tasksData ? Object.keys(tasksData).map(key => ({ id: key, ...tasksData[key] })) : [];
       setTasks(tasksArray);
@@ -35,55 +35,54 @@ export default function Altruism_si_Speranta() {
   }, []);
 
   const completeTask = async (taskId) => {
-    await db.ref(`tasks/${taskId}`).remove();
+    await ref(db, `tasks/${taskId}`).remove();
     setTasks(tasks.filter(task => task.id !== taskId));
   };
 
   const deleteTask = async (taskId) => {
-    await db.ref(`tasks/${taskId}`).remove();
+    await ref(db, `tasks/${taskId}`).remove();
     setTasks(tasks.filter(task => task.id !== taskId));
   };
 
-// TODO: do sth with the logo
 
-const LogoImage = () => {
-  return (
-    <View style={{ 
-      justifyContent: 'center', 
-      alignItems: 'center',
-      shadowColor: '#fff', // Set the shadow color here
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.5,
-      shadowRadius: 1,
-      elevation: 5, // For Android shadow
-    }}>
-      <Image
-        style={{ width: 50, height: 40 }}
-        source={require('./assets/logo.png')}
-      />
-    </View>
-  );
-};
+  // const LogoImage = () => {
+  //   return (
+  //     <View style={{ 
+  //       justifyContent: 'center', 
+  //       alignItems: 'center',
+  //       shadowColor: '#fff', // Set the shadow color here
+  //       shadowOffset: { width: 0, height: 0 },
+  //       shadowOpacity: 0.5,
+  //       shadowRadius: 1,
+  //       elevation: 5, // For Android shadow
+  //     }}>
+  //       <Image
+  //         style={{ width: 50, height: 40 }}
+  //         source={require('./assets/logo.png')}
+  //       />
+  //     </View>
+  //   );
+  // };
 
-function SettingsStack() {
-  return (
-    <Stack.Navigator
-      initialRouteName="SettingsPage"
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: '#093A3E', // Use the color here for the header background
-        },
-        headerTintColor: '#fff', // Set the header text color to white
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-      }}
-    >
-      <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false, headerTitle: '' }} />
-      <Stack.Screen name="PrivacyPolicyPage" component={PrivacyPolicyPage} options={{ headerTitle: ''}}/>
-    </Stack.Navigator>
-  );
-}
+  function SettingsStack() {
+    return (
+      <Stack.Navigator
+        initialRouteName="SettingsPage"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#093A3E', // Use the color here for the header background
+          },
+          headerTintColor: '#fff', // Set the header text color to white
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      >
+        <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="PrivacyPolicyPage" component={PrivacyPolicyPage} options={{ headerTitle: '' }} />
+      </Stack.Navigator>
+    );
+  }
 
   return (
     <NavigationContainer>
@@ -101,7 +100,7 @@ function SettingsStack() {
               iconName = focused ? 'calendar-check' : 'calendar-check-outline';
             } else if (route.name === 'Setări') {
               iconName = focused ? 'cog' : 'cog-outline';
-            // TODO: remove this once backend logic is finished
+              // TODO: remove this once backend logic is finished
             } else if (route.name === 'Login') {
               iconName = focused ? 'login' : 'login';
             }
@@ -113,11 +112,12 @@ function SettingsStack() {
           tabBarInactiveTintColor: '#a0a3a3',
           tabBarStyle: { backgroundColor: '#093A3E', paddingTop: 10 },
           headerStyle: { backgroundColor: '#093A3E' }, // Set header background color
-          headerTitle: () => (
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-              <LogoImage />
-            </View>
-          ),
+          headerTitle: ''
+          // headerTitle: () => (
+          //   <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+          //     <LogoImage />
+          //   </View>
+          // ),
         })}
       >
         <Tab.Screen name="Home" options={{ tabBarLabel: 'Home' }}>

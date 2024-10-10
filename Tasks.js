@@ -70,7 +70,7 @@ export default function TaskWidget() {
     setTasks(newTasks);
   };
   // TODO: add backend connection to delete task in DB
-  
+
   // Toggle task completion function
   const completeTask = (index) => {
     // console.log(`Toggling task at index: ${index}`);
@@ -84,12 +84,12 @@ export default function TaskWidget() {
       return newTasks;
     });
   };
-  
+
   // Swipe right to complete task
   const renderLeftActions = (progress, drag, index) => {
     const styleAnimation = useAnimatedStyle(() => {
       return {
-        transform: [{ translateX: drag.value -50 }],
+        transform: [{ translateX: drag.value - 50 }],
         inputRange: [0, 100],
         outputRange: [1, 0],
         progress: progress.value,
@@ -117,7 +117,7 @@ export default function TaskWidget() {
   const renderRightActions = (progress, drag, index) => {
     const styleAnimation = useAnimatedStyle(() => {
       return {
-        transform: [{ translateX: drag.value +50 }],
+        transform: [{ translateX: drag.value + 50 }],
         inputRange: [-100, 0],
         outputRange: [1, 0],
         progress: progress.value,
@@ -131,10 +131,10 @@ export default function TaskWidget() {
             // Close the swipeable
             if (swipeableRefs.current[index]) {
               swipeableRefs.current[index].close();
-            }          
+            }
             deleteTask(index);
           }}
-            style={styles.rightAction}>
+          style={styles.rightAction}>
           <MaterialCommunityIcons name="trash-can-outline" size={24} color="white" />
         </TouchableOpacity>
       </Reanimated.View>
@@ -142,14 +142,14 @@ export default function TaskWidget() {
   };
 
   // TODO: add backend connection to update task completion in DB
-  
+
 
   return (
     <View>
       <FlatList
         data={tasks}
         renderItem={({ item, index }) => (
-        // console.log(`Rendering task at index: ${index}, isChecked: ${item.isChecked}`),
+          // console.log(`Rendering task at index: ${index}, isChecked: ${item.isChecked}`),
           <GestureHandlerRootView>
             <ReanimatedSwipeable
               ref={(ref) => (swipeableRefs.current[index] = ref)}
@@ -167,7 +167,7 @@ export default function TaskWidget() {
                   }
                 });
               }}
-              >
+            >
               <View>
                 <View style={styles.row}>
                   {/* Task Details */}
@@ -184,7 +184,7 @@ export default function TaskWidget() {
                     {/* Deadline and Responsible Person */}
                     <View style={styles.taskInfoRow}>
                       <Text style={styles.taskInfoText}>Deadline: {item.deadline}</Text>
-                      <Text style={styles.taskInfoText}>Responsabil: 
+                      <Text style={styles.taskInfoText}>Responsabil:
                         <Text style={styles.taskResponsabil}> {item.responsible}</Text></Text>
                     </View>
                   </View>
@@ -257,13 +257,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: '100%',
     width: 50,
-    backgroundColor: 'red' 
+    backgroundColor: 'red'
   },
   leftAction: {
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
     width: 50,
-    backgroundColor: 'green' 
+    backgroundColor: 'green'
   },
 });

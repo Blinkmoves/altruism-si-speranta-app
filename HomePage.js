@@ -8,22 +8,22 @@ export default function HomePage() {
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-      <View>
         <View>
-          <Text style={commonStyles.title}>Task-uri</Text>
+          <View>
+            <Text style={commonStyles.title}>Task-uri</Text>
+          </View>
+          <View>
+            <TaskWidget />
+          </View>
         </View>
-        <View>
-          <TaskWidget />
+        <View style={commonStyles.container}>
+          <View>
+            <Text style={commonStyles.title}>Evenimente</Text>
+          </View>
+          <View>
+            <EventsWidget />
+          </View>
         </View>
-      </View>
-      <View style={commonStyles.container}>
-        <View>
-          <Text style={commonStyles.title}>Evenimente</Text>
-        </View>
-        <View>
-          <EventsWidget />
-        </View>
-      </View>
       </ScrollView>
     </View>
   );
