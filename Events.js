@@ -4,12 +4,14 @@ import { Calendar } from 'react-native-calendars';
 import commonStyles from './styles';
 
 export default function EventsWidget() {
+  const currentDate = new Date().toISOString().split('T')[0];
+  const maxDate = '9999-12-31';
   return (
     <View style={styles.container}>
       <Calendar
         // Set the first and last selectable days
-        minDate={'2020-01-01'}
-        maxDate={'2030-12-31'}
+        minDate={currentDate}
+        maxDate={maxDate}
         onDayPress={(day) => {
           console.log('selected day', day);
         }}

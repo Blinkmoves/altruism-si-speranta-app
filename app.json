@@ -2,6 +2,7 @@
   "expo": {
     "name": "Altruism si Speranta App",
     "slug": "altruism-si-speranta",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "userInterfaceStyle": "automatic"
   }
 }

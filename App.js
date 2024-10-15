@@ -19,6 +19,8 @@ const Stack = createStackNavigator();
 // TODO: make this work with firebase
 // TODO: define the tasks schema in db
 
+// TODO: add dark mode as well using useColorScheme
+
 // Use firebase for state management
 export default function Altruism_si_Speranta() {
   const [tasks, setTasks] = useState([]);
