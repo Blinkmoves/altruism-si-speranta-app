@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { AppRegistry, Text, View, Image } from 'react-native';
+import { AppRegistry, Text, View, Image, ActivityIndicator } from 'react-native';
 import HomePage from './HomePage';
 import TasksPage from './TasksPage';
 import EventsPage from './EventsPage';
 import SettingsPage from './SettingsPage';
 import PrivacyPolicyPage from './PrivacyPolicyPage';
 import Login from './login';
-import { Ionicons } from '@expo/vector-icons';
+import CreateAccount from './CreateAccount';
+import ForgotPassword from './ForgotPassword';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { app, db } from './firebaseConfig';
+import { app, db, auth } from './firebaseConfig';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,18 +24,38 @@ const Stack = createStackNavigator();
 
 // Use firebase for state management
 export default function Altruism_si_Speranta() {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      const snapshot = await ref(db, 'tasks').once('value');
-      const tasksData = snapshot.val();
-      const tasksArray = tasksData ? Object.keys(tasksData).map(key => ({ id: key, ...tasksData[key] })) : [];
-      setTasks(tasksArray);
-    };
-
-    fetchTasks();
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+    });
+    return unsubscribe;
   }, []);
+
+  // TODO: fix this to maintain login state
+  
+  if (isAuthenticated === null) {
+    // Show a loading indicator while checking authentication state
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+    );
+}
+
+// TODO see how to solve this and the tasks states
+  // useEffect(() => {
+  //   const fetchTasks = async () => {
+  //     const snapshot = await ref(db, 'tasks').once('value');
+  //     const tasksData = snapshot.val();
+  //     const tasksArray = tasksData ? Object.keys(tasksData).map(key => ({ id: key, ...tasksData[key] })) : [];
+  //     setTasks(tasksArray);
+  //   };
+
+  //   fetchTasks();
+  // }, []);
 
   const completeTask = async (taskId) => {
     await ref(db, `tasks/${taskId}`).remove();
@@ -45,26 +66,6 @@ export default function Altruism_si_Speranta() {
     await ref(db, `tasks/${taskId}`).remove();
     setTasks(tasks.filter(task => task.id !== taskId));
   };
-
-
-  // const LogoImage = () => {
-  //   return (
-  //     <View style={{ 
-  //       justifyContent: 'center', 
-  //       alignItems: 'center',
-  //       shadowColor: '#fff', // Set the shadow color here
-  //       shadowOffset: { width: 0, height: 0 },
-  //       shadowOpacity: 0.5,
-  //       shadowRadius: 1,
-  //       elevation: 5, // For Android shadow
-  //     }}>
-  //       <Image
-  //         style={{ width: 50, height: 40 }}
-  //         source={require('./assets/logo.png')}
-  //       />
-  //     </View>
-  //   );
-  // };
 
   function SettingsStack() {
     return (
@@ -78,16 +79,38 @@ export default function Altruism_si_Speranta() {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          headerBackTitle: ' Înapoi', // Customize the back button text
         }}
       >
         <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false, headerTitle: '' }} />
-        <Stack.Screen name="PrivacyPolicyPage" component={PrivacyPolicyPage} options={{ headerTitle: '' }} />
+        <Stack.Screen name="PrivacyPolicyPage" component={PrivacyPolicyPage} options={{ headerShown: false, headerTitle: '' }} />
       </Stack.Navigator>
     );
   }
 
-  return (
-    <NavigationContainer>
+  function LoginStack() {
+    return (
+      <Stack.Navigator
+        initialRouteName="Login"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#093A3E', // Use the color here for the header background
+          },
+          headerTintColor: '#fff', // Set the header text color to white
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      >
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="CreateAccount" component={CreateAccount} options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false, headerTitle: '' }} />
+      </Stack.Navigator>
+    );
+  }
+
+  function AuthenticatedStack() {
+    return (
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={({ route }) => ({
@@ -107,7 +130,6 @@ export default function Altruism_si_Speranta() {
               iconName = focused ? 'login' : 'login';
             }
 
-            // You can return any icon component that you like here!
             return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: 'white',
@@ -115,11 +137,6 @@ export default function Altruism_si_Speranta() {
           tabBarStyle: { backgroundColor: '#093A3E', paddingTop: 10 },
           headerStyle: { backgroundColor: '#093A3E' }, // Set header background color
           headerTitle: ''
-          // headerTitle: () => (
-          //   <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-          //     <LogoImage />
-          //   </View>
-          // ),
         })}
       >
         <Tab.Screen name="Home" options={{ tabBarLabel: 'Home' }}>
@@ -130,9 +147,15 @@ export default function Altruism_si_Speranta() {
         </Tab.Screen>
         <Tab.Screen name="Evenimente" component={EventsPage} options={{ tabBarLabel: 'Evenimente' }} />
         <Tab.Screen name="Setări" component={SettingsStack} options={{ tabBarLabel: 'Setări' }} />
-        {/* TODO: remove this once backend logic is finished */}
-        <Tab.Screen name="Login" component={Login} options={{ tabBarLabel: 'Login' }} />
+        {/* <Tab.Screen name="Login" component={LoginStack} options={{ tabBarLabel: 'Login' }} />  */}
       </Tab.Navigator>
+    );
+  }
+
+
+  return (
+    <NavigationContainer>
+        {isAuthenticated ? <AuthenticatedStack /> : <LoginStack />}
     </NavigationContainer>
   );
 };
