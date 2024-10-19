@@ -23,6 +23,27 @@ const commonStyles = StyleSheet.create({
         marginVertical: 16,
         textAlign: 'center',
     },
+    successToast: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#20c961', // Green background with transparency
+        paddingVertical: 14,
+        paddingHorizontal: 30,
+        borderRadius: 8,
+    },
+    errorToast: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#c92031', // Red background with transparency
+        paddingVertical: 14,
+        paddingHorizontal: 30,
+        borderRadius: 8,
+    },
+    toastText: {
+        color: 'white',
+        marginLeft: 10,
+        fontSize: 16,
+    },
 });
 
 export default commonStyles;

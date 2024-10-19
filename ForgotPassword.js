@@ -1,9 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, findNodeHandle, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, findNodeHandle, Image } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from './firebaseConfig'; // Import the Firebase auth instance
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
+import commonStyles from './styles';
+import toastConfig from './toastConfig'; // Import custom toast configuration
 
 export default function ForgotPassword({ navigation }) {
     const [email, setEmail] = useState('');
@@ -14,13 +18,25 @@ export default function ForgotPassword({ navigation }) {
     const emailInputRef = useRef(null);
 
     const handlePasswordReset = async () => {
+        Keyboard.dismiss(); // Hide the keyboard
         try {
             await sendPasswordResetEmail(auth, email);
+            Toast.show({
+                type: 'success',
+                text1: 'Un link de resetare a parolei a fost trimis la adresa de email specificată.',
+                visibilityTime: 5000, // 5 seconds
+                topOffset: 60,
+            });
             setSuccess('Un link de resetare a parolei a fost trimis la adresa de email specificată.');
             setError('');
-            Alert.alert('Success', 'Un link de resetare a parolei a fost trimis la adresa de email specificată.');
         } catch (error) {
-            console.error('A apărut o eroare la trimiterea e-mailului de resetare a parolei: ', error);
+            const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
+            Toast.show({
+                type: 'error',
+                text1: friendlyErrorMessage,
+                visibilityTime: 5000, // 5 seconds
+                topOffset: 60,
+            });
             setError(error.message);
             setSuccess('');
         }
@@ -58,8 +74,6 @@ export default function ForgotPassword({ navigation }) {
                 onFocus={() => scrollToInput(emailInputRef.current)}
             />
             <View style={styles.buttonsArea}>
-                {error ? <Text style={styles.errorText}>{error}</Text> : null}
-                {success ? <Text style={styles.successText}>{success}</Text> : null}
                 <TouchableOpacity style={styles.createButton} onPress={handlePasswordReset}>
                     <Text style={styles.buttonText}>Trimite link de resetare</Text>
                 </TouchableOpacity>
@@ -68,6 +82,7 @@ export default function ForgotPassword({ navigation }) {
                     <Text style={styles.goToLoginText}>Înapoi la Login</Text>
                 </TouchableOpacity>
             </View>
+            <Toast config={toastConfig} />
         </KeyboardAwareScrollView>
     );
 }

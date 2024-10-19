@@ -13,12 +13,10 @@ import CreateAccount from './CreateAccount';
 import ForgotPassword from './ForgotPassword';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { app, db, auth } from './firebaseConfig';
+import commonStyles from './styles';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-
-// TODO: make this work with firebase
-// TODO: define the tasks schema in db
 
 // TODO: add dark mode as well using useColorScheme
 
@@ -34,18 +32,17 @@ export default function Altruism_si_Speranta() {
     return unsubscribe;
   }, []);
 
-  // TODO: fix this to maintain login state
-  
   if (isAuthenticated === null) {
     // Show a loading indicator while checking authentication state
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="large" color="#0000ff" />
-        </View>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
     );
-}
+  }
 
-// TODO see how to solve this and the tasks states
+  // TODO: define the tasks schema in db
+  // TODO see how to solve this and the tasks states
   // useEffect(() => {
   //   const fetchTasks = async () => {
   //     const snapshot = await ref(db, 'tasks').once('value');
@@ -125,11 +122,10 @@ export default function Altruism_si_Speranta() {
               iconName = focused ? 'calendar-check' : 'calendar-check-outline';
             } else if (route.name === 'Setări') {
               iconName = focused ? 'cog' : 'cog-outline';
-              // TODO: remove this once backend logic is finished
-            } else if (route.name === 'Login') {
-              iconName = focused ? 'login' : 'login';
             }
-
+            //  else if (route.name === 'Login') {
+            //   iconName = focused ? 'login' : 'login';
+            // }
             return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: 'white',
@@ -139,10 +135,10 @@ export default function Altruism_si_Speranta() {
           headerTitle: ''
         })}
       >
-        <Tab.Screen name="Home" options={{ tabBarLabel: 'Home' }}>
+        <Tab.Screen name="Home" component={HomePage} options={{ tabBarLabel: 'Home' }}>
           {props => <HomePage {...props} tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} />}
         </Tab.Screen>
-        <Tab.Screen name="Task-uri" options={{ tabBarLabel: 'Task-uri' }}>
+        <Tab.Screen name="Task-uri" component={TasksPage} options={{ tabBarLabel: 'Task-uri' }}>
           {props => <TasksPage {...props} tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} />}
         </Tab.Screen>
         <Tab.Screen name="Evenimente" component={EventsPage} options={{ tabBarLabel: 'Evenimente' }} />
@@ -152,10 +148,9 @@ export default function Altruism_si_Speranta() {
     );
   }
 
-
   return (
     <NavigationContainer>
-        {isAuthenticated ? <AuthenticatedStack /> : <LoginStack />}
+      {isAuthenticated ? <AuthenticatedStack /> : <LoginStack />}
     </NavigationContainer>
   );
 };

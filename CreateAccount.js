@@ -1,9 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebaseConfig'; // Import the Firebase auth instance
+import Toast from 'react-native-toast-message';
+import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
+import toastConfig from './toastConfig'; // Import custom toast configuration
+import commonStyles from './styles';
 
 export default function CreateAccount({ navigation }) {
     const [email, setEmail] = useState('');
@@ -15,15 +19,29 @@ export default function CreateAccount({ navigation }) {
     const passwordInputRef = useRef(null); // Ref for password input
 
     const handleCreateAccount = async () => {
+        Keyboard.dismiss(); // Hide the keyboard
         try {
             await createUserWithEmailAndPassword(auth, email, password);
-            Alert.alert('Contul a fost creat cu succes!');
+            Toast.show({
+                type: 'success',
+                text1: 'Contul a fost creat cu succes!',
+                visibilityTime: 2000, // 2 seconds
+                topOffset: 60,
+            });
             setError(''); // Clear error message after successful account creation
-            // Navigate back to the login screen
-            navigation.navigate('Login');
+            setTimeout(() => {
+                navigation.navigate('HomePage'); // Navigate to the HomePage after a delay
+            }, 2000); // Adjust the delay as needed
         } catch (error) {
-            Alert.alert('A apărut o eroare la crearea contului: ', error);
+            const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
+            Toast.show({
+                type: 'error',
+                text1: friendlyErrorMessage,
+                visibilityTime: 5000, // 5 seconds
+                topOffset: 60,
+            });
             setError(error.message);
+            console.log(error);
         }
     };
 
@@ -75,7 +93,6 @@ export default function CreateAccount({ navigation }) {
                 onSubmitEditing={handleCreateAccount} // Call create account function on submit
             />
             <View style={styles.buttonsArea}>
-                {error ? <Text style={styles.errorText}>{error}</Text> : null}
                 <TouchableOpacity style={styles.createButton} onPress={handleCreateAccount}>
                     <Text style={styles.buttonText}>Creează cont</Text>
                 </TouchableOpacity>
@@ -84,6 +101,7 @@ export default function CreateAccount({ navigation }) {
                     <Text style={styles.goToLoginText}>Înapoi la Login</Text>
                 </TouchableOpacity>
             </View>
+            <Toast config={toastConfig} />
         </KeyboardAwareScrollView>
     );
 }

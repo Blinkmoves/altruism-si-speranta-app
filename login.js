@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebaseConfig'; // Import the Firebase auth instance
-
+import Toast from 'react-native-toast-message';
+import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
+import toastConfig from './toastConfig'; // Import custom toast configuration
 import commonStyles from './styles';
 
 export default function Login({ navigation }) {
@@ -15,16 +17,28 @@ export default function Login({ navigation }) {
     const emailInputRef = useRef(null);
     const passwordInputRef = useRef(null);
 
-    // TODO: modify to not use alerts, instead use either Snackbar from the top or a Toast for success messages. Use inline alerts for error messages.
-    // TODO: add delay to wait for success message to be displayed and disappear before navigating to the next screen (ON LOGIN, ON CREATE ACCOUNT, ON FORGOT PASSWORD)
-
     const handleLogin = async () => {
+        Keyboard.dismiss(); // Hide the keyboard
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            Alert.alert('Te-ai logat cu succes!');
+            Toast.show({
+                type: 'success',
+                text1: 'Te-ai logat cu succes!',
+                visibilityTime: 2000, // 2 seconds
+                topOffset: 60,
+            });
             setError(''); // Clear error message after successful login
+            setTimeout(() => {
+                navigation.navigate('HomePage'); // Navigate to the HomePage after a delay
+            }, 2000); // Adjust the delay as needed
         } catch (error) {
-            Alert.alert('A apărut o eroare la logare: ', error);
+            const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
+            Toast.show({
+                type: 'error',
+                text1: friendlyErrorMessage,
+                visibilityTime: 5000, // 5 seconds
+                topOffset: 60,
+            });
             setError(error.message);
         }
     };
@@ -87,7 +101,6 @@ export default function Login({ navigation }) {
                 />
             </View>
             <View style={styles.buttonsArea}>
-                {error ? <Text style={styles.errorText}>{error}</Text> : null}
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                     <Text style={styles.loginButtonText}>Login</Text>
                 </TouchableOpacity>
@@ -100,6 +113,7 @@ export default function Login({ navigation }) {
                     </TouchableOpacity>
                 </View>
             </View>
+            <Toast config={toastConfig} />
         </KeyboardAwareScrollView>
     );
 }
@@ -174,9 +188,5 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: 8,
         alignItems: 'center',
-    },
-    errorText: {
-        color: 'red',
-        marginBottom: 12,
     },
 });
