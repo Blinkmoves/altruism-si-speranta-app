@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { AppRegistry, Text, View, Image, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import HomePage from './HomePage';
 import TasksPage from './TasksPage';
 import EventsPage from './EventsPage';
@@ -135,10 +135,10 @@ export default function Altruism_si_Speranta() {
           headerTitle: ''
         })}
       >
-        <Tab.Screen name="Home" component={HomePage} options={{ tabBarLabel: 'Home' }}>
+        <Tab.Screen name="Home" options={{ tabBarLabel: 'Home' }}>
           {props => <HomePage {...props} tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} />}
         </Tab.Screen>
-        <Tab.Screen name="Task-uri" component={TasksPage} options={{ tabBarLabel: 'Task-uri' }}>
+        <Tab.Screen name="Task-uri" options={{ tabBarLabel: 'Task-uri' }}>
           {props => <TasksPage {...props} tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} />}
         </Tab.Screen>
         <Tab.Screen name="Evenimente" component={EventsPage} options={{ tabBarLabel: 'Evenimente' }} />

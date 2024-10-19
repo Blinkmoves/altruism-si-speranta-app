@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard, StatusBar } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebaseConfig'; // Import the Firebase auth instance
@@ -68,7 +68,9 @@ export default function Login({ navigation }) {
             extraHeight={100}
 
         >
+            <StatusBar backgroundColor="#fff" barStyle="dark-content" />
             <Image style={styles.logoImage} source={require('./assets/logo.jpg')} />
+            <Text style={styles.title}>Loghează-te</Text>
             <View>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
@@ -85,6 +87,7 @@ export default function Login({ navigation }) {
                     onFocus={() => scrollToInput(emailInputRef.current)}
                     onSubmitEditing={() => passwordInputRef.current.focus()} // Focus password input on submit
                 />
+                {/* TODO add show password icon to LOGIN, CREATE */}
                 <Text style={styles.label}>Parolă</Text>
                 <TextInput
                     style={styles.input}

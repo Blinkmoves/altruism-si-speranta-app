@@ -126,6 +126,7 @@ export default function SettingsPage({ navigation }) {
           </TouchableOpacity>
           <View style={styles.bottomDivider} />
           {/* DELETE BUTTON */}
+          {/* TODO add delete logic */}
           <TouchableOpacity style={styles.bottomButtons}>
             <View style={styles.iconTextArea}>
               <View style={{ width: '10%' }}>
@@ -138,6 +139,7 @@ export default function SettingsPage({ navigation }) {
           </TouchableOpacity>
           <View style={styles.bottomDivider} />
           {/* LOGOUT BUTTON */}
+          {/* TODO add logout logic */}
           <TouchableOpacity style={styles.logoutButton}>
             <View style={styles.iconTextArea}>
               <View style={{ width: '10%' }}>
