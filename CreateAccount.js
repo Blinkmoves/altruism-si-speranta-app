@@ -2,14 +2,14 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from './firebaseConfig'; // Import the Firebase auth instance
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
 import toastConfig from './toastConfig'; // Import custom toast configuration
 import commonStyles from './styles';
 
-export default function CreateAccount({ navigation }) {
+export default function CreateAccount({ navigation, setIsAuthenticated }) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -24,17 +24,19 @@ export default function CreateAccount({ navigation }) {
     const handleCreateAccount = async () => {
         Keyboard.dismiss(); // Hide the keyboard
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, { displayName: name });
+
+            setError(''); // Clear error message after successful account creation
+            setIsAuthenticated(true); // Set the authenticated state to true
+            navigation.navigate('HomePage'); // Navigate to the HomePage after a delay
+            // FIXME toast not shown after account creation
             Toast.show({
                 type: 'success',
                 text1: 'Contul a fost creat cu succes!',
-                visibilityTime: 2000, // 2 seconds
-                topOffset: 60,
+                visibilityTime: 3000, // 2 seconds
+                topOffset: 20,
             });
-            setError(''); // Clear error message after successful account creation
-            setTimeout(() => {
-                navigation.navigate('HomePage'); // Navigate to the HomePage after a delay
-            }, 2000); // Adjust the delay as needed
         } catch (error) {
             const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
             Toast.show({
@@ -66,7 +68,7 @@ export default function CreateAccount({ navigation }) {
         >
             <Image style={styles.logoImage} source={require('./assets/logo.jpg')} />
             <Text style={styles.title}>Creează un cont nou</Text>
-            <Text style={styles.label}>Nume</Text>
+            <Text style={styles.label}>Nume complet</Text>
             <TextInput
                 style={styles.input}
                 value={name}
@@ -76,6 +78,7 @@ export default function CreateAccount({ navigation }) {
                 }}
                 returnKeyType="next"
                 autoCapitalize="words"
+                ref={nameInputRef}
                 onFocus={() => scrollToInput(nameInputRef.current)}
                 onSubmitEditing={() => emailInputRef.current.focus()} // Focus email input on submit
             />

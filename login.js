@@ -20,21 +20,21 @@ export default function Login({ navigation }) {
     const emailInputRef = useRef(null);
     const passwordInputRef = useRef(null);
 
-    // TODO: not a must but implement login by name as well
+    // IDEA: not a must but implement login by name as well
     const handleLogin = async () => {
         Keyboard.dismiss(); // Hide the keyboard
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            navigation.navigate('HomePage'); // Navigate to the HomePage after a delay
+            setError(''); // Clear error message after successful login
+            // FIXME toast not shown after login
             Toast.show({
                 type: 'success',
                 text1: 'Te-ai logat cu succes!',
                 visibilityTime: 2000, // 2 seconds
                 topOffset: 60,
             });
-            setError(''); // Clear error message after successful login
-            setTimeout(() => {
-                navigation.navigate('HomePage'); // Navigate to the HomePage after a delay
-            }, 2000); // Adjust the delay as needed
+            console.log('Logged in successfully');
         } catch (error) {
             const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
             Toast.show({

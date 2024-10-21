@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Image, Text } from 'react-native';
 import HomePage from './HomePage';
 import TasksPage from './TasksPage';
 import EventsPage from './EventsPage';
@@ -18,12 +18,26 @@ import commonStyles from './styles';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// TODO: add dark mode as well using useColorScheme
+// IDEA: add dark mode as well using useColorScheme
 
 // Use firebase for state management
 export default function Altruism_si_Speranta() {
+
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [tasks, setTasks] = useState([]);
+
+  const displayName = auth.currentUser?.displayName || '';
+
+  // Define custom header component
+  const CustomHeader = ({ title }) => {
+    return (
+      <View style={commonStyles.headerContainer}>
+        <Image source={require('./assets/logo.png')} style={commonStyles.headerLogo} />
+        <Text style={commonStyles.headerTitle}>{title}</Text>
+      </View>
+    );
+  };
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -36,7 +50,7 @@ export default function Altruism_si_Speranta() {
     // Show a loading indicator while checking authentication state
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#093A3E" />
       </View>
     );
   }
@@ -85,7 +99,7 @@ export default function Altruism_si_Speranta() {
     );
   }
 
-  function LoginStack() {
+  function LoginStack({ setIsAuthenticated }) {
     return (
       <Stack.Navigator
         initialRouteName="Login"
@@ -132,7 +146,9 @@ export default function Altruism_si_Speranta() {
           tabBarInactiveTintColor: '#a0a3a3',
           tabBarStyle: { backgroundColor: '#093A3E', paddingTop: 10 },
           headerStyle: { backgroundColor: '#093A3E' }, // Set header background color
-          headerTitle: ''
+          // headerTitle: 'Fii altruist(ă) și azi, ' + displayName + '!',
+          // headerTitleStyle: { color: 'white', fontSize: 14 }, // Set header title color
+          headerTitle: () => <CustomHeader title={`Fii altruist(ă) și azi, ${displayName}!`} />,
         })}
       >
         <Tab.Screen name="Home" options={{ tabBarLabel: 'Home' }}>
@@ -149,7 +165,7 @@ export default function Altruism_si_Speranta() {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <AuthenticatedStack /> : <LoginStack />}
+      {isAuthenticated ? <AuthenticatedStack /> : <LoginStack setIsAuthenticated={setIsAuthenticated} />}
     </NavigationContainer>
   );
 };

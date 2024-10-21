@@ -60,6 +60,22 @@ const commonStyles = StyleSheet.create({
     passwordIconContainer: {
         padding: 8,
     },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+    },
+    headerLogo: {
+        width: 40,
+        height: 30,
+        marginRight: 10,
+    },
+    headerTitle: {
+        color: 'white',
+        fontSize: 14,
+        textAlign: 'center',
+    },
 });
 
 export default commonStyles;
