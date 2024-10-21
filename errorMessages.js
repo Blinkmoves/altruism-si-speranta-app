@@ -20,7 +20,11 @@ export const getFriendlyErrorMessage = (errorCode) => {
         case 'auth/weak-password':
             return 'Parola este prea slabă.'; // CreateAccount
         case 'auth/network-request-failed':
-            return 'A apărut o eroare de rețea. Te rugăm să încerci din nou.'; // Login, CreateAccount and ForgotPassword
+            return 'A apărut o eroare de rețea. Te rugăm să încerci din nou.'; // Login, CreateAccount and ForgotPassword, Logout
+        case 'auth/no-current-user':
+            return 'Nu există niciun utilizator conectat.'; // Logout
+        case 'auth/internal-error':
+            return 'A apărut o eroare internă. Te rugăm să încerci din nou.'; // Login, Logout, CreateAccount and ForgotPassword
         default:
             return 'A apărut o eroare. Te rugăm să încerci din nou.'; // Login, CreateAccount and ForgotPassword
     }

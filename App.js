@@ -143,7 +143,6 @@ export default function Altruism_si_Speranta() {
         </Tab.Screen>
         <Tab.Screen name="Evenimente" component={EventsPage} options={{ tabBarLabel: 'Evenimente' }} />
         <Tab.Screen name="Setări" component={SettingsStack} options={{ tabBarLabel: 'Setări' }} />
-        {/* <Tab.Screen name="Login" component={LoginStack} options={{ tabBarLabel: 'Login' }} />  */}
       </Tab.Navigator>
     );
   }
@@ -154,9 +153,3 @@ export default function Altruism_si_Speranta() {
     </NavigationContainer>
   );
 };
-
-// // The entry point of the app
-// AppRegistry.runApplication('main', {
-//   initialProps: {},
-//   rootTag: document.getElementById('app-root'),
-// });

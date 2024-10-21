@@ -7,16 +7,20 @@ import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
 import toastConfig from './toastConfig'; // Import custom toast configuration
 import commonStyles from './styles';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Manage password visibility state
+    const [isPasswordFocused, setIsPasswordFocused] = useState(false); // Manage password focus state
 
     const scrollRef = useRef(null);
     const emailInputRef = useRef(null);
     const passwordInputRef = useRef(null);
 
+    // TODO: not a must but implement login by name as well
     const handleLogin = async () => {
         Keyboard.dismiss(); // Hide the keyboard
         try {
@@ -81,27 +85,46 @@ export default function Login({ navigation }) {
                         if (error) setError(''); // Clear error when user starts typing
                     }}
                     keyboardType="email-address"
+                    inputmode='email'
                     autoCapitalize="none"
                     returnKeyType="next"
+                    autoCompleteType="email"
+                    autoCorrect={true}
+                    textContentType="emailAddress"
                     ref={emailInputRef} // Assign ref to email input
                     onFocus={() => scrollToInput(emailInputRef.current)}
                     onSubmitEditing={() => passwordInputRef.current.focus()} // Focus password input on submit
                 />
-                {/* TODO add show password icon to LOGIN, CREATE */}
                 <Text style={styles.label}>Parolă</Text>
-                <TextInput
-                    style={styles.input}
-                    value={password}
-                    onChangeText={(text) => {
-                        setPassword(text);
-                        if (error) setError(''); // Clear error when user starts typing
-                    }}
-                    secureTextEntry
-                    returnKeyType="done"
-                    ref={passwordInputRef} // Assign ref to password input
-                    onFocus={() => scrollToInput(passwordInputRef.current)}
-                    onSubmitEditing={handleLogin} // Call login function on submit
-                />
+                <View style={commonStyles.passwordContainer}>
+                    <TextInput
+                        style={commonStyles.passwordInput}
+                        value={password}
+                        onChangeText={(text) => {
+                            setPassword(text);
+                            if (error) setError(''); // Clear error when user starts typing
+                        }}
+                        secureTextEntry={!isPasswordVisible} // Hide password if isPasswordVisible is false
+                        returnKeyType="done"
+                        ref={passwordInputRef} // Assign ref to password input
+                        onFocus={() => {
+                            scrollToInput(passwordInputRef.current)
+                            setIsPasswordFocused(true); // Set isPasswordFocused to true when password input is focused
+                        }}
+                        onBlur={() => setIsPasswordFocused(false)} // Set isPasswordFocused to false when password input is blurred
+                        onSubmitEditing={handleLogin} // Call login function on submit
+                    />
+                    <TouchableOpacity
+                        style={commonStyles.passwordIconContainer}
+                        onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                    >
+                        <MaterialCommunityIcons
+                            name={isPasswordVisible ? "eye-off" : "eye"}
+                            size={24}
+                            color="gray"
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
             <View style={styles.buttonsArea}>
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
@@ -144,6 +167,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 12,
         paddingHorizontal: 8,
+        fontSize: 16,
     },
     loginButton: {
         backgroundColor: '#60908C',

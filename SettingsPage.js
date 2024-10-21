@@ -1,15 +1,131 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Switch } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Switch, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import commonStyles from './styles';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { getAuth, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import Toast from 'react-native-toast-message';
+import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
+import toastConfig from './toastConfig'; // Import custom toast configuration
 
-export default function SettingsPage({ navigation }) {
+export default function SettingsPage() {
+
+  const navigation = useNavigation();
+  const [password, setPassword] = useState('');
   const [isEditingPersonalData, setIsEditingPersonalData] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isPushNotificationsEnabled, setPushNotificationsEnabled] = useState(false);
   const [isEmailNotificationsEnabled, setEmailNotificationsEnabled] = useState(false);
   const buttonTextStyle = commonStyles.ButtonText;
   const fontSize = buttonTextStyle.fontSize || 16; // Default to 16 if fontSize is not defined
+
+  const auth = getAuth();
+
+  const handleLogout = async () => {
+    try {
+      Toast.show({
+        type: 'success',
+        text1: 'Te-ai delogat cu succes!',
+        visibilityTime: 2000, // 2 seconds
+        topOffset: 20,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds
+      await signOut(auth);
+      navigation.navigate('Login');
+    } catch (error) {
+      const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
+      Toast.show({
+        type: 'error',
+        text1: friendlyErrorMessage,
+        visibilityTime: 5000, // 5 seconds
+        topOffset: 20,
+      });
+    }
+  };
+
+
+  // DELETE ACCOUNT LOGIC START
+
+  const handleDeleteAccount = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      Toast.show({
+        type: 'error',
+        text1: 'Nu există niciun utilizator autentificat.',
+        visibilityTime: 5000, // 5 seconds
+        topOffset: 20,
+      });
+      return;
+    }
+
+    // Prompt the user to confirm account deletion
+    Alert.alert(
+      'Confirmare Ștergere Cont',
+      'Ești sigur că vrei să ștergi contul? Această acțiune este ireversibilă.',
+      [
+        {
+          text: 'Anulează',
+          style: 'cancel',
+        },
+        {
+          text: 'Șterge',
+          style: 'destructive',
+          onPress: () => showPasswordPrompt(),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const showPasswordPrompt = () => {
+    // Show the password input alert
+    Alert.prompt(
+      'Confirmare Parolă',
+      'Introdu parola pentru a confirma ștergerea contului.',
+      [
+        {
+          text: 'Anulează',
+          style: 'cancel',
+        },
+        {
+          text: 'Șterge',
+          style: 'destructive',
+          onPress: (password) => confirmDeleteAccount(password),
+        },
+      ],
+      'secure-text'
+    );
+  };
+
+  const confirmDeleteAccount = async (password) => {
+    const user = auth.currentUser;
+    try {
+      // Re-authenticate the user
+      const credential = EmailAuthProvider.credential(user.email, password);
+      await reauthenticateWithCredential(user, credential);
+
+      // Delete the user
+      await deleteUser(user);
+      Toast.show({
+        type: 'success',
+        text1: 'Contul a fost șters cu succes!',
+        visibilityTime: 3000, // 2 seconds
+        topOffset: 60,
+      });
+      navigation.navigate('Login'); // Navigate to the login screen after account deletion
+    } catch (error) {
+      const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
+      Toast.show({
+        type: 'error',
+        text1: friendlyErrorMessage,
+        visibilityTime: 5000, // 5 seconds
+        topOffset: 20,
+      });
+    }
+  };
+
+  // DELETE ACCOUNT LOGIC END
+
 
   return (
     <View style={commonStyles.container}>
@@ -28,20 +144,20 @@ export default function SettingsPage({ navigation }) {
               <Text style={styles.label}>Nume</Text>
               <TextInput
                 style={styles.input}
-              // Add onChangeText and value props to handle the username input
+              // TODO Add onChangeText and value props to handle the username input
               />
 
               <Text style={styles.label}>Email</Text>
               <TextInput
                 style={styles.input}
                 keyboardType="email-address"
-              // Add onChangeText and value props to handle the email input
+              // TODO Add onChangeText and value props to handle the email input
               />
 
               <TouchableOpacity
                 style={styles.saveButton}
                 onPress={() => {
-                  // Add a function to handle the save button press
+                  // TODO Add a function to handle the save button press
                 }}
               >
                 <Text style={commonStyles.ButtonText}>Salvează</Text>
@@ -111,8 +227,10 @@ export default function SettingsPage({ navigation }) {
             />
           </View>
         </View>
+
         {/* BOTTOM BUTTONS SECTION */}
         <View style={[styles.notificationContainer, { paddingVertical: 20 }]}>
+          
           {/* PRIVACY POLICY */}
           <TouchableOpacity style={styles.bottomButtons} onPress={() => navigation.navigate('PrivacyPolicyPage')}>
             <View style={styles.iconTextArea}>
@@ -125,9 +243,9 @@ export default function SettingsPage({ navigation }) {
             </View>
           </TouchableOpacity>
           <View style={styles.bottomDivider} />
+
           {/* DELETE BUTTON */}
-          {/* TODO add delete logic */}
-          <TouchableOpacity style={styles.bottomButtons}>
+          <TouchableOpacity style={styles.bottomButtons} onPress={handleDeleteAccount}>
             <View style={styles.iconTextArea}>
               <View style={{ width: '10%' }}>
                 <MaterialCommunityIcons name="trash-can-outline" size={26} color={'#C03636'} />
@@ -138,20 +256,21 @@ export default function SettingsPage({ navigation }) {
             </View>
           </TouchableOpacity>
           <View style={styles.bottomDivider} />
+
           {/* LOGOUT BUTTON */}
-          {/* TODO add logout logic */}
-          <TouchableOpacity style={styles.logoutButton}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <View style={styles.iconTextArea}>
               <View style={{ width: '10%' }}>
                 <MaterialCommunityIcons name="logout" size={26} color={'black'} />
               </View>
               <View style={{ width: '90%' }}>
-                <Text style={styles.bottomButtonText}> Deconectează-te</Text>
+                <Text style={styles.bottomButtonText}> Logout</Text>
               </View>
             </View>
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Toast config={toastConfig} />
     </View>
   );
 }

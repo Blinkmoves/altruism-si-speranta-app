@@ -44,6 +44,22 @@ const commonStyles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 16,
     },
+    passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: '#093A3E',
+        borderWidth: 1.2,
+        borderRadius: 10,
+        marginBottom: 12,
+        paddingHorizontal: 8,
+    },
+    passwordInput: {
+        flex: 1,
+        fontSize: 16,
+    },
+    passwordIconContainer: {
+        padding: 8,
+    },
 });
 
 export default commonStyles;

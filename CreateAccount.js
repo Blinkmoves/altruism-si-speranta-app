@@ -10,11 +10,14 @@ import toastConfig from './toastConfig'; // Import custom toast configuration
 import commonStyles from './styles';
 
 export default function CreateAccount({ navigation }) {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Manage password visibility state
 
     const scrollRef = useRef(null);
+    const nameInputRef = useRef(null); // Ref for name input
     const emailInputRef = useRef(null); // Ref for email input
     const passwordInputRef = useRef(null); // Ref for password input
 
@@ -63,6 +66,19 @@ export default function CreateAccount({ navigation }) {
         >
             <Image style={styles.logoImage} source={require('./assets/logo.jpg')} />
             <Text style={styles.title}>Creează un cont nou</Text>
+            <Text style={styles.label}>Nume</Text>
+            <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={(text) => {
+                    setName(text);
+                    if (error) setError(''); // Clear error when user starts typing
+                }}
+                returnKeyType="next"
+                autoCapitalize="words"
+                onFocus={() => scrollToInput(nameInputRef.current)}
+                onSubmitEditing={() => emailInputRef.current.focus()} // Focus email input on submit
+            />
             <Text style={styles.label}>Email</Text>
             <TextInput
                 style={styles.input}
@@ -79,19 +95,31 @@ export default function CreateAccount({ navigation }) {
                 onSubmitEditing={() => passwordInputRef.current.focus()} // Focus password input on submit
             />
             <Text style={styles.label}>Parolă</Text>
-            <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={(text) => {
-                    setPassword(text);
-                    if (error) setError(''); // Clear error when user starts typing
-                }}
-                returnKeyType="done"
-                secureTextEntry
-                ref={passwordInputRef} // Assign ref to password input
-                onFocus={() => scrollToInput(passwordInputRef.current)} // Pass ref to scroll function
-                onSubmitEditing={handleCreateAccount} // Call create account function on submit
-            />
+            <View style={commonStyles.passwordContainer}>
+                <TextInput
+                    style={commonStyles.passwordInput}
+                    value={password}
+                    onChangeText={(text) => {
+                        setPassword(text);
+                        if (error) setError(''); // Clear error when user starts typing
+                    }}
+                    returnKeyType="done"
+                    secureTextEntry={!isPasswordVisible} // Hide password if isPasswordVisible is false
+                    ref={passwordInputRef} // Assign ref to password input
+                    onFocus={() => scrollToInput(passwordInputRef.current)} // Pass ref to scroll function
+                    onSubmitEditing={handleCreateAccount} // Call create account function on submit
+                />
+                <TouchableOpacity
+                    style={commonStyles.passwordIconContainer}
+                    onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                >
+                    <MaterialCommunityIcons
+                        name={isPasswordVisible ? "eye-off" : "eye"}
+                        size={24}
+                        color="gray"
+                    />
+                </TouchableOpacity>
+            </View>
             <View style={styles.buttonsArea}>
                 <TouchableOpacity style={styles.createButton} onPress={handleCreateAccount}>
                     <Text style={styles.buttonText}>Creează cont</Text>
@@ -127,6 +155,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 12,
         paddingHorizontal: 10,
+        fontSize: 16,
     },
     errorText: {
         color: 'red',
