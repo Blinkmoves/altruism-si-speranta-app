@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -6,83 +6,91 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import commonStyles from './styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { db } from './firebaseConfig';
+import { ref, onValue, remove, update } from 'firebase/database';
+import Toast from 'react-native-toast-message';
+import toastConfig from './toastConfig'; // Import custom toast configuration
+import EventsWidget from './Events';
 
-export default function TaskWidget() {
-  const [tasks, setTasks] = useState([
-    {
-      name: 'Task 1',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sed turpis placerat, convallis leo nec, viverra turpis.',
-      deadline: '2024-01-01',
-      responsible: 'Paula Redes',
-      tag: ['urgent', 'high priority'],
-      isChecked: false,
-    },
-    {
-      name: 'Task 2',
-      description:
-        'Praesent dignissim justo eget pellentesque molestie. Praesent rhoncus, justo nec suscipit mollis.',
-      deadline: '2024-02-01',
-      responsible: 'Paula Clem',
-      tag: ['important', 'urgent'],
-      isChecked: false,
-    },
-    {
-      name: 'Task 3',
-      description: 'Description 3',
-      deadline: '2024-03-01',
-      responsible: 'Paula Negrutiu',
-      tag: ['casual', 'event X'],
-      isChecked: false,
-    },
-    {
-      name: 'Task 4',
-      description: 'Description 3',
-      deadline: '2024-03-01',
-      responsible: 'Paula Nadaban',
-      tag: ['casual', 'event X'],
-      isChecked: false,
-    },
-    {
-      name: 'Task 5',
-      description: 'Description 3',
-      deadline: '2024-03-01',
-      responsible: 'Paula Rebeca',
-      tag: ['casual', 'event X'],
-      isChecked: false,
-    },
-    {
-      name: 'Task 6',
-      description: 'Description 3',
-      deadline: '2024-03-01',
-      responsible: 'Paula Rebeca',
-      tag: ['casual', 'event X'],
-      isChecked: false,
-    },
-  ]);
+// IDEA: add filtering based on tags
+
+export default function TaskWidget({ showFooter }) {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const tasksRef = ref(db, 'tasks');
+    const unsubscribe = onValue(tasksRef, (snapshot) => {
+      const data = snapshot.val();
+      // console.log("Data: ", data);
+      if (data) {
+        const tasksArray = Object.keys(data).flatMap(uid =>
+          Object.keys(data[uid]).map(taskId => ({
+            id: taskId,
+            uid: uid,
+            ...data[uid][taskId],
+          }))
+        );
+        // console.log('Fetched tasks:', tasksArray); // This should give you a flat array of tasks
+        setTasks(tasksArray);
+      } else {
+        setTasks([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const swipeableRefs = useRef([]);
 
-  // Delete task function
-  const deleteTask = (index) => {
-    const newTasks = [...tasks];
-    newTasks.splice(index, 1);
-    setTasks(newTasks);
+  // Complete task function
+  const completeTask = async (taskId, uid) => {
+    try {
+      const taskRef = ref(db, `tasks/${uid}/${taskId}`);
+      console.log('Updating task:', taskId, 'for user:', uid);
+      await update(taskRef, { isChecked: true });
+      setTasks(tasks.map(task =>
+        task.id === taskId ? { ...task, isChecked: true } : task
+      ));
+      Toast.show({
+        type: 'success',
+        text1: 'Task-ul a fost completat cu succes!',
+        visibilityTime: 2000, // 2 seconds
+        topOffset: 0,
+      });
+    } catch (error) {
+      console.error('Error completing task: ', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Eroare la completarea task-ului!',
+        visibilityTime: 5000, // 5 seconds
+        topOffset: 20,
+      });
+    }
   };
-  // TODO: add backend connection to delete task in DB
 
-  // Toggle task completion function
-  const completeTask = (index) => {
-    // console.log(`Toggling task at index: ${index}`);
-    setTasks((prevTasks) => {
-      const newTasks = [...prevTasks];
-      if (newTasks[index]) {
-        newTasks.splice(index, 1); // Remove the task from the list
-        // newTasks[index].isChecked = !newTasks[index].isChecked;
-        // console.log(`Task ${index} isChecked: ${newTasks[index].isChecked}`);
-      }
-      return newTasks;
-    });
+
+  // Delete task function
+  const deleteTask = async (taskId, uid) => {
+    try {
+      const taskRef = ref(db, `tasks/${uid}/${taskId}`);
+      await remove(taskRef);
+      setTasks(tasks.filter(task => task.id !== taskId));
+      Toast.show({
+        type: 'success',
+        text1: 'Task-ul a fost șters cu succes!',
+        visibilityTime: 2000, // 2 seconds
+        topOffset: 20,
+      });
+    } catch (error) {
+      console.error('Error deleting task: ', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Eroare la ștergerea task-ului!',
+        visibilityTime: 5000, // 5 seconds
+        // TODO see why there is too much offset even if 0
+        topOffset: 0,
+      });
+    }
   };
 
   // Swipe right to complete task
@@ -104,7 +112,7 @@ export default function TaskWidget() {
             if (swipeableRefs.current[index]) {
               swipeableRefs.current[index].close();
             }
-            completeTask(index);
+            completeTask(filteredTasks[index].id, filteredTasks[index].uid);
           }}
           style={styles.leftAction}>
           <Ionicons name="checkmark-circle" size={24} color="white" />
@@ -132,7 +140,7 @@ export default function TaskWidget() {
             if (swipeableRefs.current[index]) {
               swipeableRefs.current[index].close();
             }
-            deleteTask(index);
+            deleteTask(filteredTasks[index].id, filteredTasks[index].uid);
           }}
           style={styles.rightAction}>
           <MaterialCommunityIcons name="trash-can-outline" size={24} color="white" />
@@ -141,15 +149,22 @@ export default function TaskWidget() {
     );
   };
 
-  // TODO: add backend connection to update task completion in DB
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' });
+  };
 
+  // console.log(tasks);
+
+  // Check if isChecked is true and skip those tasks
+  const filteredTasks = tasks.filter(task => !task.isChecked);
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <FlatList
-        data={tasks}
+        data={filteredTasks}
+        keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
-          // console.log(`Rendering task at index: ${index}, isChecked: ${item.isChecked}`),
           <GestureHandlerRootView>
             <ReanimatedSwipeable
               ref={(ref) => (swipeableRefs.current[index] = ref)}
@@ -175,17 +190,22 @@ export default function TaskWidget() {
                     <Text>{item.description}</Text>
                     {/* Tags */}
                     <View style={styles.chipContainer}>
-                      {item.tag.map((tag, tagIndex) => (
-                        <View key={tagIndex} style={styles.chip}>
-                          <Text style={styles.chipText}>{tag}</Text>
-                        </View>
-                      ))}
+                      {item.tags && item.tags.length > 0 ? (
+                        item.tags.map((tag, tagIndex) => (
+                          <View key={tagIndex} style={styles.chip}>
+                            <Text style={styles.chipText}>{tag}</Text>
+                          </View>
+                        ))
+                      ) : null}
                     </View>
                     {/* Deadline and Responsible Person */}
                     <View style={styles.taskInfoRow}>
-                      <Text style={styles.taskInfoText}>Deadline: {item.deadline}</Text>
+                      <Text style={styles.taskInfoText}>Deadline:
+                        <Text style={styles.taskResponsabil}> {formatDate(item.deadline)}</Text>
+                      </Text>
                       <Text style={styles.taskInfoText}>Responsabil:
-                        <Text style={styles.taskResponsabil}> {item.responsible}</Text></Text>
+                        <Text style={styles.taskResponsabil}> {item.responsiblePerson}</Text>
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -194,8 +214,14 @@ export default function TaskWidget() {
             <View style={styles.divider} />
           </GestureHandlerRootView>
         )}
-        keyExtractor={(item, index) => index.toString()}
+        ListFooterComponent={showFooter ? (
+          <View>
+            <Text style={commonStyles.title}>Evenimente</Text>
+            <EventsWidget />
+          </View>
+        ) : null}
       />
+      <Toast config={toastConfig} />
     </View>
   );
 }
@@ -214,6 +240,7 @@ const styles = StyleSheet.create({
   },
   chipContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     marginVertical: 4,
   },
   chip: {
@@ -235,8 +262,11 @@ const styles = StyleSheet.create({
   },
   taskResponsabil: {
     color: 'black',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   taskInfoText: {
+    flex: 1,
     fontSize: 12,
     color: 'grey',
     fontWeight: 'bold',

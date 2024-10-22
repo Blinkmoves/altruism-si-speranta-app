@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import commonStyles from './styles';
 import TaskWidget from './Tasks';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 
 export default function TasksPage() {
+
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <MaskedView
@@ -18,12 +22,10 @@ export default function TasksPage() {
           />
         }
       >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <TaskWidget />
-        </ScrollView>
+      <TaskWidget showFooter={false} />
       </MaskedView>
       <View style={styles.addButtonArea}>
-        <TouchableOpacity style={styles.addButton} onPress={() => console.log('Add Task')}>
+        <TouchableOpacity style={commonStyles.Button} onPress={() => navigation.navigate('AddTasksPage')}>
           <Text style={commonStyles.ButtonText}>Adaugă Task</Text>
         </TouchableOpacity>
       </View>
@@ -34,7 +36,7 @@ export default function TasksPage() {
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
   },
   maskedView: {
     flex: 1,
@@ -44,17 +46,6 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   addButtonArea: {
-    alignItems: 'center',
-    marginVertical: 8,
-    height: '10%',
-  },
-  addButton: {
-    position: 'absolute',
-    width: '50%',
-    bottom: 0,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    backgroundColor: 'teal',
+    padding: 20,
   },
 });
