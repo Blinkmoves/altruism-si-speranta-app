@@ -56,8 +56,8 @@ export default function ForgotPassword({ navigation }) {
             keyboardShouldPersistTaps="handled"
             ref={scrollRef}
         >
-            <Image style={styles.logoImage} source={require('./assets/logo.jpg')} />
-            <Text style={styles.title}>Resetează Parola</Text>
+            <Image style={commonStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
+            <Text style={commonStyles.loginStackTitle}>Resetează Parola</Text>
             <Text style={styles.label}>Email</Text>
             <TextInput
                 style={styles.input}
@@ -125,20 +125,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 24,
-    },
     buttonsArea: {
         marginTop: 20,
-    },
-    logoImage: {
-        alignSelf: 'center',
-        width: 180,
-        height: 180,
-        resizeMode: 'contain',  // Prevents stretching and layout overflow
     },
     link: {
         flexDirection: 'row',

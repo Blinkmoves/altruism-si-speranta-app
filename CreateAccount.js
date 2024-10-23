@@ -66,8 +66,8 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
             // keyboardOpeningTime={Number.MAX_SAFE_INTEGER} // This will prevent the scroll view from jumping when the keyboard opens
             extraHeight={100}
         >
-            <Image style={styles.logoImage} source={require('./assets/logo.jpg')} />
-            <Text style={styles.title}>Creează un cont nou</Text>
+            <Image style={commonStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
+            <Text style={commonStyles.loginStackTitle}>Creează un cont nou</Text>
             <Text style={styles.label}>Nume complet</Text>
             <TextInput
                 style={styles.input}
@@ -176,20 +176,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 24,
-    },
     buttonsArea: {
         marginTop: 20,
-    },
-    logoImage: {
-        alignSelf: 'center',
-        width: 180,
-        height: 180,
-        resizeMode: 'contain',  // Prevents stretching and layout overflow
     },
     link: {
         flexDirection: 'row',

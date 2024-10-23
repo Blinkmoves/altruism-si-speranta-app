@@ -27,12 +27,12 @@ export default function Login({ navigation }) {
             await signInWithEmailAndPassword(auth, email, password);
             navigation.navigate('HomePage'); // Navigate to the HomePage after a delay
             setError(''); // Clear error message after successful login
-            // FIXME toast not shown after login
+            // FIXME toast lower even if topOffset is 0
             Toast.show({
                 type: 'success',
                 text1: 'Te-ai logat cu succes!',
                 visibilityTime: 2000, // 2 seconds
-                topOffset: 60,
+                topOffset: 0,
             });
             console.log('Logged in successfully');
         } catch (error) {
@@ -73,8 +73,8 @@ export default function Login({ navigation }) {
 
         >
             <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-            <Image style={styles.logoImage} source={require('./assets/logo.jpg')} />
-            <Text style={styles.title}>Loghează-te</Text>
+            <Image style={commonStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
+            <Text style={commonStyles.loginStackTitle}>Loghează-te</Text>
             <View>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
@@ -154,12 +154,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 48,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 24,
-    },
     input: {
         height: 40,
         borderColor: '#093A3E',
@@ -197,11 +191,6 @@ const styles = StyleSheet.create({
     forgotPasswordText: {
         color: '#007BFF',
         fontSize: 14,
-    },
-    logoImage: {
-        alignSelf: 'center',
-        width: 180,
-        height: 180,
     },
     label: {
         fontSize: 16,

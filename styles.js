@@ -76,6 +76,18 @@ const commonStyles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
     },
+    loginStackLogoImage: {
+        alignSelf: 'center',
+        width: 180,
+        height: 180,
+        resizeMode: 'contain',
+    },
+    loginStackTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 20,
+    },
 });
 
 export default commonStyles;
