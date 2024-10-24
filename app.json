@@ -9,6 +9,6 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
-    "icon": "./assets/logo.png"
+    "icon": "./assets/icon.png"
   }
 }

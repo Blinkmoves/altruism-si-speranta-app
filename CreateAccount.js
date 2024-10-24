@@ -29,7 +29,7 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
 
             setError(''); // Clear error message after successful account creation
             setIsAuthenticated(true); // Set the authenticated state to true
-            navigation.navigate('HomePage'); // Navigate to the HomePage after a delay
+            navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
             // FIXME toast not shown after account creation
             Toast.show({
                 type: 'success',

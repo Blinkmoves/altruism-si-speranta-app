@@ -71,7 +71,7 @@ export default function Altruism_si_Speranta() {
           headerBackTitle: ' Înapoi', // Customize the back button text
         }}
       >
-        <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false, headerTitle: '', unmountOnBlur: true }} />
         <Stack.Screen name="PrivacyPolicyPage" component={PrivacyPolicyPage} options={{ headerShown: false, headerTitle: '' }} />
       </Stack.Navigator>
     );
@@ -82,20 +82,16 @@ export default function Altruism_si_Speranta() {
     return (
       <Stack.Navigator
         initialRouteName="TasksPage"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#093A3E', // Use the color here for the header background
-          },
-          headerTintColor: '#fff', // Set the header text color to white
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          headerBackTitle: ' Înapoi', // Customize the back button text
-        }}
+        screenOptions={
+          {
+            headerShown: false,
+            headerTitle: '',
+          }
+        }
       >
-        <Stack.Screen name="TasksPage" component={TasksPage} options={{ headerShown: false, headerTitle: '' }} />
-        <Stack.Screen name="AddTasksPage" component={AddTasksPage} options={{ headerShown: false, headerTitle: '' }} />
-        <Stack.Screen name="TaskShowPage" component={TaskShowPage} options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="TasksPage" component={TasksPage} />
+        <Stack.Screen name="TaskShowPage" component={TaskShowPage} />
+        <Stack.Screen name="AddTasksPage" component={AddTasksPage} />
       </Stack.Navigator>
     );
   }
@@ -106,24 +102,21 @@ export default function Altruism_si_Speranta() {
   function LoginStack() {
     return (
       <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#093A3E', // Use the color here for the header background
-          },
-          headerTintColor: '#fff', // Set the header text color to white
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
+        screenOptions={
+          {
+            headerShown: false,
+            headerTitle: '',
+          }
+        }
       >
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false, headerTitle: '' }} />
-        <Stack.Screen name="CreateAccount" component={CreateAccount} options={{ headerShown: false, headerTitle: '' }} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false, headerTitle: '' }} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="CreateAccount" component={CreateAccount} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
       </Stack.Navigator>
     );
   }
 
+  // Authenticated stack that includes the Home, Tasks, Events, and Settings screens
   function AuthenticatedStack() {
     return (
       <Tab.Navigator
@@ -147,23 +140,26 @@ export default function Altruism_si_Speranta() {
           tabBarInactiveTintColor: '#a0a3a3',
           tabBarStyle: { backgroundColor: '#093A3E', paddingTop: 10 },
           headerStyle: { backgroundColor: '#093A3E' }, // Set header background color
-          // headerTitle: () => <CustomHeader title={`Fii altruist(ă) și azi, ${displayName}!`} />,
           headerTitle: '',
         })}
       >
-        <Tab.Screen name="Home" component={HomePage} options={{ tabBarLabel: 'Home' }}>
-        </Tab.Screen>
-        <Tab.Screen name="Task-uri" component={TasksStack} options={{ tabBarLabel: 'Task-uri' }}>
-        </Tab.Screen>
-        <Tab.Screen name="Evenimente" component={EventsPage} options={{ tabBarLabel: 'Evenimente' }} />
-        <Tab.Screen name="Setări" component={SettingsStack} options={{ tabBarLabel: 'Setări' }} />
+        <Tab.Screen name="Home" component={HomePage} />
+        <Tab.Screen name="Task-uri" component={TasksStack} />
+        <Tab.Screen name="Evenimente" component={EventsPage} />
+        <Tab.Screen name="Setări" component={SettingsStack} />
       </Tab.Navigator>
     );
   }
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <AuthenticatedStack /> : <LoginStack setIsAuthenticated={setIsAuthenticated} />}
+      <Stack.Navigator>
+        {isAuthenticated ? (
+          <Stack.Screen name="AuthenticatedStack" component={AuthenticatedStack} options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen name="LoginStack" component={LoginStack} options={{ headerShown: false }} />
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

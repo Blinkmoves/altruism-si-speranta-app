@@ -68,7 +68,7 @@ export default function SettingsPage() {
         visibilityTime: 2000, // 2 seconds
         topOffset: 60,
       });
-      navigation.navigate('Login');
+      navigation.navigate('LoginStack', { screen: 'Login' });
     } catch (error) {
       const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
       Toast.show({

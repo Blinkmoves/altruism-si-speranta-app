@@ -10,6 +10,16 @@ export default function TasksPage() {
 
   const navigation = useNavigation();
 
+  // Navigate to the AddTasksPage
+  const navigateToAddTasksPage = () => {
+    navigation.navigate('AuthenticatedStack', {
+      screen: 'Task-uri',
+      params: {
+        screen: 'AddTasksPage',
+      },
+    });
+  };
+
   return (
     <View style={styles.container}>
       <MaskedView
@@ -25,7 +35,7 @@ export default function TasksPage() {
       <TaskWidget showFooter={false} />
       </MaskedView>
       <View style={styles.addButtonArea}>
-        <TouchableOpacity style={commonStyles.Button} onPress={() => navigation.navigate('AddTasksPage')}>
+        <TouchableOpacity style={commonStyles.Button} onPress={navigateToAddTasksPage}>
           <Text style={commonStyles.ButtonText}>Adaugă Task</Text>
         </TouchableOpacity>
       </View>

@@ -9,13 +9,16 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { db } from './firebaseConfig';
 import { ref, onValue, remove, update } from 'firebase/database';
 import Toast from 'react-native-toast-message';
-import toastConfig from './toastConfig'; // Import custom toast configuration
+import toastConfig from './toastConfig';
 import EventsWidget from './Events';
+import { useNavigation } from '@react-navigation/native';
 
 // IDEA: add filtering based on tags
 
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const tasksRef = ref(db, 'tasks');
@@ -41,6 +44,7 @@ export default function TaskWidget({ showFooter }) {
   }, []);
 
   const swipeableRefs = useRef([]);
+
 
   // Complete task function
   const completeTask = async (taskId, uid) => {
@@ -159,6 +163,17 @@ export default function TaskWidget({ showFooter }) {
   // Check if isChecked is true and skip those tasks
   const filteredTasks = tasks.filter(task => !task.isChecked);
 
+  // Navigate to TaskShowPage
+  const navigateToTaskShowPage = (task) => {
+    navigation.navigate('AuthenticatedStack', {
+      screen: 'Task-uri',
+      params: {
+        screen: 'TaskShowPage',
+        params: { task },
+      },
+    });
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -183,33 +198,35 @@ export default function TaskWidget({ showFooter }) {
                 });
               }}
             >
-              <View>
-                <View style={styles.row}>
-                  {/* Task Details */}
-                  <View style={styles.taskDetails}>
-                    <Text>{item.description}</Text>
-                    {/* Tags */}
-                    <View style={styles.chipContainer}>
-                      {item.tags && item.tags.length > 0 ? (
-                        item.tags.map((tag, tagIndex) => (
-                          <View key={tagIndex} style={styles.chip}>
-                            <Text style={styles.chipText}>{tag}</Text>
-                          </View>
-                        ))
-                      ) : null}
-                    </View>
-                    {/* Deadline and Responsible Person */}
-                    <View style={styles.taskInfoRow}>
-                      <Text style={styles.taskInfoText}>Deadline:
-                        <Text style={styles.taskResponsabil}> {formatDate(item.deadline)}</Text>
-                      </Text>
-                      <Text style={styles.taskInfoText}>Responsabil:
-                        <Text style={styles.taskResponsabil}> {item.responsiblePerson}</Text>
-                      </Text>
+              <TouchableOpacity onPress={() => navigateToTaskShowPage(item)}>
+                <View>
+                  <View style={styles.row}>
+                    {/* Task Details */}
+                    <View style={styles.taskDetails}>
+                      <Text>{item.description}</Text>
+                      {/* Tags */}
+                      <View style={styles.chipContainer}>
+                        {item.tags && item.tags.length > 0 ? (
+                          item.tags.map((tag, tagIndex) => (
+                            <View key={tagIndex} style={styles.chip}>
+                              <Text style={styles.chipText}>{tag}</Text>
+                            </View>
+                          ))
+                        ) : null}
+                      </View>
+                      {/* Deadline and Responsible Person */}
+                      <View style={styles.taskInfoRow}>
+                        <Text style={styles.taskInfoText}>Deadline:
+                          <Text style={styles.taskResponsabil}> {formatDate(item.deadline)}</Text>
+                        </Text>
+                        <Text style={styles.taskInfoText}>Responsabil:
+                          <Text style={styles.taskResponsabil}> {item.responsiblePerson}</Text>
+                        </Text>
+                      </View>
                     </View>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             </ReanimatedSwipeable>
             <View style={styles.divider} />
           </GestureHandlerRootView>

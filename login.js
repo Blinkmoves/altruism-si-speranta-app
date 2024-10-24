@@ -25,7 +25,7 @@ export default function Login({ navigation }) {
         Keyboard.dismiss(); // Hide the keyboard
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            navigation.navigate('HomePage'); // Navigate to the HomePage after a delay
+            navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
             setError(''); // Clear error message after successful login
             // FIXME toast lower even if topOffset is 0
             Toast.show({
