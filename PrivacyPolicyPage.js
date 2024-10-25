@@ -1,11 +1,11 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import commonStyles from './styles';
+import globalStyles from './styles';
 
 
 export default function PrivacyPolicyPage() {
   return (
-    <View style={commonStyles.container}>
+    <View style={globalStyles.container}>
       <ScrollView indicatorStyle={'black'} style={styles.scrollContainer}>
         <View style={styles.section}>
           <Text style={styles.title}>Politica de Confidențialitate - Altruism și Speranță</Text>

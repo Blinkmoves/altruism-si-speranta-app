@@ -7,7 +7,7 @@ import { auth } from './firebaseConfig'; // Import the Firebase auth instance
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
 import toastConfig from './toastConfig'; // Import custom toast configuration
-import commonStyles from './styles';
+import globalStyles from './styles';
 
 export default function CreateAccount({ navigation, setIsAuthenticated }) {
     const [name, setName] = useState('');
@@ -66,8 +66,8 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
             // keyboardOpeningTime={Number.MAX_SAFE_INTEGER} // This will prevent the scroll view from jumping when the keyboard opens
             extraHeight={100}
         >
-            <Image style={commonStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
-            <Text style={commonStyles.loginStackTitle}>Creează un cont nou</Text>
+            <Image style={globalStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
+            <Text style={globalStyles.loginStackTitle}>Creează un cont nou</Text>
             <Text style={styles.label}>Nume complet</Text>
             <TextInput
                 style={styles.input}
@@ -98,9 +98,9 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
                 onSubmitEditing={() => passwordInputRef.current.focus()} // Focus password input on submit
             />
             <Text style={styles.label}>Parolă</Text>
-            <View style={commonStyles.passwordContainer}>
+            <View style={globalStyles.passwordContainer}>
                 <TextInput
-                    style={commonStyles.passwordInput}
+                    style={globalStyles.passwordInput}
                     value={password}
                     onChangeText={(text) => {
                         setPassword(text);
@@ -113,7 +113,7 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
                     onSubmitEditing={handleCreateAccount} // Call create account function on submit
                 />
                 <TouchableOpacity
-                    style={commonStyles.passwordIconContainer}
+                    style={globalStyles.passwordIconContainer}
                     onPress={() => setIsPasswordVisible(!isPasswordVisible)}
                 >
                     <MaterialCommunityIcons

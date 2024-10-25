@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import commonStyles from './styles';
+import globalStyles from './styles';
 
 export default function EventsWidget() {
   const currentDate = new Date().toISOString().split('T')[0];

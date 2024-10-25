@@ -15,7 +15,9 @@ import CreateAccount from './CreateAccount';
 import ForgotPassword from './ForgotPassword';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { app, db, auth } from './firebaseConfig';
-import commonStyles from './styles';
+import globalStyles from './styles';
+import { useNavigation } from '@react-navigation/native';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -68,7 +70,8 @@ export default function Altruism_si_Speranta() {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
-          headerBackTitle: ' Înapoi', // Customize the back button text
+          gestureEnabled: true,
+          gestureResponseDistance: 200
         }}
       >
         <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown: false, headerTitle: '', unmountOnBlur: true }} />
@@ -86,6 +89,8 @@ export default function Altruism_si_Speranta() {
           {
             headerShown: false,
             headerTitle: '',
+            gestureEnabled: true,
+            gestureResponseDistance: 200
           }
         }
       >
@@ -106,6 +111,8 @@ export default function Altruism_si_Speranta() {
           {
             headerShown: false,
             headerTitle: '',
+            gestureEnabled: true,
+            gestureResponseDistance: 200
           }
         }
       >
@@ -141,6 +148,8 @@ export default function Altruism_si_Speranta() {
           tabBarStyle: { backgroundColor: '#093A3E', paddingTop: 10 },
           headerStyle: { backgroundColor: '#093A3E' }, // Set header background color
           headerTitle: '',
+          gestureEnabled: true,
+          gestureResponseDistance: 200
         })}
       >
         <Tab.Screen name="Home" component={HomePage} />

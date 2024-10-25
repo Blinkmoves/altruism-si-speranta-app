@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-const commonStyles = StyleSheet.create({
+const globalStyles = StyleSheet.create({
     container: {
         padding: 20,
         flex: 1,
@@ -90,4 +90,4 @@ const commonStyles = StyleSheet.create({
     },
 });
 
-export default commonStyles;
+export default globalStyles;

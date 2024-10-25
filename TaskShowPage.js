@@ -1,18 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { db } from './firebaseConfig';
 import { ref, onValue } from 'firebase/database';
 import { auth } from './firebaseConfig';
-import commonStyles from './styles';
-
-// FIXME: TaskShowPage not working, infinitely loading
+import globalStyles from './styles';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { deleteTask, editTask, completeTask } from './taskActions';
+import { useNavigation } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { CommonActions, useFocusEffect, StackActions } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
+import toastConfig from './toastConfig';
 
 const TaskShowPage = ({ route }) => {
     const { taskId } = route.params;
-    const [task, setTask] = useState(null);
+    const [task, setTask] = useState([]);
+    const [tasks, setTasks] = useState([]);
+
+    const navigation = useNavigation();
 
     // Get user ID from Firebase Auth
     const uid = auth.currentUser.uid;
+
+    // TODO: Reset navigation but beware not to reset the stack when the user navigates back to the TasksPage, currently there is double swipe/navigation when going back
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         const unsubscribe = navigation.addListener('blur', () => {
+    //             // Check if the screen is focused
+    //             if (!navigation.isFocused()) {
+    //                 // Reset the navigation stack when the screen is unfocused
+    //                 navigation.pop();
+    //             }
+    //         });
+    //         // Clean up the event listener when the component is unmounted or the screen is unfocused
+    //         return unsubscribe;
+    //     }, [navigation])
+    // );
 
     useEffect(() => {
         const taskRef = ref(db, `tasks/${uid}/${taskId}`);
@@ -22,7 +45,7 @@ const TaskShowPage = ({ route }) => {
         });
 
         return () => unsubscribe();
-    }, [taskId]);
+    }, [taskId, uid]);
 
     if (!task) {
         return (
@@ -32,86 +55,188 @@ const TaskShowPage = ({ route }) => {
         );
     }
 
+    // console.log('User ID:', uid);
+    // console.log('Task:', task);
+    // console.log('Task ID:', taskId);
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' });
+    };
+
+    // Handle task actions
+    const handleCompleteTask = async (taskId, uid) => {
+        const successComplete = await completeTask(taskId, uid, setTasks, tasks);
+        if (successComplete) {
+            // Delay the navigation to allow the Toast message to show
+            setTimeout(() => {
+                navigation.goBack()
+            }, 2000);
+        }
+    };
+
+    const handleDeleteTask = async (taskId, uid) => {
+        const successDelete = await deleteTask(taskId, uid, setTasks);
+        if (successDelete) {
+            // Delay the navigation to allow the Toast message to show
+            setTimeout(() => {
+                navigation.goBack()
+            }, 2000);
+        }
+    };
+
+    // TODO: Edit task
+    const handleEditTask = (taskId, uid, updatedTask) => {
+        editTask(taskId, uid, updatedTask);
+    };
+
     return (
-        <View style={styles.container}>
-            {/* IMPORTED FROM TASKS */}
-            <TouchableOpacity onPress={() => navigateToTaskShowPage(item)}>
-                <View>
-                    <View style={styles.row}>
-                        {/* Task Details */}
-                        <View style={styles.taskDetails}>
-                            <Text>{item.description}</Text>
-                            {/* Tags */}
-                            <View style={styles.chipContainer}>
-                                {item.tags && item.tags.length > 0 ? (
-                                    item.tags.map((tag, tagIndex) => (
-                                        <View key={tagIndex} style={styles.chip}>
-                                            <Text style={styles.chipText}>{tag}</Text>
-                                        </View>
-                                    ))
-                                ) : null}
-                            </View>
-                            {/* Deadline and Responsible Person */}
-                            <View style={styles.taskInfoRow}>
-                                <Text style={styles.taskInfoText}>Deadline:
-                                    <Text style={styles.taskResponsabil}> {formatDate(item.deadline)}</Text>
-                                </Text>
-                                <Text style={styles.taskInfoText}>Responsabil:
-                                    <Text style={styles.taskResponsabil}> {item.responsiblePerson}</Text>
-                                </Text>
-                            </View>
+        <ScrollView style={styles.scrollView}>
+            <View style={globalStyles.container}>
+                <Text style={globalStyles.title}>Detaliile Task-ului</Text>
+
+                {/* Task Description */}
+                <View style={styles.row}>
+                    <View style={styles.taskDetails}>
+                        <Text style={styles.label}>Descriere: </Text>
+                        <Text style={styles.value}>{task.description}</Text>
+                    </View>
+                </View>
+
+                {/* Tags */}
+                <View style={styles.row}>
+                    <View style={styles.taskDetails}>
+                        <Text style={styles.label}>Tags: </Text>
+                        <View style={styles.chipContainer}>
+                            {task.tags && task.tags.length > 0 ? (
+                                task.tags.map((tag, tagIndex) => (
+                                    <View key={tagIndex} style={styles.chip}>
+                                        <Text style={styles.chipText}>{tag}</Text>
+                                    </View>
+                                ))
+                            ) : null}
                         </View>
                     </View>
                 </View>
-            </TouchableOpacity>
-            {/* IMPORTED FROM TASKS */}
-            <Text style={styles.title}>Task Details</Text>
 
-            {/* Task Description */}
-            <View style={styles.detailRow}>
-                <Text style={styles.label}>Description: </Text>
-                <Text style={styles.value}>{task.description}</Text>
-            </View>
-
-            {/* Tags */}
-            {task.tags && task.tags.length > 0 && (
-                <View style={styles.detailRow}>
-                    <Text style={styles.label}>Tags: </Text>
-                    {task.tags.map((tag, index) => (
-                        <Text key={index} style={styles.tag}>{tag}</Text>
-                    ))}
+                {/* Deadline */}
+                <View style={styles.row}>
+                    <View style={styles.taskDetails}>
+                        <Text style={styles.label}>Deadline: </Text>
+                        <Text style={styles.value}> {formatDate(task.deadline)}</Text>
+                    </View>
                 </View>
-            )}
 
-            {/* Deadline */}
-            <View style={styles.detailRow}>
-                <Text style={styles.label}>Deadline: </Text>
-                <Text style={styles.value}>{new Date(task.deadline).toLocaleDateString()}</Text>
-            </View>
+                {/* Responsible Person */}
+                <View style={styles.row}>
+                    <View style={styles.taskDetails}>
+                        <Text style={styles.label}>Responsabil: </Text>
+                        <Text style={styles.value}>{task.responsiblePerson}</Text>
+                    </View>
+                </View>
 
-            {/* Responsible Person */}
-            <View style={styles.detailRow}>
-                <Text style={styles.label}>Responsible: </Text>
-                <Text style={styles.value}>{task.responsiblePerson}</Text>
-            </View>
-        </View>
+                {/* Bottom buttons area */}
+                {/* Mark as completed */}
+                <View>
+                    <TouchableOpacity
+                        style={[globalStyles.Button, { flex: 1 }]}
+                        onPress={handleEditTask}
+                    >
+                        <Text style={globalStyles.ButtonText}>Editează</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Edit and Delete task in the same row */}
+                <View style={styles.bottomButtonsRow}>
+                    <View style={{ flex: 1 }}>
+                        <TouchableOpacity
+                            style={[globalStyles.Button, { backgroundColor: 'green', marginRight: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}
+                            onPress={() => handleCompleteTask(taskId, uid)}
+                        >
+                            <MaterialCommunityIcons name="checkbox-marked-circle-outline" size={24} color="white" />
+                            <Text style={globalStyles.ButtonText}> Finalizează</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <TouchableOpacity
+                            style={[globalStyles.Button, { flex: 1, backgroundColor: '#C03636', marginLeft: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}
+                            onPress={() => handleDeleteTask(taskId, uid)}
+                        >
+                            <MaterialCommunityIcons name="trash-can-outline" size={24} color='white' />
+                            <Text style={globalStyles.ButtonText}> Șterge</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* Back button */}
+                <TouchableOpacity style={styles.linkGoBack} onPress={() => navigation.goBack()}>
+                    <MaterialCommunityIcons name="chevron-left" size={16} color="#007BFF" />
+                    <Text style={styles.goBackText}>Înapoi la pagina de task-uri</Text>
+                </TouchableOpacity>
+            </View >
+            <Toast config={toastConfig} />
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    loadingText: {
-        fontSize: 18,
-        textAlign: 'center',
-        marginTop: 20,
+    scrollView: {
+        flex: 1,
+        backgroundColor: 'white'
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        // marginVertical: 8,
+        // paddingHorizontal: 20,
+        paddingVertical: 8,
+    },
+    taskDetails: {
+        flex: 1,
+        width: '100%',
+    },
+    chipContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        // marginVertical: 4,
+    },
+    chip: {
+        backgroundColor: '#60908C',
+        paddingVertical: 6,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        marginRight: 4,
+        marginTop: 4,
+    },
+    chipText: {
+        color: 'white',
+        fontSize: 12,
     },
     label: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginTop: 8,
+        marginVertical: 8,
     },
     value: {
         fontSize: 16,
-        marginBottom: 8,
+        // marginBottom: 8,
+    },
+    bottomButtonsRow: {
+        // flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    linkGoBack: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 12,
+        marginTop: 16,
+    },
+    goBackText: {
+        color: '#007BFF',
+        fontSize: 14,
     },
 });
 

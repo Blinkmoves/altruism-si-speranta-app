@@ -6,7 +6,7 @@ import { auth } from './firebaseConfig'; // Import the Firebase auth instance
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
-import commonStyles from './styles';
+import globalStyles from './styles';
 import toastConfig from './toastConfig'; // Import custom toast configuration
 
 export default function ForgotPassword({ navigation }) {
@@ -56,8 +56,8 @@ export default function ForgotPassword({ navigation }) {
             keyboardShouldPersistTaps="handled"
             ref={scrollRef}
         >
-            <Image style={commonStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
-            <Text style={commonStyles.loginStackTitle}>Resetează Parola</Text>
+            <Image style={globalStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
+            <Text style={globalStyles.loginStackTitle}>Resetează Parola</Text>
             <Text style={styles.label}>Email</Text>
             <TextInput
                 style={styles.input}

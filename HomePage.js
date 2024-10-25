@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import TaskWidget from './Tasks';
-import commonStyles from './styles';
+import globalStyles from './styles';
 
 export default function HomePage() {
   return (
     <View style={styles.container}>
-        <Text style={commonStyles.title}>Task-uri</Text>
+        <Text style={globalStyles.title}>Task-uri</Text>
         <TaskWidget showFooter={true} />
     </View>
   );

@@ -6,7 +6,7 @@ import { auth } from './firebaseConfig'; // Import the Firebase auth instance
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
 import toastConfig from './toastConfig'; // Import custom toast configuration
-import commonStyles from './styles';
+import globalStyles from './styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function Login({ navigation }) {
@@ -73,8 +73,8 @@ export default function Login({ navigation }) {
 
         >
             <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-            <Image style={commonStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
-            <Text style={commonStyles.loginStackTitle}>Loghează-te</Text>
+            <Image style={globalStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
+            <Text style={globalStyles.loginStackTitle}>Loghează-te</Text>
             <View>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
@@ -96,9 +96,9 @@ export default function Login({ navigation }) {
                     onSubmitEditing={() => passwordInputRef.current.focus()} // Focus password input on submit
                 />
                 <Text style={styles.label}>Parolă</Text>
-                <View style={commonStyles.passwordContainer}>
+                <View style={globalStyles.passwordContainer}>
                     <TextInput
-                        style={commonStyles.passwordInput}
+                        style={globalStyles.passwordInput}
                         value={password}
                         onChangeText={(text) => {
                             setPassword(text);
@@ -115,7 +115,7 @@ export default function Login({ navigation }) {
                         onSubmitEditing={handleLogin} // Call login function on submit
                     />
                     <TouchableOpacity
-                        style={commonStyles.passwordIconContainer}
+                        style={globalStyles.passwordIconContainer}
                         onPress={() => setIsPasswordVisible(!isPasswordVisible)}
                     >
                         <MaterialCommunityIcons

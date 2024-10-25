@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Switch, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import commonStyles from './styles';
+import globalStyles from './styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getAuth, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider, updateProfile, updateEmail, updatePassword } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
@@ -29,7 +29,7 @@ export default function SettingsPage() {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false); // Manage password visibility state
 
 
-  const buttonTextStyle = commonStyles.ButtonText;
+  const buttonTextStyle = globalStyles.ButtonText;
   const fontSize = buttonTextStyle.fontSize || 16; // Default to 16 if fontSize is not defined
 
   const scrollRef = useRef(null);
@@ -263,15 +263,15 @@ export default function SettingsPage() {
       // keyboardOpeningTime={Number.MAX_SAFE_INTEGER} // This will prevent the scroll view from jumping when the keyboard opens
       extraHeight={100}
     >
-      <View style={commonStyles.container}>
+      <View style={globalStyles.container}>
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           <View>
-            <Text style={commonStyles.title}>Editează Profilul</Text>
+            <Text style={globalStyles.title}>Editează Profilul</Text>
             <TouchableOpacity
               style={styles.editProfileButton}
               onPress={() => setIsEditingAccountData(!isEditingAccountData)}
             >
-              <Text style={commonStyles.ButtonText}>Modifică Datele Contului</Text>
+              <Text style={globalStyles.ButtonText}>Modifică Datele Contului</Text>
             </TouchableOpacity>
 
             {isEditingAccountData && (
@@ -304,7 +304,7 @@ export default function SettingsPage() {
                   style={styles.saveButton}
                   onPress={handleUpdateAccountData}
                 >
-                  <Text style={commonStyles.ButtonText}>Salvează</Text>
+                  <Text style={globalStyles.ButtonText}>Salvează</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -314,16 +314,16 @@ export default function SettingsPage() {
               style={styles.editProfileButton}
               onPress={() => setIsChangingPassword(!isChangingPassword)}
             >
-              <Text style={commonStyles.ButtonText}>Schimbă Parola</Text>
+              <Text style={globalStyles.ButtonText}>Schimbă Parola</Text>
             </TouchableOpacity>
 
             {isChangingPassword && (
               <View style={styles.innerContainer}>
                 {/* Current password */}
                 <Text style={[styles.label, { marginBottom: 10 }]}>Introdu Parola Actuală</Text>
-                <View style={[commonStyles.passwordContainer, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
+                <View style={[globalStyles.passwordContainer, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
                   <TextInput
-                    style={commonStyles.passwordInput}
+                    style={globalStyles.passwordInput}
                     secureTextEntry={!isCurrentPasswordVisible}
                     returnKeyType="next"
                     value={currentPassword}
@@ -333,7 +333,7 @@ export default function SettingsPage() {
                     onSubmitEditing={() => newPasswordInputRef.current.focus()}
                   />
                   <TouchableOpacity
-                    style={commonStyles.passwordIconContainer}
+                    style={globalStyles.passwordIconContainer}
                     onPress={() => setIsCurrentPasswordVisible(!isCurrentPasswordVisible)}
                   >
                     <MaterialCommunityIcons
@@ -346,9 +346,9 @@ export default function SettingsPage() {
 
                 {/* New password */}
                 <Text style={[styles.label, { marginBottom: 10 }]}>Parolă Nouă</Text>
-                <View style={[commonStyles.passwordContainer, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
+                <View style={[globalStyles.passwordContainer, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
                   <TextInput
-                    style={commonStyles.passwordInput}
+                    style={globalStyles.passwordInput}
                     secureTextEntry={!isNewPasswordVisible}
                     returnKeyType="next"
                     value={newPassword}
@@ -358,7 +358,7 @@ export default function SettingsPage() {
                     onSubmitEditing={() => confirmPasswordInputRef.current.focus()}
                   />
                   <TouchableOpacity
-                    style={commonStyles.passwordIconContainer}
+                    style={globalStyles.passwordIconContainer}
                     onPress={() => setIsNewPasswordVisible(!isNewPasswordVisible)}
                   >
                     <MaterialCommunityIcons
@@ -371,9 +371,9 @@ export default function SettingsPage() {
 
                 {/* Confirm new password */}
                 <Text style={[styles.label, { marginBottom: 10 }]}>Confirmă Parola Nouă</Text>
-                <View style={[commonStyles.passwordContainer, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
+                <View style={[globalStyles.passwordContainer, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
                   <TextInput
-                    style={commonStyles.passwordInput}
+                    style={globalStyles.passwordInput}
                     secureTextEntry={!isConfirmPasswordVisible}
                     returnKeyType="done"
                     value={confirmPassword}
@@ -383,7 +383,7 @@ export default function SettingsPage() {
                     onSubmitEditing={handleChangePassword}
                   />
                   <TouchableOpacity
-                    style={commonStyles.passwordIconContainer}
+                    style={globalStyles.passwordIconContainer}
                     onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
                   >
                     <MaterialCommunityIcons
@@ -398,7 +398,7 @@ export default function SettingsPage() {
                   style={styles.saveButton}
                   onPress={handleChangePassword}
                 >
-                  <Text style={commonStyles.ButtonText}>Salvează Parola</Text>
+                  <Text style={globalStyles.ButtonText}>Salvează Parola</Text>
                 </TouchableOpacity>
               </View>
             )}

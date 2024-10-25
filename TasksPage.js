@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import commonStyles from './styles';
+import globalStyles from './styles';
 import TaskWidget from './Tasks';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -35,8 +35,8 @@ export default function TasksPage() {
       <TaskWidget showFooter={false} />
       </MaskedView>
       <View style={styles.addButtonArea}>
-        <TouchableOpacity style={commonStyles.Button} onPress={navigateToAddTasksPage}>
-          <Text style={commonStyles.ButtonText}>Adaugă Task</Text>
+        <TouchableOpacity style={globalStyles.Button} onPress={navigateToAddTasksPage}>
+          <Text style={globalStyles.ButtonText}>Adaugă Task</Text>
         </TouchableOpacity>
       </View>
     </View>

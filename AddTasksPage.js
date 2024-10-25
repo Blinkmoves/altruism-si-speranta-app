@@ -8,7 +8,7 @@ import { ref, push, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
 import toastConfig from './toastConfig'; // Import custom toast configuration
-import commonStyles from './styles';
+import globalStyles from './styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const AddTasksPage = () => {
@@ -122,8 +122,8 @@ const AddTasksPage = () => {
             keyboardOpeningTime={Number.MAX_SAFE_INTEGER} // This will prevent the scroll view from jumping when the keyboard opens
             extraHeight={100}
         >
-            <View style={commonStyles.container}>
-                <Text style={[commonStyles.title, { marginBottom: 30 }]}>Adaugă un Task nou</Text>
+            <View style={globalStyles.container}>
+                <Text style={[globalStyles.title, { marginBottom: 30 }]}>Adaugă un Task nou</Text>
                 {/* Task Description */}
                 <Text style={styles.label}>Descrierea task-ului:</Text>
                 <TextInput
@@ -172,8 +172,8 @@ const AddTasksPage = () => {
                                 style={styles.datePicker}
                                 locale='ro-RO'
                             />
-                            <TouchableOpacity onPress={() => setShowDatePickerModal(false)} style={[commonStyles.Button, { width: '50%' }]}>
-                                <Text style={commonStyles.ButtonText}>Selectează</Text>
+                            <TouchableOpacity onPress={() => setShowDatePickerModal(false)} style={[globalStyles.Button, { width: '50%' }]}>
+                                <Text style={globalStyles.ButtonText}>Selectează</Text>
                             </TouchableOpacity>
                         </View>
                     </TouchableWithoutFeedback>
@@ -192,8 +192,8 @@ const AddTasksPage = () => {
                     onSubmitEditing={handleAddTask}
                 />
                 <View>
-                    <TouchableOpacity style={commonStyles.Button} onPress={handleAddTask}>
-                        <Text style={commonStyles.ButtonText}>Adaugă Task</Text>
+                    <TouchableOpacity style={globalStyles.Button} onPress={handleAddTask}>
+                        <Text style={globalStyles.ButtonText}>Adaugă Task</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.linkGoBack} onPress={() => navigation.goBack()}>
                         <MaterialCommunityIcons name="chevron-left" size={16} color="#007BFF" />

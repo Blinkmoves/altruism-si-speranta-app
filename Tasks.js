@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, TouchableHighlight } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import commonStyles from './styles';
+import globalStyles from './styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { db } from './firebaseConfig';
 import { ref, onValue, remove, update } from 'firebase/database';
@@ -12,6 +12,7 @@ import Toast from 'react-native-toast-message';
 import toastConfig from './toastConfig';
 import EventsWidget from './Events';
 import { useNavigation } from '@react-navigation/native';
+import { deleteTask, editTask, completeTask } from './taskActions';
 
 // IDEA: add filtering based on tags
 
@@ -45,56 +46,17 @@ export default function TaskWidget({ showFooter }) {
 
   const swipeableRefs = useRef([]);
 
-
-  // Complete task function
-  const completeTask = async (taskId, uid) => {
-    try {
-      const taskRef = ref(db, `tasks/${uid}/${taskId}`);
-      console.log('Updating task:', taskId, 'for user:', uid);
-      await update(taskRef, { isChecked: true });
-      setTasks(tasks.map(task =>
-        task.id === taskId ? { ...task, isChecked: true } : task
-      ));
-      Toast.show({
-        type: 'success',
-        text1: 'Task-ul a fost completat cu succes!',
-        visibilityTime: 2000, // 2 seconds
-        topOffset: 0,
-      });
-    } catch (error) {
-      console.error('Error completing task: ', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Eroare la completarea task-ului!',
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
-      });
-    }
+  // Handle task actions
+  const handleCompleteTask = (taskId, uid) => {
+    completeTask(taskId, uid, setTasks, tasks);
   };
 
+  const handleDeleteTask = (uid, taskId) => {
+    deleteTask(uid, taskId, setTasks);
+  };
 
-  // Delete task function
-  const deleteTask = async (taskId, uid) => {
-    try {
-      const taskRef = ref(db, `tasks/${uid}/${taskId}`);
-      await remove(taskRef);
-      setTasks(tasks.filter(task => task.id !== taskId));
-      Toast.show({
-        type: 'success',
-        text1: 'Task-ul a fost șters cu succes!',
-        visibilityTime: 2000, // 2 seconds
-        topOffset: 20,
-      });
-    } catch (error) {
-      console.error('Error deleting task: ', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Eroare la ștergerea task-ului!',
-        visibilityTime: 5000, // 5 seconds
-        // TODO see why there is too much offset even if 0
-        topOffset: 0,
-      });
-    }
+  const handleEditTask = (uid, taskId, updatedTask) => {
+    editTask(uid, taskId, updatedTask);
   };
 
   // Swipe right to complete task
@@ -116,7 +78,7 @@ export default function TaskWidget({ showFooter }) {
             if (swipeableRefs.current[index]) {
               swipeableRefs.current[index].close();
             }
-            completeTask(filteredTasks[index].id, filteredTasks[index].uid);
+            handleCompleteTask(filteredTasks[index].id, filteredTasks[index].uid);
           }}
           style={styles.leftAction}>
           <Ionicons name="checkmark-circle" size={24} color="white" />
@@ -125,6 +87,7 @@ export default function TaskWidget({ showFooter }) {
     );
   }
 
+  // TODO: add edit task functionality next to delete
   // Swipe left to delete task
   const renderRightActions = (progress, drag, index) => {
     const styleAnimation = useAnimatedStyle(() => {
@@ -144,7 +107,7 @@ export default function TaskWidget({ showFooter }) {
             if (swipeableRefs.current[index]) {
               swipeableRefs.current[index].close();
             }
-            deleteTask(filteredTasks[index].id, filteredTasks[index].uid);
+            handleDeleteTask(filteredTasks[index].id, filteredTasks[index].uid);
           }}
           style={styles.rightAction}>
           <MaterialCommunityIcons name="trash-can-outline" size={24} color="white" />
@@ -169,7 +132,7 @@ export default function TaskWidget({ showFooter }) {
       screen: 'Task-uri',
       params: {
         screen: 'TaskShowPage',
-        params: { task },
+        params: { taskId: task.id, uid: task.uid },
       },
     });
   };
@@ -198,7 +161,11 @@ export default function TaskWidget({ showFooter }) {
                 });
               }}
             >
-              <TouchableOpacity onPress={() => navigateToTaskShowPage(item)}>
+              <TouchableHighlight
+                onPress={() => navigateToTaskShowPage(item)}
+                underlayColor="#f0f0f0"
+                activeOpacity={0.6}
+              >
                 <View>
                   <View style={styles.row}>
                     {/* Task Details */}
@@ -226,14 +193,14 @@ export default function TaskWidget({ showFooter }) {
                     </View>
                   </View>
                 </View>
-              </TouchableOpacity>
+              </TouchableHighlight>
             </ReanimatedSwipeable>
             <View style={styles.divider} />
           </GestureHandlerRootView>
         )}
         ListFooterComponent={showFooter ? (
           <View>
-            <Text style={commonStyles.title}>Evenimente</Text>
+            <Text style={globalStyles.title}>Evenimente</Text>
             <EventsWidget />
           </View>
         ) : null}
@@ -293,11 +260,6 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     backgroundColor: '#ccc',
-  },
-  checkboxTask: {
-    alignSelf: 'top',
-    width: 18,
-    height: 18,
   },
   rightAction: {
     alignItems: 'center',
