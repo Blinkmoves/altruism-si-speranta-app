@@ -6,8 +6,8 @@ import globalStyles from './styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getAuth, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider, updateProfile, updateEmail, updatePassword } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
-import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
-import toastConfig from './toastConfig'; // Import custom toast configuration
+import { getFriendlyErrorMessage } from './errorMessages';
+import toastConfig from './toastConfig';
 
 export default function SettingsPage() {
 
@@ -33,11 +33,11 @@ export default function SettingsPage() {
   const fontSize = buttonTextStyle.fontSize || 16; // Default to 16 if fontSize is not defined
 
   const scrollRef = useRef(null);
-  const nameInputRef = useRef(null); // Ref for name input
-  const emailInputRef = useRef(null); // Ref for email input
-  const currentPasswordInputRef = useRef(null); // Ref for password input
-  const newPasswordInputRef = useRef(null); // Ref for password input
-  const confirmPasswordInputRef = useRef(null); // Ref for password input
+  const nameInputRef = useRef(null);
+  const emailInputRef = useRef(null);
+  const currentPasswordInputRef = useRef(null);
+  const newPasswordInputRef = useRef(null);
+  const confirmPasswordInputRef = useRef(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -147,6 +147,7 @@ export default function SettingsPage() {
         visibilityTime: 3000, // 2 seconds
         topOffset: 60,
       });
+      // TODO: change navigation to nested navigation
       navigation.navigate('Login'); // Navigate to the login screen after account deletion
     } catch (error) {
       const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
