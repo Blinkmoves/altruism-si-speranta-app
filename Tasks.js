@@ -13,6 +13,8 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 
 // IDEA: add filtering based on tags
 // IDEA: add animation when TaskWidget renders to show the hidden swipe buttons (like a bounce effect) (you can use react-native-animatable?)
+// IDEA: add delete as in Files on iOS (deletion goes up until the left of the screen then the row disappears from the bottom to top)
+// Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
 
 // FIXME: when navigating to the TaskShowPage from the HomePage, the TaskPage can never be reset to top of the stack
 
@@ -80,41 +82,39 @@ export default function TaskWidget({ showFooter }) {
 
   // Define renderItem
   const renderItem = ({ item, index }) => (
-    <View style={styles.rowFront}>
-      <TouchableHighlight
-        onPress={() => navigateToTaskShowPage(item)}
-        underlayColor="#f0f0f0"
-        activeOpacity={0.6}
-      >
-        <View>
-          <View style={styles.row}>
-            {/* Task Details */}
-            <View style={styles.taskDetails}>
-              <Text>{item.description}</Text>
-              {/* Tags */}
-              <View style={styles.chipContainer}>
-                {item.tags && item.tags.length > 0 ? (
-                  item.tags.map((tag, tagIndex) => (
-                    <View key={tagIndex} style={styles.chip}>
-                      <Text style={styles.chipText}>{tag}</Text>
-                    </View>
-                  ))
-                ) : null}
-              </View>
-              {/* Deadline and Responsible Person */}
-              <View style={styles.taskInfoRow}>
-                <Text style={styles.taskInfoText}>Deadline:
-                  <Text style={styles.taskResponsabil}> {formatDate(item.deadline)}</Text>
-                </Text>
-                <Text style={styles.taskInfoText}>Responsabil:
-                  <Text style={styles.taskResponsabil}> {item.responsiblePerson}</Text>
-                </Text>
-              </View>
+    <TouchableHighlight
+      onPress={() => navigateToTaskShowPage(item)}
+      underlayColor="#f0f0f0"
+      activeOpacity={0.6}
+    >
+      <View style={styles.rowFront}>
+        <View style={styles.row}>
+          {/* Task Details */}
+          <View style={styles.taskDetails}>
+            <Text>{item.description}</Text>
+            {/* Tags */}
+            <View style={styles.chipContainer}>
+              {item.tags && item.tags.length > 0 ? (
+                item.tags.map((tag, tagIndex) => (
+                  <View key={tagIndex} style={styles.chip}>
+                    <Text style={styles.chipText}>{tag}</Text>
+                  </View>
+                ))
+              ) : null}
+            </View>
+            {/* Deadline and Responsible Person */}
+            <View style={styles.taskInfoRow}>
+              <Text style={styles.taskInfoText}>Deadline:
+                <Text style={styles.taskResponsabil}> {formatDate(item.deadline)}</Text>
+              </Text>
+              <Text style={styles.taskInfoText}>Responsabil:
+                <Text style={styles.taskResponsabil}> {item.responsiblePerson}</Text>
+              </Text>
             </View>
           </View>
         </View>
-      </TouchableHighlight>
-    </View>
+      </View>
+    </TouchableHighlight>
   );
 
   // Define renderHiddenItem
@@ -219,6 +219,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    backgroundColor: '#ddd',
   },
   rowFront: {
     backgroundColor: 'white',
