@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import globalStyles from './styles';
-import EventsWidget from './Events';
+import globalStyles from '../styles/styles';
+import EventsWidget from '../components/EventsWidget';
 
 export default function EventsPage() {
   const [selectedDay, setSelectedDay] = useState(Date.now());

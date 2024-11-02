@@ -2,12 +2,12 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, findNodeHandle, Image } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from './firebaseConfig'; // Import the Firebase auth instance
+import { auth } from '../services/firebaseConfig';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
-import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
-import globalStyles from './styles';
-import toastConfig from './toastConfig'; // Import custom toast configuration
+import { getFriendlyErrorMessage } from '../utils/errorMessages';
+import globalStyles from '../styles/styles';
+import toastConfig from '../utils/toastConfig';
 
 export default function ForgotPassword({ navigation }) {
     const [email, setEmail] = useState('');
@@ -56,7 +56,7 @@ export default function ForgotPassword({ navigation }) {
             keyboardShouldPersistTaps="handled"
             ref={scrollRef}
         >
-            <Image style={globalStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
+            <Image style={globalStyles.loginStackLogoImage} source={require('../assets/logo.png')} />
             <Text style={globalStyles.loginStackTitle}>Resetează Parola</Text>
             <Text style={styles.label}>Email</Text>
             <TextInput

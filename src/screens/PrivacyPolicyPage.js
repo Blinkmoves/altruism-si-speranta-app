@@ -1,7 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import globalStyles from './styles';
-
+import globalStyles from '../styles/styles';
 
 export default function PrivacyPolicyPage() {
   return (

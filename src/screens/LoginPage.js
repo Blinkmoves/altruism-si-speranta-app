@@ -2,11 +2,11 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard, StatusBar } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from './firebaseConfig'; // Import the Firebase auth instance
+import { auth } from '../services/firebaseConfig';
 import Toast from 'react-native-toast-message';
-import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
-import toastConfig from './toastConfig'; // Import custom toast configuration
-import globalStyles from './styles';
+import { getFriendlyErrorMessage } from '../utils/errorMessages';
+import toastConfig from '../utils/toastConfig';
+import globalStyles from '../styles/styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function Login({ navigation }) {
@@ -73,7 +73,7 @@ export default function Login({ navigation }) {
 
         >
             <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-            <Image style={globalStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
+            <Image style={globalStyles.loginStackLogoImage} source={require('../assets/logo.png')} />
             <Text style={globalStyles.loginStackTitle}>Loghează-te</Text>
             <View>
                 <Text style={styles.label}>Email</Text>

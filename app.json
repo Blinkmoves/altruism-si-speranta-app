@@ -5,10 +5,10 @@
     "version": "1.0.0",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash-screen.png",
+      "image": "./src/assets/splash-screen.png",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
-    "icon": "./assets/icon.png"
+    "icon": "./src/assets/icon.png"
   }
 }

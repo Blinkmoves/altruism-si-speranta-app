@@ -3,11 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard } 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from './firebaseConfig'; // Import the Firebase auth instance
+import { auth } from '../services/firebaseConfig';
 import Toast from 'react-native-toast-message';
-import { getFriendlyErrorMessage } from './errorMessages'; // Import the error handling function
-import toastConfig from './toastConfig'; // Import custom toast configuration
-import globalStyles from './styles';
+import { getFriendlyErrorMessage } from '../utils/errorMessages';
+import toastConfig from '../utils/toastConfig';
+import globalStyles from '../styles/styles';
 
 export default function CreateAccount({ navigation, setIsAuthenticated }) {
     const [name, setName] = useState('');
@@ -66,7 +66,7 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
             // keyboardOpeningTime={Number.MAX_SAFE_INTEGER} // This will prevent the scroll view from jumping when the keyboard opens
             extraHeight={100}
         >
-            <Image style={globalStyles.loginStackLogoImage} source={require('./assets/logo.png')} />
+            <Image style={globalStyles.loginStackLogoImage} source={require('../assets/logo.png')} />
             <Text style={globalStyles.loginStackTitle}>Creează un cont nou</Text>
             <Text style={styles.label}>Nume complet</Text>
             <TextInput

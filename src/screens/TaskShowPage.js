@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
-import { db } from './firebaseConfig';
+import { db } from '../services/firebaseConfig';
 import { ref, onValue } from 'firebase/database';
-import { auth } from './firebaseConfig';
-import globalStyles from './styles';
+import { auth } from '../services/firebaseConfig';
+import globalStyles from '../styles/styles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { deleteTask, editTask, completeTask } from './taskActions';
+import { deleteTask, editTask, completeTask } from '../utils/taskActions';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-toast-message';
-import toastConfig from './toastConfig';
+import toastConfig from '../utils/toastConfig';
 
 const TaskShowPage = ({ route }) => {
     const { taskId } = route.params;

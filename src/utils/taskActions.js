@@ -1,5 +1,5 @@
 import { ref, remove, update } from 'firebase/database';
-import { db } from './firebaseConfig';
+import { db } from '../services/firebaseConfig';
 import Toast from 'react-native-toast-message';
 
 // Complete task function
