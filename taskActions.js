@@ -59,7 +59,7 @@ export const deleteTask = async (taskId, uid, setTasks) => {
 };
 
 // TODO Edit Task
-export const editTask = async (uid, taskId, updatedTask) => {
+export const editTask = async (taskId, uid, updatedTask) => {
     try {
         const taskRef = ref(db, `tasks/${uid}/${taskId}`);
         await update(taskRef, updatedTask);

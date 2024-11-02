@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect, useState, useRef } from 'react';
+import { NavigationContainer, CommonActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, ActivityIndicator, Image, Text } from 'react-native';
@@ -16,7 +16,7 @@ import ForgotPassword from './ForgotPassword';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { app, db, auth } from './firebaseConfig';
 import globalStyles from './styles';
-import { useNavigation } from '@react-navigation/native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 
 const Tab = createBottomTabNavigator();
@@ -29,23 +29,40 @@ export default function Altruism_si_Speranta() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   const displayName = auth.currentUser?.displayName || '';
-
-  // Define custom header component
-  // const CustomHeader = ({ title }) => {
-  //   return (
-  //     <View style={commonStyles.headerContainer}>
-  //       <Image source={require('./assets/logo.png')} style={commonStyles.headerLogo} />
-  //       <Text style={commonStyles.headerTitle}>{title}</Text>
-  //     </View>
-  //   );
-  // };
-
+  // const navigationRef = useRef();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
     });
-    return unsubscribe;
+
+    // FIXME: TODO: fix the navigation state reset when pressing a bottom tab button
+    // FIXME: see the fixme in the Tasks.js file
+    
+    // const handleStateChange = (e) => {
+    //   const state = e.data.state;
+    //   const currentRoute = state.routes[state.index];
+
+    //   navigationRef.current?.dispatch(
+    //     CommonActions.reset({
+    //       index: 0,
+    //       routes: [{ name: currentRoute.name }],
+    //     })
+    //   );
+    // };
+
+    // // Only set the listener if the navigation ref is available
+    // if (navigationRef.current) {
+    //   navigationRef.current.addListener('state', handleStateChange);
+    // }
+
+    return () => {
+      unsubscribeAuth();
+      // Remove the listener if it was added
+      // if (navigationRef.current) {
+      //   navigationRef.current.removeListener('state', handleStateChange);
+      // }
+    };
   }, []);
 
   if (isAuthenticated === null) {
@@ -161,14 +178,18 @@ export default function Altruism_si_Speranta() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {isAuthenticated ? (
-          <Stack.Screen name="AuthenticatedStack" component={AuthenticatedStack} options={{ headerShown: false }} />
-        ) : (
-          <Stack.Screen name="LoginStack" component={LoginStack} options={{ headerShown: false }} />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer
+        // ref={navigationRef}
+      >
+        <Stack.Navigator>
+          {isAuthenticated ? (
+            <Stack.Screen name="AuthenticatedStack" component={AuthenticatedStack} options={{ headerShown: false }} />
+          ) : (
+            <Stack.Screen name="LoginStack" component={LoginStack} options={{ headerShown: false }} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };

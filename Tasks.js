@@ -1,24 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, TouchableHighlight } from 'react-native';
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TouchableHighlight } from 'react-native';
 import globalStyles from './styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { db } from './firebaseConfig';
-import { ref, onValue, remove, update } from 'firebase/database';
+import { ref, onValue } from 'firebase/database';
 import Toast from 'react-native-toast-message';
 import toastConfig from './toastConfig';
 import EventsWidget from './Events';
 import { useNavigation } from '@react-navigation/native';
 import { deleteTask, editTask, completeTask } from './taskActions';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 // IDEA: add filtering based on tags
+// IDEA: add animation when TaskWidget renders to show the hidden swipe buttons (like a bounce effect) (you can use react-native-animatable?)
+
+// FIXME: when navigating to the TaskShowPage from the HomePage, the TaskPage can never be reset to top of the stack
 
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);
-
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -44,76 +43,18 @@ export default function TaskWidget({ showFooter }) {
     return () => unsubscribe();
   }, []);
 
-  const swipeableRefs = useRef([]);
 
   // Handle task actions
   const handleCompleteTask = (taskId, uid) => {
     completeTask(taskId, uid, setTasks, tasks);
   };
 
-  const handleDeleteTask = (uid, taskId) => {
-    deleteTask(uid, taskId, setTasks);
+  const handleDeleteTask = (taskId, uid) => {
+    deleteTask(taskId, uid, setTasks);
   };
 
-  const handleEditTask = (uid, taskId, updatedTask) => {
-    editTask(uid, taskId, updatedTask);
-  };
-
-  // Swipe right to complete task
-  const renderLeftActions = (progress, drag, index) => {
-    const styleAnimation = useAnimatedStyle(() => {
-      return {
-        transform: [{ translateX: drag.value - 50 }],
-        inputRange: [0, 100],
-        outputRange: [1, 0],
-        progress: progress.value,
-      };
-    });
-
-    return (
-      <Reanimated.View style={styleAnimation}>
-        <TouchableOpacity
-          onPress={() => {
-            // Close the swipeable
-            if (swipeableRefs.current[index]) {
-              swipeableRefs.current[index].close();
-            }
-            handleCompleteTask(filteredTasks[index].id, filteredTasks[index].uid);
-          }}
-          style={styles.leftAction}>
-          <Ionicons name="checkmark-circle" size={24} color="white" />
-        </TouchableOpacity>
-      </Reanimated.View>
-    );
-  }
-
-  // TODO: add edit task functionality next to delete
-  // Swipe left to delete task
-  const renderRightActions = (progress, drag, index) => {
-    const styleAnimation = useAnimatedStyle(() => {
-      return {
-        transform: [{ translateX: drag.value + 50 }],
-        inputRange: [-100, 0],
-        outputRange: [1, 0],
-        progress: progress.value,
-      };
-    });
-
-    return (
-      <Reanimated.View style={styleAnimation}>
-        <TouchableOpacity
-          onPress={() => {
-            // Close the swipeable
-            if (swipeableRefs.current[index]) {
-              swipeableRefs.current[index].close();
-            }
-            handleDeleteTask(filteredTasks[index].id, filteredTasks[index].uid);
-          }}
-          style={styles.rightAction}>
-          <MaterialCommunityIcons name="trash-can-outline" size={24} color="white" />
-        </TouchableOpacity>
-      </Reanimated.View>
-    );
+  const handleEditTask = (taskId, uid, updatedTask) => {
+    editTask(taskId, uid, updatedTask);
   };
 
   const formatDate = (dateString) => {
@@ -137,67 +78,85 @@ export default function TaskWidget({ showFooter }) {
     });
   };
 
+  // Define renderItem
+  const renderItem = ({ item, index }) => (
+    <View style={styles.rowFront}>
+      <TouchableHighlight
+        onPress={() => navigateToTaskShowPage(item)}
+        underlayColor="#f0f0f0"
+        activeOpacity={0.6}
+      >
+        <View>
+          <View style={styles.row}>
+            {/* Task Details */}
+            <View style={styles.taskDetails}>
+              <Text>{item.description}</Text>
+              {/* Tags */}
+              <View style={styles.chipContainer}>
+                {item.tags && item.tags.length > 0 ? (
+                  item.tags.map((tag, tagIndex) => (
+                    <View key={tagIndex} style={styles.chip}>
+                      <Text style={styles.chipText}>{tag}</Text>
+                    </View>
+                  ))
+                ) : null}
+              </View>
+              {/* Deadline and Responsible Person */}
+              <View style={styles.taskInfoRow}>
+                <Text style={styles.taskInfoText}>Deadline:
+                  <Text style={styles.taskResponsabil}> {formatDate(item.deadline)}</Text>
+                </Text>
+                <Text style={styles.taskInfoText}>Responsabil:
+                  <Text style={styles.taskResponsabil}> {item.responsiblePerson}</Text>
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </TouchableHighlight>
+    </View>
+  );
+
+  // Define renderHiddenItem
+  const renderHiddenItem = ({ item, index }) => (
+    <View style={styles.rowBack}>
+      {/* Left Side: Complete Button */}
+      <TouchableOpacity
+        style={[styles.backLeftBtn, styles.completeButton]}
+        onPress={() => handleCompleteTask(item.id, item.uid)}
+      >
+        <MaterialCommunityIcons name="checkbox-marked-circle-outline" size={26} color="white" />
+      </TouchableOpacity>
+
+      {/* Right Side: Edit and Delete Buttons */}
+      <View style={styles.rightButtons}>
+        <TouchableOpacity
+          style={[styles.backRightBtn, styles.editButton]}
+          onPress={() => handleEditTask(item.id, item.uid)}
+        >
+          <MaterialCommunityIcons name="square-edit-outline" size={26} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.backRightBtn, styles.deleteButton]}
+          onPress={() => handleDeleteTask(item.id, item.uid)}
+        >
+          <MaterialCommunityIcons name="trash-can" size={26} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <View style={{ flex: 1 }}>
-      <FlatList
+      <SwipeListView
         data={filteredTasks}
         keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => (
-          <GestureHandlerRootView>
-            <ReanimatedSwipeable
-              ref={(ref) => (swipeableRefs.current[index] = ref)}
-              friction={3}
-              enableTrackpadTwoFingerGesture
-              overshootLeft={false}
-              overshootRight={false}
-              renderRightActions={(progress, drag) => renderRightActions(progress, drag, index)}
-              renderLeftActions={(progress, drag) => renderLeftActions(progress, drag, index)}
-              onSwipeableWillOpen={() => {
-                // Close other swipeables
-                swipeableRefs.current.forEach((ref, i) => {
-                  if (i !== index && ref) {
-                    ref.close();
-                  }
-                });
-              }}
-            >
-              <TouchableHighlight
-                onPress={() => navigateToTaskShowPage(item)}
-                underlayColor="#f0f0f0"
-                activeOpacity={0.6}
-              >
-                <View>
-                  <View style={styles.row}>
-                    {/* Task Details */}
-                    <View style={styles.taskDetails}>
-                      <Text>{item.description}</Text>
-                      {/* Tags */}
-                      <View style={styles.chipContainer}>
-                        {item.tags && item.tags.length > 0 ? (
-                          item.tags.map((tag, tagIndex) => (
-                            <View key={tagIndex} style={styles.chip}>
-                              <Text style={styles.chipText}>{tag}</Text>
-                            </View>
-                          ))
-                        ) : null}
-                      </View>
-                      {/* Deadline and Responsible Person */}
-                      <View style={styles.taskInfoRow}>
-                        <Text style={styles.taskInfoText}>Deadline:
-                          <Text style={styles.taskResponsabil}> {formatDate(item.deadline)}</Text>
-                        </Text>
-                        <Text style={styles.taskInfoText}>Responsabil:
-                          <Text style={styles.taskResponsabil}> {item.responsiblePerson}</Text>
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </TouchableHighlight>
-            </ReanimatedSwipeable>
-            <View style={styles.divider} />
-          </GestureHandlerRootView>
-        )}
+        renderItem={renderItem}
+        renderHiddenItem={renderHiddenItem}
+        leftOpenValue={75}
+        rightOpenValue={-150}
+        disableLeftSwipe={false}
+        disableRightSwipe={false}
         ListFooterComponent={showFooter ? (
           <View>
             <Text style={globalStyles.title}>Evenimente</Text>
@@ -255,24 +214,42 @@ const styles = StyleSheet.create({
     color: 'grey',
     fontWeight: 'bold',
   },
-  divider: {
-    height: 1,
-    width: '90%',
-    alignSelf: 'center',
-    backgroundColor: '#ccc',
+  rowBack: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  rightAction: {
+  rowFront: {
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  backLeftBtn: {
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
-    width: 50,
-    backgroundColor: 'red'
+    width: 75,
   },
-  leftAction: {
+  rightButtons: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
-    width: 50,
-    backgroundColor: 'green'
+  },
+  backRightBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 75,
+    height: '100%',
+  },
+  completeButton: {
+    backgroundColor: 'green',
+  },
+  editButton: {
+    backgroundColor: 'teal',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
   },
 });

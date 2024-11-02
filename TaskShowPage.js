@@ -8,7 +8,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { deleteTask, editTask, completeTask } from './taskActions';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { CommonActions, useFocusEffect, StackActions } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import toastConfig from './toastConfig';
 
@@ -21,21 +20,6 @@ const TaskShowPage = ({ route }) => {
 
     // Get user ID from Firebase Auth
     const uid = auth.currentUser.uid;
-
-    // TODO: Reset navigation but beware not to reset the stack when the user navigates back to the TasksPage, currently there is double swipe/navigation when going back
-    // useFocusEffect(
-    //     React.useCallback(() => {
-    //         const unsubscribe = navigation.addListener('blur', () => {
-    //             // Check if the screen is focused
-    //             if (!navigation.isFocused()) {
-    //                 // Reset the navigation stack when the screen is unfocused
-    //                 navigation.pop();
-    //             }
-    //         });
-    //         // Clean up the event listener when the component is unmounted or the screen is unfocused
-    //         return unsubscribe;
-    //     }, [navigation])
-    // );
 
     useEffect(() => {
         const taskRef = ref(db, `tasks/${uid}/${taskId}`);

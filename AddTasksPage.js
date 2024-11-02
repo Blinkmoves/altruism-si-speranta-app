@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Platform, Modal, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation, useFocusEffect, CommonActions } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { db } from './firebaseConfig';
 import { ref, push, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
@@ -31,25 +31,6 @@ const AddTasksPage = () => {
     const tagInputRef = useRef(null); // Ref for tag input
     const deadlineInputRef = useRef(null); // Ref for deadline input
     const responsiblePersonInputRef = useRef(null); // Ref for responsible person input
-
-
-    // TODO: Reset navigation but beware not to reset the stack when the user navigates back to the TasksPage, currently there is double swipe/navigation when going back
-    useFocusEffect(
-        React.useCallback(() => {
-            const unsubscribe = navigation.addListener('blur', () => {
-                // Reset the navigation stack when the screen is unfocused
-                navigation.dispatch(
-                    CommonActions.reset({
-                        index: 0, // Ensures the stack is reset to the first screen
-                        key: null,
-                        routes: [{ name: 'TasksPage' }],
-                    })
-                );
-            });
-            // Clean up the event listener when the component is unmounted or the screen is unfocused
-            return unsubscribe;
-        }, [navigation])
-    );
 
     const handleAddTask = async () => {
         // Dismiss the keyboard
