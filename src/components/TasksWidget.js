@@ -17,6 +17,7 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 // Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
 
 // FIXME: when navigating to the TaskShowPage from the HomePage, the TaskPage can never be reset to top of the stack
+// ^ Seems to be working now, but keep an eye on it
 
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);

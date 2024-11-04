@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { NavigationContainer, CommonActions } from '@react-navigation/native';
+import { NavigationContainer, CommonActions, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, ActivityIndicator, Image, Text } from 'react-native';
+import { useColorScheme } from 'react-native';
+import { lightTheme, darkTheme } from './styles/themes';
 import HomePage from './screens/HomePage';
 import TasksPage from './screens/TasksPage';
 import AddTasksPage from './screens/AddTasksPage';
@@ -22,9 +24,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// IDEA: add dark mode as well using useColorScheme
+// IDEA/TODO: add light and dark themes
 
 export default function Altruism_si_Speranta() {
+
+  const scheme = useColorScheme();
 
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
@@ -181,6 +185,7 @@ export default function Altruism_si_Speranta() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer
         // ref={navigationRef}
+        theme={scheme === 'dark' ? darkTheme : lightTheme}
       >
         <Stack.Navigator>
           {isAuthenticated ? (
