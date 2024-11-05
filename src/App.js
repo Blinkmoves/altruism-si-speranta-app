@@ -5,16 +5,19 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { View, ActivityIndicator, Image, Text } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { lightTheme, darkTheme } from './styles/themes';
+
 import HomePage from './screens/HomePage';
 import TasksPage from './screens/TasksPage';
 import AddTasksPage from './screens/AddTasksPage';
 import TaskShowPage from './screens/TaskShowPage';
+import EditTaskPage from './screens/EditTaskPage';
 import EventsPage from './screens/EventsPage';
 import SettingsPage from './screens/SettingsPage';
 import PrivacyPolicyPage from './screens/PrivacyPolicyPage';
 import Login from './screens/LoginPage';
 import CreateAccount from './screens/CreateAccountPage';
 import ForgotPassword from './screens/ForgotPasswordPage';
+
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { app, db, auth } from './services/firebaseConfig';
 import globalStyles from './styles/styles';
@@ -40,8 +43,10 @@ export default function Altruism_si_Speranta() {
       setIsAuthenticated(!!user);
     });
 
-    // FIXME: TODO: fix the navigation state reset when pressing a bottom tab button
+    // FIXME: TODO: Reset the navigation state when pressing the bottom tab button
     // FIXME: see the fixme in the Tasks.js file
+
+    // TODO: separate the navigators into separate files and move them to the navigation folder
     
     // const handleStateChange = (e) => {
     //   const state = e.data.state;
@@ -118,6 +123,7 @@ export default function Altruism_si_Speranta() {
         <Stack.Screen name="TasksPage" component={TasksPage} />
         <Stack.Screen name="TaskShowPage" component={TaskShowPage} />
         <Stack.Screen name="AddTasksPage" component={AddTasksPage} />
+        <Stack.Screen name="EditTaskPage" component={EditTaskPage} />
       </Stack.Navigator>
     );
   }

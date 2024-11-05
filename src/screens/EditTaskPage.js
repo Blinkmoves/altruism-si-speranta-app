@@ -1,30 +1,33 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Platform, Modal, Keyboard } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Platform, Modal, Keyboard, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import { db } from '../services/firebaseConfig';
-import { ref, push, set } from 'firebase/database';
+import { ref, update, get } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
 import toastConfig from '../utils/toastConfig';
 import globalStyles from '../styles/styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const AddTasksPage = () => {
+export default function EditTaskPage({ route }) {
 
     const auth = getAuth();
     const user = auth.currentUser;
     const navigation = useNavigation();
 
-    const [description, setDescription] = useState('');
-    const [tags, setTags] = useState('');
-    const [responsiblePerson, setResponsiblePerson] = useState('');
-    const [tasks, setTasks] = useState([]);
-    const [isChecked, setIsChecked] = useState(false);
+    // console.log('Route params: ', route.params);
+    const { taskId, uid } = route.params;
+    const [task, setTask] = useState(null);
 
+    const [description, setDescription] = useState('');
     const [deadline, setDeadline] = useState(new Date());
+    const [responsiblePerson, setResponsiblePerson] = useState('');
+    const [tags, setTags] = useState([]);
+
     const [showDatePickerModal, setShowDatePickerModal] = useState(false); // For modal display
+    const [loading, setLoading] = useState(true);
 
     const scrollRef = useRef(null);
     const descriereInputRef = useRef(null); // Ref for descriere input
@@ -32,11 +35,46 @@ const AddTasksPage = () => {
     const deadlineInputRef = useRef(null); // Ref for deadline input
     const responsiblePersonInputRef = useRef(null); // Ref for responsible person input
 
-    const handleAddTask = async () => {
-        // Dismiss the keyboard
-        Keyboard.dismiss();
+    const [uidMismatch, setUidMismatch] = useState(false);
 
-        // Validate the task description and responsible person fields
+    const currentUid = user.uid; // Get the authenticated user's ID
+
+    useEffect(() => {
+        // Check if the authenticated user's ID matches the user ID of the task (is the owner of the task)
+        // console.log('Current UID:', currentUid);
+        // console.log('Task UID:', uid);
+        if (uid !== currentUid) {
+            setUidMismatch(true);
+            setLoading(false);
+            Toast.show({
+                type: 'error',
+                text1: 'Accesul este interzis! Nu ești ownerul acestui task!',
+                visibilityTime: 5000, // 5 seconds
+                topOffset: 20,
+            });
+            navigation.goBack();
+            return;
+        }
+        const fetchTask = async () => {
+            const taskRef = ref(db, `tasks/${uid}/${taskId}`);
+            const snapshot = await get(taskRef);
+            if (snapshot.exists()) {
+                const taskData = snapshot.val();
+                // console.log('Task data:', taskData);
+                setTask(taskData);
+                setDescription(taskData.description);
+                setDeadline(new Date(taskData.deadline));
+                setResponsiblePerson(taskData.responsiblePerson);
+                setTags(taskData.tags.join(', '));
+            }
+            setLoading(false);
+        };
+
+        fetchTask();
+    }, [taskId, uid]);
+
+    const handleSave = async () => {
+        Keyboard.dismiss();
         if (!description) {
             Toast.show({
                 type: 'error',
@@ -57,39 +95,29 @@ const AddTasksPage = () => {
         }
 
         if (user) {
-            const uid = user.uid; // Get the authenticated user's ID
             try {
-                const taskRef = ref(db, `tasks/${uid}`); // Reference to the tasks collection for the authenticated user
-                const newTaskRef = push(taskRef);
-                const newTask = {
+                const taskRef = ref(db, `tasks/${uid}/${taskId}`);
+                await update(taskRef, {
                     description,
+                    deadline: deadline.toISOString(),
                     tags: tags.split(',').map(tag => tag.trim()),
-                    deadline: deadline.toString(),
                     responsiblePerson,
-                    createdBy: uid,
-                    isChecked: false,
-                };
-                await set(newTaskRef, newTask);
-                setTasks([...tasks, { id: newTaskRef.key, ...newTask }]);
-                setDescription('');
-                setTags('');
-                setDeadline(new Date());
-                setResponsiblePerson('');
-                setIsChecked(false);
+                });
+
                 Toast.show({
                     type: 'success',
-                    text1: 'Task adăugat cu succes!',
+                    text1: 'Task-ul a fost actualizat cu succes!',
                     visibilityTime: 2000, // 2 seconds
                     topOffset: 20,
                 });
-                // Navigate to the TasksPage after a delay
+
                 setTimeout(() => {
-                    navigation.navigate('TasksPage');
+                    navigation.goBack();
                 }, 2000);
             } catch (error) {
                 Toast.show({
                     type: 'error',
-                    text1: 'A apărut o eroare la adăugarea task-ului!',
+                    text1: 'A apărut o eroare la editarea task-ului!',
                     visibilityTime: 5000, // 5 seconds
                     topOffset: 20,
                 });
@@ -114,6 +142,42 @@ const AddTasksPage = () => {
         setShowDatePickerModal(true); // Show modal for date picker
     };
 
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#093A3E" />
+            </View>
+        );
+    }
+
+    // TODO fix animation to be from left to right as if going back - code is in the copilot editor
+    const goToTasksPage = () => {
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    {
+                        name: 'AuthenticatedStack',
+                        state: {
+                            routes: [
+                                {
+                                    name: 'Task-uri',
+                                    state: {
+                                        routes: [
+                                            {
+                                                name: 'TasksPage',
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            })
+        );
+    };
+
     return (
         <KeyboardAwareScrollView
             style={[styles.container, { backgroundColor: 'white' }]}
@@ -125,7 +189,7 @@ const AddTasksPage = () => {
             extraHeight={100}
         >
             <View style={globalStyles.container}>
-                <Text style={[globalStyles.title, { marginBottom: 30 }]}>Adaugă un Task nou</Text>
+                <Text style={[globalStyles.title, { marginBottom: 30 }]}>Editează Task-ul</Text>
                 {/* Task Description */}
                 <Text style={styles.label}><Text style={{ color: 'red' }}>*</Text> Descrierea task-ului:</Text>
                 <TextInput
@@ -133,7 +197,7 @@ const AddTasksPage = () => {
                     value={description}
                     onChangeText={(text) => setDescription(text)}
                     keyboardType="default"
-                    returnKeyType="next"
+                    returnKeyType="return"
                     multiline={true} // Allow multiple lines of input
                     numberOfLines={4} // Set the initial number of lines
                     ref={descriereInputRef}
@@ -191,13 +255,13 @@ const AddTasksPage = () => {
                     autoCapitalize='words'
                     ref={responsiblePersonInputRef}
                     onFocus={() => scrollToInput(responsiblePersonInputRef.current)}
-                    onSubmitEditing={handleAddTask}
+                    onSubmitEditing={handleSave}
                 />
                 <View>
-                    <TouchableOpacity style={globalStyles.Button} onPress={handleAddTask}>
-                        <Text style={globalStyles.ButtonText}>Adaugă Task</Text>
+                    <TouchableOpacity style={globalStyles.Button} onPress={handleSave}>
+                        <Text style={globalStyles.ButtonText}>Salvează</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.linkGoBack} onPress={() => navigation.goBack()}>
+                    <TouchableOpacity style={styles.linkGoBack} onPress={() => goToTasksPage()}>
                         <MaterialCommunityIcons name="chevron-left" size={16} color="#007BFF" />
                         <Text style={styles.goBackText}>Înapoi la pagina de task-uri</Text>
                     </TouchableOpacity>
@@ -252,5 +316,3 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
 });
-
-export default AddTasksPage;

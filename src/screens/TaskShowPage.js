@@ -6,13 +6,14 @@ import { auth } from '../services/firebaseConfig';
 import globalStyles from '../styles/styles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { deleteTask, editTask, completeTask } from '../utils/taskActions';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-toast-message';
 import toastConfig from '../utils/toastConfig';
 
 const TaskShowPage = ({ route }) => {
     const { taskId } = route.params;
+    // console.log('Task ID:', taskId);
     const [task, setTask] = useState([]);
     const [tasks, setTasks] = useState([]);
 
@@ -69,9 +70,39 @@ const TaskShowPage = ({ route }) => {
         }
     };
 
-    // TODO: Edit task
-    const handleEditTask = (taskId, uid, updatedTask) => {
-        editTask(taskId, uid, updatedTask);
+    // Navigate to EditTaskPage
+    const handleEditTask = (taskId, uid) => {
+        navigation.navigate('EditTaskPage', {
+            taskId,
+            uid,
+        });
+    };
+
+    const goToTasksPage = () => {
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    {
+                        name: 'AuthenticatedStack',
+                        state: {
+                            routes: [
+                                {
+                                    name: 'Task-uri',
+                                    state: {
+                                        routes: [
+                                            {
+                                                name: 'TasksPage',
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            })
+        );
     };
 
     return (
@@ -124,7 +155,7 @@ const TaskShowPage = ({ route }) => {
                 <View>
                     <TouchableOpacity
                         style={[globalStyles.Button, { flex: 1 }]}
-                        onPress={handleEditTask}
+                        onPress={() => handleEditTask(taskId, uid)}
                     >
                         <Text style={globalStyles.ButtonText}>Editează</Text>
                     </TouchableOpacity>
@@ -153,7 +184,7 @@ const TaskShowPage = ({ route }) => {
                 </View>
 
                 {/* Back button */}
-                <TouchableOpacity style={styles.linkGoBack} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.linkGoBack} onPress={() => goToTasksPage()}>
                     <MaterialCommunityIcons name="chevron-left" size={16} color="#007BFF" />
                     <Text style={styles.goBackText}>Înapoi la pagina de task-uri</Text>
                 </TouchableOpacity>
