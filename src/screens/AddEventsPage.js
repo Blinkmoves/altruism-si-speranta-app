@@ -3,10 +3,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const EventShowPage = () => {
+const AddEventsPage = () => {
   return (
     <View style={styles.container}>
-      <Text>Event Show Page</Text>
+      <Text>Add Events Page</Text>
     </View>
   );
 };
@@ -19,4 +19,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EventShowPage;
+export default AddEventsPage;
