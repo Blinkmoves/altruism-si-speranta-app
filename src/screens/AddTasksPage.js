@@ -8,7 +8,7 @@ import { ref, push, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
 import toastConfig from '../utils/toastConfig';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const AddTasksPage = () => {

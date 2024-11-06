@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 import EventsWidget from '../components/EventsWidget';
 
 export default function EventsPage() {

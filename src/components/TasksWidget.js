@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TouchableHighlight } from 'react-native';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { db } from '../services/firebaseConfig';
 import { ref, onValue } from 'firebase/database';
@@ -15,9 +15,6 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 // IDEA: add animation when TaskWidget renders to show the hidden swipe buttons (like a bounce effect) (you can use react-native-animatable?)
 // IDEA: add delete as in Files on iOS (deletion goes up until the left of the screen then the row disappears from the bottom to top)
 // Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
-
-// FIXME: when navigating to the TaskShowPage from the HomePage, the TaskPage can never be reset to top of the stack
-// ^ Seems to be working now, but keep an eye on it
 
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);
@@ -188,7 +185,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   chip: {
-    backgroundColor: '#60908C',
+    backgroundColor: '#976E9E', // change back to #60908C if you want green (Also in TaskShowPage.js)
     paddingVertical: 6,
     paddingHorizontal: 16,
     borderRadius: 20,

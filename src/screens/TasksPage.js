@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 import TaskWidget from '../components/TasksWidget';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';

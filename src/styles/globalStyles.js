@@ -26,7 +26,7 @@ const globalStyles = StyleSheet.create({
     successToast: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#20c961', // Green background with transparency
+        backgroundColor: '#20c961',
         paddingVertical: 14,
         paddingHorizontal: 30,
         borderRadius: 8,
@@ -34,7 +34,7 @@ const globalStyles = StyleSheet.create({
     errorToast: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#c92031', // Red background with transparency
+        backgroundColor: '#c92031',
         paddingVertical: 14,
         paddingHorizontal: 30,
         borderRadius: 8,

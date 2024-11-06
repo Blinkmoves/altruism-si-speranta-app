@@ -7,7 +7,7 @@ import { auth } from '../services/firebaseConfig';
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import toastConfig from '../utils/toastConfig';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 
 export default function CreateAccount({ navigation, setIsAuthenticated }) {
     const [name, setName] = useState('');

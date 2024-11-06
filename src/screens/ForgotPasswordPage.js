@@ -6,7 +6,7 @@ import { auth } from '../services/firebaseConfig';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 import toastConfig from '../utils/toastConfig';
 
 export default function ForgotPassword({ navigation }) {

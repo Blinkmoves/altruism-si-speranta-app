@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import TaskWidget from '../components/TasksWidget';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 
 export default function HomePage() {
   return (

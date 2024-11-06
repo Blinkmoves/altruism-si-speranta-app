@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Switch, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getAuth, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider, updateProfile, updateEmail, updatePassword } from 'firebase/auth';
 import Toast from 'react-native-toast-message';

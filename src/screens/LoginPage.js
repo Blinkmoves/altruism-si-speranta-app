@@ -6,7 +6,7 @@ import { auth } from '../services/firebaseConfig';
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import toastConfig from '../utils/toastConfig';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function Login({ navigation }) {

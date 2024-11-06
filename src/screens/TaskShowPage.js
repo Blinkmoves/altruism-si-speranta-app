@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-nat
 import { db } from '../services/firebaseConfig';
 import { ref, onValue } from 'firebase/database';
 import { auth } from '../services/firebaseConfig';
-import globalStyles from '../styles/styles';
+import globalStyles from '../styles/globalStyles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { deleteTask, editTask, completeTask } from '../utils/taskActions';
 import { useNavigation, CommonActions } from '@react-navigation/native';
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
         // marginVertical: 4,
     },
     chip: {
-        backgroundColor: '#60908C',
+        backgroundColor: '#976E9E', // change back to #60908C if you want green (Also in TaskWidget.js)
         paddingVertical: 6,
         paddingHorizontal: 16,
         borderRadius: 20,

@@ -26,9 +26,6 @@ export default function Altruism_si_Speranta() {
       setIsAuthenticated(!!user);
     });
 
-    // FIXME: TODO: Reset the navigation state when pressing the bottom tab button
-    // FIXME: see the fixme in the TaskWidget.js file
-
     return () => {
       unsubscribeAuth();
     };

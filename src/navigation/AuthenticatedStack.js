@@ -37,8 +37,9 @@ function AuthenticatedStack() {
       })}
     >
       <Tab.Screen name="Home" component={HomePage} />
-      <Tab.Screen name="Task-uri" component={TasksStack} />
-      <Tab.Screen name="Evenimente" component={EventsStack} />
+      {/* lazy: false to mount the screens on launch to prevent this error: when navigating to the TaskShowPage from the HomePage, the TaskPage can never be reset to top of the stack */}
+      <Tab.Screen name="Task-uri" component={TasksStack} options={{ lazy: false}} />
+      <Tab.Screen name="Evenimente" component={EventsStack} options={{ lazy: false}} />
       <Tab.Screen name="Setări" component={SettingsStack} />
     </Tab.Navigator>
   );
