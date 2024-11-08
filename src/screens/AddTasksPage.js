@@ -10,8 +10,11 @@ import Toast from 'react-native-toast-message';
 import toastConfig from '../utils/toastConfig';
 import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import useThemeStyles from '../hooks/useThemeStyles';
 
 const AddTasksPage = () => {
+
+    const { themeStyles, colors } = useThemeStyles();
 
     const auth = getAuth();
     const user = auth.currentUser;
@@ -116,20 +119,18 @@ const AddTasksPage = () => {
 
     return (
         <KeyboardAwareScrollView
-            style={[styles.container, { backgroundColor: 'white' }]}
-            contentContainerStyle={styles.scrollViewContent}
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
             ref={scrollRef}
             keyboardOpeningTime={Number.MAX_SAFE_INTEGER} // This will prevent the scroll view from jumping when the keyboard opens
             extraHeight={100}
         >
-            <View style={globalStyles.container}>
-                <Text style={[globalStyles.title, { marginBottom: 30 }]}>Adaugă un Task nou</Text>
+            <View style={[globalStyles.container, themeStyles.container]}>
+                <Text style={[globalStyles.title, themeStyles.text, { marginBottom: 30 }]}>Adaugă un Task nou</Text>
                 {/* Task Description */}
-                <Text style={styles.label}><Text style={{ color: 'red' }}>*</Text> Descrierea task-ului:</Text>
+                <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Descrierea task-ului:</Text>
                 <TextInput
-                    style={[styles.input, styles.messageBox]}
+                    style={[globalStyles.input, styles.messageBox]}
                     value={description}
                     onChangeText={(text) => setDescription(text)}
                     keyboardType="default"
@@ -141,9 +142,9 @@ const AddTasksPage = () => {
                     onSubmitEditing={() => tagInputRef.current.focus()}
                 />
                 {/* Task Tags */}
-                <Text style={styles.label}>Scrie tag-urile separate prin virgulă (cum ar fi: lejer, urgent sau orice alt tag relevant):</Text>
+                <Text style={[styles.label, themeStyles.text]}>Scrie tag-urile separate prin virgulă (cum ar fi: lejer, urgent sau orice alt tag relevant):</Text>
                 <TextInput
-                    style={styles.input}
+                    style={globalStyles.input}
                     value={tags}
                     onChangeText={(text) => setTags(text)}
                     keyboardType="default"
@@ -152,9 +153,9 @@ const AddTasksPage = () => {
                     onFocus={() => scrollToInput(tagInputRef.current)}
                 />
                 {/* Task Deadline */}
-                <Text style={styles.label}>Alege un deadline pentru task:</Text>
+                <Text style={[styles.label, themeStyles.text]}>Alege un deadline pentru task:</Text>
                 <TouchableOpacity onPress={showDatePicker} ref={deadlineInputRef} onFocus={() => scrollToInput(deadlineInputRef.current)}>
-                    <Text style={styles.input}>{deadline.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' })}</Text>
+                    <Text style={[globalStyles.input, themeStyles.borderRadius]}>{deadline.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' })}</Text>
                 </TouchableOpacity>
                 {/* Date Picker Modal */}
                 <Modal
@@ -164,7 +165,7 @@ const AddTasksPage = () => {
                     onRequestClose={() => setShowDatePickerModal(false)} // Allows the back button to close the modal on Android
                 >
                     <TouchableWithoutFeedback onPress={() => setShowDatePickerModal(false)}>
-                        <View style={styles.modalContainer}>
+                        <View style={[styles.modalContainer, themeStyles.modalContainer]}>
                             <DateTimePicker
                                 value={deadline}
                                 mode='date'
@@ -174,16 +175,16 @@ const AddTasksPage = () => {
                                 style={styles.datePicker}
                                 locale='ro-RO'
                             />
-                            <TouchableOpacity onPress={() => setShowDatePickerModal(false)} style={[globalStyles.Button, { width: '50%' }]}>
-                                <Text style={globalStyles.ButtonText}>Selectează</Text>
+                            <TouchableOpacity onPress={() => setShowDatePickerModal(false)} style={[globalStyles.button, themeStyles.button, { width: '50%' }]}>
+                                <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Selectează</Text>
                             </TouchableOpacity>
                         </View>
                     </TouchableWithoutFeedback>
                 </Modal>
                 {/* Task Responsible Person */}
-                <Text style={styles.label}><Text style={{ color: 'red' }}>*</Text> Numele persoanei responsabile de acest task:</Text>
+                <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Numele persoanei responsabile de acest task:</Text>
                 <TextInput
-                    style={styles.input}
+                    style={globalStyles.input}
                     value={responsiblePerson}
                     onChangeText={(text) => setResponsiblePerson(text)}
                     keyboardType="default"
@@ -194,8 +195,8 @@ const AddTasksPage = () => {
                     onSubmitEditing={handleAddTask}
                 />
                 <View>
-                    <TouchableOpacity style={globalStyles.Button} onPress={handleAddTask}>
-                        <Text style={globalStyles.ButtonText}>Adaugă Task</Text>
+                    <TouchableOpacity style={[globalStyles.button, themeStyles.button]} onPress={handleAddTask}>
+                        <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Adaugă Task</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.linkGoBack} onPress={() => navigation.goBack()}>
                         <MaterialCommunityIcons name="chevron-left" size={16} color="#007BFF" />
@@ -209,23 +210,7 @@ const AddTasksPage = () => {
 };
 
 const styles = StyleSheet.create({
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 8,
-        marginBottom: 16,
-    },
     label: {
-        fontSize: 16,
-    },
-    input: {
-        width: '100%',
-        // height: 40,
-        padding: 10,
-        marginVertical: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
         fontSize: 16,
     },
     messageBox: {

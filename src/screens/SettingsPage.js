@@ -8,8 +8,11 @@ import { getAuth, signOut, deleteUser, reauthenticateWithCredential, EmailAuthPr
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import toastConfig from '../utils/toastConfig';
+import useThemeStyles from '../hooks/useThemeStyles';
 
 export default function SettingsPage() {
+
+  const { themeStyles, colors } = useThemeStyles();
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -29,7 +32,7 @@ export default function SettingsPage() {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false); // Manage password visibility state
 
 
-  const buttonTextStyle = globalStyles.ButtonText;
+  const buttonTextStyle = globalStyles.buttonText;
   const fontSize = buttonTextStyle.fontSize || 16; // Default to 16 if fontSize is not defined
 
   const scrollRef = useRef(null);
@@ -147,8 +150,9 @@ export default function SettingsPage() {
         visibilityTime: 3000, // 2 seconds
         topOffset: 60,
       });
-      // TODO: change navigation to nested navigation
-      navigation.navigate('Login'); // Navigate to the login screen after account deletion
+      navigation.navigate('LoginStack', {
+        screen: 'Login',
+      });
     } catch (error) {
       const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
       Toast.show({
@@ -256,30 +260,28 @@ export default function SettingsPage() {
 
   return (
     <KeyboardAwareScrollView
-      style={[styles.container, { backgroundColor: 'white' }]}
-      contentContainerStyle={styles.scrollViewContent}
       enableOnAndroid={true}
       keyboardShouldPersistTaps="handled"
       ref={scrollRef}
       // keyboardOpeningTime={Number.MAX_SAFE_INTEGER} // This will prevent the scroll view from jumping when the keyboard opens
       extraHeight={100}
     >
-      <View style={globalStyles.container}>
+      <View style={[globalStyles.container, themeStyles.container]}>
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           <View>
-            <Text style={globalStyles.title}>Editează Profilul</Text>
+            <Text style={[globalStyles.title, themeStyles.text]}>Editează Profilul</Text>
             <TouchableOpacity
-              style={styles.editProfileButton}
+              style={[styles.editProfileButton, themeStyles.button]}
               onPress={() => setIsEditingAccountData(!isEditingAccountData)}
             >
-              <Text style={globalStyles.ButtonText}>Modifică Datele Contului</Text>
+              <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Modifică Datele Contului</Text>
             </TouchableOpacity>
 
             {isEditingAccountData && (
               <View style={styles.innerContainer}>
-                <Text style={styles.label}>Nume</Text>
+                <Text style={[styles.label, themeStyles.text]}>Nume</Text>
                 <TextInput
-                  style={styles.input}
+                  style={globalStyles.input}
                   autoCapitalize="words"
                   returnKeyType="done"
                   value={name}
@@ -288,9 +290,9 @@ export default function SettingsPage() {
                   onFocus={() => scrollToInput(nameInputRef.current)}
                 />
 
-                <Text style={styles.label}>Email</Text>
+                <Text style={[styles.label, themeStyles.text]}>Email</Text>
                 <TextInput
-                  style={styles.input}
+                  style={globalStyles.input}
                   keyboardType="email-address"
                   autoCompleteType="email"
                   textContentType="emailAddress"
@@ -302,29 +304,29 @@ export default function SettingsPage() {
                 />
 
                 <TouchableOpacity
-                  style={styles.saveButton}
+                  style={[styles.saveButton, themeStyles.purpleButton]}
                   onPress={handleUpdateAccountData}
                 >
-                  <Text style={globalStyles.ButtonText}>Salvează</Text>
+                  <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Salvează</Text>
                 </TouchableOpacity>
               </View>
             )}
 
 
             <TouchableOpacity
-              style={styles.editProfileButton}
+              style={[styles.editProfileButton, themeStyles.button]}
               onPress={() => setIsChangingPassword(!isChangingPassword)}
             >
-              <Text style={globalStyles.ButtonText}>Schimbă Parola</Text>
+              <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Schimbă Parola</Text>
             </TouchableOpacity>
 
             {isChangingPassword && (
               <View style={styles.innerContainer}>
                 {/* Current password */}
-                <Text style={[styles.label, { marginBottom: 10 }]}>Introdu Parola Actuală</Text>
-                <View style={[globalStyles.passwordContainer, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
+                <Text style={[styles.label, themeStyles.text, { marginBottom: 10 }]}>Introdu Parola Actuală</Text>
+                <View style={globalStyles.passwordContainer}>
                   <TextInput
-                    style={globalStyles.passwordInput}
+                    style={[globalStyles.input, { flex: 1, borderColor: 'transparent', paddingVertical: 0, paddingLeft: 0 }]}
                     secureTextEntry={!isCurrentPasswordVisible}
                     returnKeyType="next"
                     value={currentPassword}
@@ -346,10 +348,10 @@ export default function SettingsPage() {
                 </View>
 
                 {/* New password */}
-                <Text style={[styles.label, { marginBottom: 10 }]}>Parolă Nouă</Text>
-                <View style={[globalStyles.passwordContainer, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
+                <Text style={[styles.label, themeStyles.text, { marginBottom: 10 }]}>Parolă Nouă</Text>
+                <View style={globalStyles.passwordContainer}>
                   <TextInput
-                    style={globalStyles.passwordInput}
+                    style={[globalStyles.input, { flex: 1, borderColor: 'transparent', paddingVertical: 0, paddingLeft: 0 }]}
                     secureTextEntry={!isNewPasswordVisible}
                     returnKeyType="next"
                     value={newPassword}
@@ -371,10 +373,10 @@ export default function SettingsPage() {
                 </View>
 
                 {/* Confirm new password */}
-                <Text style={[styles.label, { marginBottom: 10 }]}>Confirmă Parola Nouă</Text>
-                <View style={[globalStyles.passwordContainer, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
+                <Text style={[styles.label, themeStyles.text, { marginBottom: 10 }]}>Confirmă Parola Nouă</Text>
+                <View style={globalStyles.passwordContainer}>
                   <TextInput
-                    style={globalStyles.passwordInput}
+                    style={[globalStyles.input, { flex: 1, borderColor: 'transparent', paddingVertical: 0, paddingLeft: 0 }]}
                     secureTextEntry={!isConfirmPasswordVisible}
                     returnKeyType="done"
                     value={confirmPassword}
@@ -396,10 +398,10 @@ export default function SettingsPage() {
                 </View>
 
                 <TouchableOpacity
-                  style={styles.saveButton}
+                  style={[styles.saveButton, themeStyles.purpleButton]}
                   onPress={handleChangePassword}
                 >
-                  <Text style={globalStyles.ButtonText}>Salvează Parola</Text>
+                  <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Salvează Parola</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -407,32 +409,32 @@ export default function SettingsPage() {
 
           {/* NOTIFICATIONS SETTINGS */}
           {/* TODO add functionality */}
-          <View elevation={5} clipToPadding={false} style={styles.notificationContainer}>
-            <Text style={styles.notificationsTitle}>Notificări</Text>
+          <View elevation={5} clipToPadding={false} style={[styles.notificationContainer, themeStyles.notificationContainer]}>
+            <Text style={[styles.notificationsTitle, themeStyles.text]}>Notificări</Text>
 
             <View style={styles.notificationItem}>
-              <Text style={styles.notificationsLabel}>Notificări de tip Push</Text>
+              <Text style={[styles.notificationsLabel, themeStyles.text]}>Notificări de tip Push</Text>
               <Switch
                 value={isPushNotificationsEnabled}
                 onValueChange={(value) => setPushNotificationsEnabled(value)}
-                trackColor={{ false: 'transparent', true: '#4D3D5B' }}
-                thumbColor={isPushNotificationsEnabled ? 'white' : '#f4f3f4'}
+                trackColor={{ false: 'transparent', true: colors.switchTrack }}
+              // thumbColor={isPushNotificationsEnabled ? 'white' : '#f4f3f4'}
               />
             </View>
             <View style={styles.divider} />
             <View style={styles.notificationItem}>
-              <Text style={styles.notificationsLabel}>Notificări Email</Text>
+              <Text style={[styles.notificationsLabel, themeStyles.text]}>Notificări Email</Text>
               <Switch
                 value={isEmailNotificationsEnabled}
                 onValueChange={(value) => setEmailNotificationsEnabled(value)}
-                trackColor={{ false: 'transparent', true: '#4D3D5B' }}
-                thumbColor={isEmailNotificationsEnabled ? 'white' : '#f4f3f4'}
+                trackColor={{ false: 'transparent', true: colors.switchTrack }}
+              // thumbColor={isEmailNotificationsEnabled ? 'white' : '#f4f3f4'}
               />
             </View>
           </View>
 
           {/* BOTTOM BUTTONS SECTION */}
-          <View style={[styles.notificationContainer, { paddingVertical: 20 }]}>
+          <View style={[styles.notificationContainer, themeStyles.notificationContainer, { paddingVertical: 20 }]}>
 
             {/* PRIVACY POLICY */}
             <TouchableOpacity style={styles.bottomButtons} onPress={() => navigation.navigate('PrivacyPolicyPage')}>
@@ -441,7 +443,7 @@ export default function SettingsPage() {
                   <MaterialCommunityIcons name="file-lock-outline" size={26} color={'#976E9E'} />
                 </View>
                 <View style={{ width: '90%' }} >
-                  <Text style={styles.bottomButtonText}> Politica de Confidențialitate</Text>
+                  <Text style={[styles.bottomButtonText, themeStyles.text]}> Politica de Confidențialitate</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -454,7 +456,7 @@ export default function SettingsPage() {
                   <MaterialCommunityIcons name="trash-can-outline" size={26} color={'#C03636'} />
                 </View>
                 <View style={{ width: '90%' }}>
-                  <Text style={styles.bottomButtonText}> Șterge Contul</Text>
+                  <Text style={[styles.bottomButtonText, themeStyles.text]}> Șterge Contul</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -467,7 +469,7 @@ export default function SettingsPage() {
                   <MaterialCommunityIcons name="logout" size={26} color={'black'} />
                 </View>
                 <View style={{ width: '90%' }}>
-                  <Text style={styles.bottomButtonText}> Logout</Text>
+                  <Text style={[styles.bottomButtonText, themeStyles.text]}> Logout</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -486,16 +488,6 @@ const styles = StyleSheet.create({
   notificationsLabel: {
     fontSize: 16,
     fontWeight: '500',
-  },
-  input: {
-    width: '100%',
-    // height: 40,
-    padding: 10,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    fontSize: 16,
   },
   saveButton: {
     backgroundColor: '#4D3D5B',
@@ -528,7 +520,7 @@ const styles = StyleSheet.create({
   notificationContainer: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#EAE9ED',
+    // backgroundColor: '#EAE9ED',
     borderRadius: 18,
     marginTop: 40,
     // Shadow for iOS

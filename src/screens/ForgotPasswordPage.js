@@ -8,8 +8,12 @@ import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import globalStyles from '../styles/globalStyles';
 import toastConfig from '../utils/toastConfig';
+import useThemeStyles from '../hooks/useThemeStyles';
 
 export default function ForgotPassword({ navigation }) {
+
+    const { themeStyles, colors } = useThemeStyles();
+
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -50,17 +54,17 @@ export default function ForgotPassword({ navigation }) {
 
     return (
         <KeyboardAwareScrollView
-            style={styles.container}
+            style={[styles.container, themeStyles.container]}
             contentContainerStyle={styles.scrollViewContent}
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
             ref={scrollRef}
         >
             <Image style={globalStyles.loginStackLogoImage} source={require('../assets/logo.png')} />
-            <Text style={globalStyles.loginStackTitle}>Resetează Parola</Text>
-            <Text style={styles.label}>Email</Text>
+            <Text style={[globalStyles.loginStackTitle, themeStyles.text]}>Resetează Parola</Text>
+            <Text style={[styles.label, themeStyles.text]}>Email</Text>
             <TextInput
-                style={styles.input}
+                style={globalStyles.loginInput}
                 value={email}
                 onChangeText={(text) => {
                     setEmail(text);
@@ -74,8 +78,8 @@ export default function ForgotPassword({ navigation }) {
                 onFocus={() => scrollToInput(emailInputRef.current)}
             />
             <View style={styles.buttonsArea}>
-                <TouchableOpacity style={styles.createButton} onPress={handlePasswordReset}>
-                    <Text style={styles.buttonText}>Trimite link de resetare</Text>
+                <TouchableOpacity style={[styles.createButton, themeStyles.loginButton]} onPress={handlePasswordReset}>
+                    <Text style={[styles.buttonText, themeStyles.buttonText]}>Trimite link de resetare</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.link} onPress={() => navigation.goBack()}>
                     <MaterialCommunityIcons name="chevron-left" size={16} color="#007BFF" />

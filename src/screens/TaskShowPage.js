@@ -10,8 +10,12 @@ import { useNavigation, CommonActions } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-toast-message';
 import toastConfig from '../utils/toastConfig';
+import useThemeStyles from '../hooks/useThemeStyles';
 
 const TaskShowPage = ({ route }) => {
+
+    const { themeStyles, colors } = useThemeStyles();
+
     const { taskId } = route.params;
     // console.log('Task ID:', taskId);
     const [task, setTask] = useState([]);
@@ -107,26 +111,26 @@ const TaskShowPage = ({ route }) => {
 
     return (
         <ScrollView style={styles.scrollView}>
-            <View style={globalStyles.container}>
-                <Text style={globalStyles.title}>Detaliile Task-ului</Text>
+            <View style={[globalStyles.container, themeStyles.container]}>
+                <Text style={[globalStyles.title, themeStyles.text]}>Detaliile Task-ului</Text>
 
                 {/* Task Description */}
                 <View style={styles.row}>
                     <View style={styles.taskDetails}>
-                        <Text style={styles.label}>Descriere: </Text>
-                        <Text style={styles.value}>{task.description}</Text>
+                        <Text style={[styles.label, themeStyles.textGray]}>Descriere: </Text>
+                        <Text style={[styles.value, themeStyles.text]}>{task.description}</Text>
                     </View>
                 </View>
 
                 {/* Tags */}
                 <View style={styles.row}>
                     <View style={styles.taskDetails}>
-                        <Text style={styles.label}>Tags: </Text>
+                        <Text style={[styles.label, themeStyles.textGray]}>Tags: </Text>
                         <View style={styles.chipContainer}>
                             {task.tags && task.tags.length > 0 ? (
                                 task.tags.map((tag, tagIndex) => (
-                                    <View key={tagIndex} style={styles.chip}>
-                                        <Text style={styles.chipText}>{tag}</Text>
+                                    <View key={tagIndex} style={[styles.chip, themeStyles.chip]}>
+                                        <Text style={[styles.chipText, themeStyles.buttonText]}>{tag}</Text>
                                     </View>
                                 ))
                             ) : null}
@@ -137,16 +141,16 @@ const TaskShowPage = ({ route }) => {
                 {/* Deadline */}
                 <View style={styles.row}>
                     <View style={styles.taskDetails}>
-                        <Text style={styles.label}>Deadline: </Text>
-                        <Text style={styles.value}> {formatDate(task.deadline)}</Text>
+                        <Text style={[styles.label, themeStyles.textGray]}>Deadline: </Text>
+                        <Text style={[styles.value, themeStyles.text]}>{formatDate(task.deadline)}</Text>
                     </View>
                 </View>
 
                 {/* Responsible Person */}
                 <View style={styles.row}>
                     <View style={styles.taskDetails}>
-                        <Text style={styles.label}>Responsabil: </Text>
-                        <Text style={styles.value}>{task.responsiblePerson}</Text>
+                        <Text style={[styles.label, themeStyles.textGray]}>Responsabil: </Text>
+                        <Text style={[styles.value, themeStyles.text]}>{task.responsiblePerson}</Text>
                     </View>
                 </View>
 
@@ -154,10 +158,10 @@ const TaskShowPage = ({ route }) => {
                 {/* Mark as completed */}
                 <View>
                     <TouchableOpacity
-                        style={[globalStyles.Button, { flex: 1 }]}
+                        style={[globalStyles.button, themeStyles.button, { flex: 1 }]}
                         onPress={() => handleEditTask(taskId, uid)}
                     >
-                        <Text style={globalStyles.ButtonText}>Editează</Text>
+                        <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Editează</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -165,20 +169,20 @@ const TaskShowPage = ({ route }) => {
                 <View style={styles.bottomButtonsRow}>
                     <View style={{ flex: 1 }}>
                         <TouchableOpacity
-                            style={[globalStyles.Button, { backgroundColor: 'green', marginRight: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}
+                            style={[globalStyles.button, { backgroundColor: 'green', marginRight: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}
                             onPress={() => handleCompleteTask(taskId, uid)}
                         >
                             <MaterialCommunityIcons name="checkbox-marked-circle-outline" size={24} color="white" />
-                            <Text style={globalStyles.ButtonText}> Finalizează</Text>
+                            <Text style={[globalStyles.buttonText, themeStyles.buttonText]}> Finalizează</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={{ flex: 1 }}>
                         <TouchableOpacity
-                            style={[globalStyles.Button, { flex: 1, backgroundColor: '#C03636', marginLeft: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}
+                            style={[globalStyles.button, { flex: 1, backgroundColor: '#C03636', marginLeft: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}
                             onPress={() => handleDeleteTask(taskId, uid)}
                         >
                             <MaterialCommunityIcons name="trash-can-outline" size={24} color='white' />
-                            <Text style={globalStyles.ButtonText}> Șterge</Text>
+                            <Text style={[globalStyles.buttonText, themeStyles.buttonText]}> Șterge</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -197,7 +201,7 @@ const TaskShowPage = ({ route }) => {
 const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
-        backgroundColor: 'white'
+        // backgroundColor: 'white'
     },
     row: {
         flexDirection: 'row',

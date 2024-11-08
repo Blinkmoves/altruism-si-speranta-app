@@ -10,15 +10,20 @@ import EventsWidget from './EventsWidget';
 import { useNavigation } from '@react-navigation/native';
 import { deleteTask, editTask, completeTask } from '../utils/taskActions';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import useThemeStyles from '../hooks/useThemeStyles';
 
 // IDEA: add filtering based on tags
 // IDEA: add animation when TaskWidget renders to show the hidden swipe buttons (like a bounce effect) (you can use react-native-animatable?)
 // IDEA: add delete as in Files on iOS (deletion goes up until the left of the screen then the row disappears from the bottom to top)
 // Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
 
+// TODO: add activity indicator when loading tasks (otherwise tasks just appear and it looks bad)
+
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);
   const navigation = useNavigation();
+
+  const { themeStyles, colors } = useThemeStyles();
 
   useEffect(() => {
     const tasksRef = ref(db, 'tasks');
@@ -85,28 +90,28 @@ export default function TaskWidget({ showFooter }) {
       underlayColor="#f0f0f0"
       activeOpacity={0.6}
     >
-      <View style={styles.rowFront}>
+      <View style={[styles.rowFront, themeStyles.container]}>
         <View style={styles.row}>
           {/* Task Details */}
           <View style={styles.taskDetails}>
-            <Text>{item.description}</Text>
+            <Text style={ themeStyles.text }>{item.description}</Text>
             {/* Tags */}
             <View style={styles.chipContainer}>
               {item.tags && item.tags.length > 0 ? (
                 item.tags.map((tag, tagIndex) => (
-                  <View key={tagIndex} style={styles.chip}>
-                    <Text style={styles.chipText}>{tag}</Text>
+                  <View key={tagIndex} style={[styles.chip, themeStyles.chip]}>
+                    <Text style={[styles.chipText, themeStyles.chip]}>{tag}</Text>
                   </View>
                 ))
               ) : null}
             </View>
             {/* Deadline and Responsible Person */}
             <View style={styles.taskInfoRow}>
-              <Text style={styles.taskInfoText}>Deadline:
-                <Text style={styles.taskResponsabil}> {formatDate(item.deadline)}</Text>
+              <Text style={[styles.taskInfoText, themeStyles.textGray]}>Deadline:
+                <Text style={[styles.taskResponsabil, themeStyles.text]}> {formatDate(item.deadline)}</Text>
               </Text>
-              <Text style={styles.taskInfoText}>Responsabil:
-                <Text style={styles.taskResponsabil}> {item.responsiblePerson}</Text>
+              <Text style={[styles.taskInfoText, themeStyles.textGray]}>Responsabil:
+                <Text style={[styles.taskResponsabil, themeStyles.text]}> {item.responsiblePerson}</Text>
               </Text>
             </View>
           </View>
@@ -117,7 +122,7 @@ export default function TaskWidget({ showFooter }) {
 
   // Define renderHiddenItem
   const renderHiddenItem = ({ item, index }) => (
-    <View style={styles.rowBack}>
+    <View style={[styles.rowBack, themeStyles.rowBack]}>
       {/* Left Side: Complete Button */}
       <TouchableOpacity
         style={[styles.backLeftBtn, styles.completeButton]}
@@ -157,7 +162,7 @@ export default function TaskWidget({ showFooter }) {
         disableRightSwipe={false}
         ListFooterComponent={showFooter ? (
           <View>
-            <Text style={globalStyles.title}>Evenimente</Text>
+            <Text style={[globalStyles.title, themeStyles.text, { paddingTop: 10 }]}>Evenimente</Text>
             <EventsWidget />
           </View>
         ) : null}
@@ -185,7 +190,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   chip: {
-    backgroundColor: '#976E9E', // change back to #60908C if you want green (Also in TaskShowPage.js)
+    // backgroundColor: '#976E9E', // change back to #60908C if you want green (Also in TaskShowPage.js)
     paddingVertical: 6,
     paddingHorizontal: 16,
     borderRadius: 20,
@@ -217,10 +222,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#ddd',
+    // backgroundColor: '#ddd',
   },
   rowFront: {
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },

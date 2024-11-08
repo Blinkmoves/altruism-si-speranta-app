@@ -8,8 +8,14 @@ import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import toastConfig from '../utils/toastConfig';
 import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import useThemeStyles from '../hooks/useThemeStyles';
 
 export default function Login({ navigation }) {
+
+    // TODO fix toast disappearing after successful login. Toast should show up on the HomePage too
+
+    const { themeStyles, colors } = useThemeStyles();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -20,7 +26,6 @@ export default function Login({ navigation }) {
     const emailInputRef = useRef(null);
     const passwordInputRef = useRef(null);
 
-    // IDEA: not a must but implement login by name as well
     const handleLogin = async () => {
         Keyboard.dismiss(); // Hide the keyboard
         try {
@@ -63,7 +68,7 @@ export default function Login({ navigation }) {
 
     return (
         <KeyboardAwareScrollView
-            style={styles.container}
+            style={[styles.container, themeStyles.container]}
             contentContainerStyle={styles.scrollViewContent}
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
@@ -72,13 +77,13 @@ export default function Login({ navigation }) {
             extraHeight={100}
 
         >
-            <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+            <StatusBar backgroundColor={colors.statusbar} />
             <Image style={globalStyles.loginStackLogoImage} source={require('../assets/logo.png')} />
-            <Text style={globalStyles.loginStackTitle}>Loghează-te</Text>
+            <Text style={[globalStyles.loginStackTitle, themeStyles.text]}>Loghează-te</Text>
             <View>
-                <Text style={styles.label}>Email</Text>
+                <Text style={[styles.label, themeStyles.text]}>Email</Text>
                 <TextInput
-                    style={styles.input}
+                    style={globalStyles.loginInput}
                     value={email}
                     onChangeText={(text) => {
                         setEmail(text);
@@ -95,10 +100,10 @@ export default function Login({ navigation }) {
                     onFocus={() => scrollToInput(emailInputRef.current)}
                     onSubmitEditing={() => passwordInputRef.current.focus()} // Focus password input on submit
                 />
-                <Text style={styles.label}>Parolă</Text>
-                <View style={globalStyles.passwordContainer}>
+                <Text style={[styles.label, themeStyles.text]}>Parolă</Text>
+                <View style={[globalStyles.passwordContainer, { paddingLeft: 0 }]}>
                     <TextInput
-                        style={globalStyles.passwordInput}
+                        style={[globalStyles.loginInput, { flex: 1, borderColor: 'transparent', paddingVertical: 0, marginBottom: 0 }]}
                         value={password}
                         onChangeText={(text) => {
                             setPassword(text);
@@ -115,7 +120,6 @@ export default function Login({ navigation }) {
                         onSubmitEditing={handleLogin} // Call login function on submit
                     />
                     <TouchableOpacity
-                        style={globalStyles.passwordIconContainer}
                         onPress={() => setIsPasswordVisible(!isPasswordVisible)}
                     >
                         <MaterialCommunityIcons
@@ -127,12 +131,12 @@ export default function Login({ navigation }) {
                 </View>
             </View>
             <View style={styles.buttonsArea}>
-                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                    <Text style={styles.loginButtonText}>Login</Text>
+                <TouchableOpacity style={[styles.loginButton, themeStyles.loginButton]} onPress={handleLogin}>
+                    <Text style={[styles.loginButtonText, themeStyles.buttonText]}>Login</Text>
                 </TouchableOpacity>
                 <View style={styles.rowButtonsArea}>
                     <TouchableOpacity style={styles.link} onPress={goToCreateAccount}>
-                        <Text style={styles.createAccountText}>Creează cont</Text>
+                        <Text style={[styles.createAccountText, themeStyles.text]}>Creează cont</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.link} onPress={handleForgotPassword}>
                         <Text style={styles.forgotPasswordText}>Ai uitat parola?</Text>
@@ -154,17 +158,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 48,
     },
-    input: {
-        height: 40,
-        borderColor: '#093A3E',
-        borderWidth: 1.2,
-        borderRadius: 10,
-        marginBottom: 12,
-        paddingHorizontal: 8,
-        fontSize: 16,
-    },
     loginButton: {
-        backgroundColor: '#60908C',
+        // backgroundColor: '#60908C',
         paddingVertical: 12,
         borderRadius: 10,
         alignItems: 'center',

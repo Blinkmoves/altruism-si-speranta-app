@@ -4,16 +4,15 @@ const globalStyles = StyleSheet.create({
     container: {
         padding: 20,
         flex: 1,
-        backgroundColor: 'white',
     },
-    Button: {
-        backgroundColor: 'teal',
+    button: {
+        // backgroundColor: 'teal',
         padding: 16,
         borderRadius: 8,
         alignItems: 'center',
         marginTop: 20,
     },
-    ButtonText: {
+    buttonText: {
         color: 'white',
         fontSize: 16,
     },
@@ -47,19 +46,20 @@ const globalStyles = StyleSheet.create({
     passwordContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderColor: '#093A3E',
+        borderColor: 'teal',
         borderWidth: 1.2,
         borderRadius: 10,
         marginBottom: 12,
         paddingHorizontal: 8,
+        backgroundColor: 'white',
     },
-    passwordInput: {
-        flex: 1,
-        fontSize: 16,
-    },
-    passwordIconContainer: {
-        padding: 8,
-    },
+    // passwordInput: {
+    //     flex: 1,
+    //     fontSize: 16,
+    // },
+    // passwordIconContainer: {
+    //     padding: 8,
+    // },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -88,6 +88,27 @@ const globalStyles = StyleSheet.create({
         textAlign: 'center',
         marginVertical: 20,
     },
+    input: {
+        width: '100%',
+        // height: 40,
+        padding: 10,
+        marginVertical: 10,
+        borderWidth: 1.2,
+        borderColor: 'teal',
+        borderRadius: 5,
+        fontSize: 16,
+        backgroundColor: 'white',
+    },
+    loginInput: {
+        height: 40,
+        borderColor: 'teal',
+        borderWidth: 1.2,
+        borderRadius: 10,
+        marginBottom: 12,
+        paddingHorizontal: 8,
+        fontSize: 16,
+        backgroundColor: 'white',
+    }
 });
 
 export default globalStyles;

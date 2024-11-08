@@ -5,8 +5,11 @@ import globalStyles from '../styles/globalStyles';
 import TaskWidget from '../components/TasksWidget';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
+import useThemeStyles from '../hooks/useThemeStyles';
 
 export default function TasksPage() {
+
+  const { themeStyles, colors } = useThemeStyles();
 
   const navigation = useNavigation();
 
@@ -35,8 +38,8 @@ export default function TasksPage() {
       <TaskWidget showFooter={false} />
       </MaskedView>
       <View style={styles.addButtonArea}>
-        <TouchableOpacity style={globalStyles.Button} onPress={navigateToAddTasksPage}>
-          <Text style={globalStyles.ButtonText}>Adaugă Task</Text>
+        <TouchableOpacity style={[globalStyles.button, , themeStyles.button]} onPress={navigateToAddTasksPage}>
+          <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Adaugă Task</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -46,7 +49,7 @@ export default function TasksPage() {
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
   },
   maskedView: {
     flex: 1,

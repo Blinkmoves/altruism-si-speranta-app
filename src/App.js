@@ -1,16 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { NavigationContainer, CommonActions, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, ActivityIndicator, Image, Text } from 'react-native';
-import { useColorScheme } from 'react-native';
-import { lightTheme, darkTheme } from './styles/themes';
-
+import { View, ActivityIndicator } from 'react-native';
 import LoginStack from './navigation/LoginStack';
 import AuthenticatedStack from './navigation/AuthenticatedStack';
-
 import { app, db, auth } from './services/firebaseConfig';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
+import { ThemeProvider, useThemeContext } from './hooks/useThemeContext';
 
 const Stack = createStackNavigator();
 
@@ -18,7 +14,8 @@ const Stack = createStackNavigator();
 
 export default function Altruism_si_Speranta() {
 
-  const scheme = useColorScheme();
+  const { theme } = useThemeContext();
+
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
@@ -31,6 +28,12 @@ export default function Altruism_si_Speranta() {
     };
   }, []);
 
+  // useEffect(() => {
+  //   console.log("Theme has changed:", theme);
+  // }, [theme]);
+  
+
+  // Check if the user is authenticated
   if (isAuthenticated === null) {
     // Show a loading indicator while checking authentication state
     return (
@@ -41,18 +44,18 @@ export default function Altruism_si_Speranta() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer
-        theme={scheme === 'dark' ? darkTheme : lightTheme}
-      >
-        <Stack.Navigator>
-          {isAuthenticated ? (
-            <Stack.Screen name="AuthenticatedStack" component={AuthenticatedStack} options={{ headerShown: false }} />
-          ) : (
-            <Stack.Screen name="LoginStack" component={LoginStack} options={{ headerShown: false }} />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </GestureHandlerRootView>
+    <ThemeProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <NavigationContainer theme={theme}>
+          <Stack.Navigator>
+            {isAuthenticated ? (
+              <Stack.Screen name="AuthenticatedStack" component={AuthenticatedStack} options={{ headerShown: false }} />
+            ) : (
+              <Stack.Screen name="LoginStack" component={LoginStack} options={{ headerShown: false }} />
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </GestureHandlerRootView>
+    </ThemeProvider>
   );
 };

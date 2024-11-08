@@ -8,8 +8,12 @@ import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import toastConfig from '../utils/toastConfig';
 import globalStyles from '../styles/globalStyles';
+import useThemeStyles from '../hooks/useThemeStyles';
 
 export default function CreateAccount({ navigation, setIsAuthenticated }) {
+
+    const { themeStyles, colors } = useThemeStyles();
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -58,7 +62,7 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
 
     return (
         <KeyboardAwareScrollView
-            style={styles.container}
+            style={[styles.container, themeStyles.container]}
             contentContainerStyle={styles.scrollViewContent}
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
@@ -67,10 +71,10 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
             extraHeight={100}
         >
             <Image style={globalStyles.loginStackLogoImage} source={require('../assets/logo.png')} />
-            <Text style={globalStyles.loginStackTitle}>Creează un cont nou</Text>
-            <Text style={styles.label}>Nume complet</Text>
+            <Text style={[globalStyles.loginStackTitle, themeStyles.text]}>Creează un cont nou</Text>
+            <Text style={[styles.label, themeStyles.text]}>Nume complet</Text>
             <TextInput
-                style={styles.input}
+                style={globalStyles.loginInput}
                 value={name}
                 onChangeText={(text) => {
                     setName(text);
@@ -82,9 +86,9 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
                 onFocus={() => scrollToInput(nameInputRef.current)}
                 onSubmitEditing={() => emailInputRef.current.focus()} // Focus email input on submit
             />
-            <Text style={styles.label}>Email</Text>
+            <Text style={[styles.label, themeStyles.text]}>Email</Text>
             <TextInput
-                style={styles.input}
+                style={globalStyles.loginInput}
                 value={email}
                 onChangeText={(text) => {
                     setEmail(text);
@@ -97,10 +101,10 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
                 onFocus={() => scrollToInput(emailInputRef.current)}
                 onSubmitEditing={() => passwordInputRef.current.focus()} // Focus password input on submit
             />
-            <Text style={styles.label}>Parolă</Text>
-            <View style={globalStyles.passwordContainer}>
+            <Text style={[styles.label, themeStyles.text]}>Parolă</Text>
+            <View style={[globalStyles.passwordContainer, { paddingLeft: 0 }]}>
                 <TextInput
-                    style={globalStyles.passwordInput}
+                    style={[globalStyles.loginInput, { flex: 1, borderColor: 'transparent', paddingVertical: 0, marginBottom: 0 }]}
                     value={password}
                     onChangeText={(text) => {
                         setPassword(text);
@@ -113,7 +117,6 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
                     onSubmitEditing={handleCreateAccount} // Call create account function on submit
                 />
                 <TouchableOpacity
-                    style={globalStyles.passwordIconContainer}
                     onPress={() => setIsPasswordVisible(!isPasswordVisible)}
                 >
                     <MaterialCommunityIcons
@@ -124,8 +127,8 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
                 </TouchableOpacity>
             </View>
             <View style={styles.buttonsArea}>
-                <TouchableOpacity style={styles.createButton} onPress={handleCreateAccount}>
-                    <Text style={styles.buttonText}>Creează cont</Text>
+                <TouchableOpacity style={[styles.createButton, themeStyles.loginButton]} onPress={handleCreateAccount}>
+                    <Text style={[styles.buttonText, themeStyles.buttonText]}>Creează cont</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.link} onPress={() => navigation.goBack()}>
                     <MaterialCommunityIcons name="chevron-left" size={16} color="#007BFF" />
@@ -150,15 +153,6 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         marginBottom: 10,
-    },
-    input: {
-        height: 40,
-        borderColor: '#093A3E',
-        borderWidth: 1.2,
-        borderRadius: 10,
-        marginBottom: 12,
-        paddingHorizontal: 10,
-        fontSize: 16,
     },
     errorText: {
         color: 'red',
