@@ -119,13 +119,14 @@ const AddTasksPage = () => {
 
     return (
         <KeyboardAwareScrollView
+            style={[themeStyles.container]}
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
             ref={scrollRef}
             keyboardOpeningTime={Number.MAX_SAFE_INTEGER} // This will prevent the scroll view from jumping when the keyboard opens
             extraHeight={100}
         >
-            <View style={[globalStyles.container, themeStyles.container]}>
+            <View style={[globalStyles.container,]}>
                 <Text style={[globalStyles.title, themeStyles.text, { marginBottom: 30 }]}>Adaugă un Task nou</Text>
                 {/* Task Description */}
                 <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Descrierea task-ului:</Text>

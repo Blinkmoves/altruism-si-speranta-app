@@ -24,7 +24,7 @@ export default function TasksPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, themeStyles.container]}>
       <MaskedView
         style={styles.maskedView}
         maskElement={

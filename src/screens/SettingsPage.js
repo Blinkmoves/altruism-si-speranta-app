@@ -260,13 +260,14 @@ export default function SettingsPage() {
 
   return (
     <KeyboardAwareScrollView
+      style={[themeStyles.container]}
       enableOnAndroid={true}
       keyboardShouldPersistTaps="handled"
       ref={scrollRef}
       // keyboardOpeningTime={Number.MAX_SAFE_INTEGER} // This will prevent the scroll view from jumping when the keyboard opens
       extraHeight={100}
     >
-      <View style={[globalStyles.container, themeStyles.container]}>
+      <View style={[globalStyles.container,]}>
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           <View>
             <Text style={[globalStyles.title, themeStyles.text]}>Editează Profilul</Text>

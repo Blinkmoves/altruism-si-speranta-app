@@ -110,7 +110,7 @@ const TaskShowPage = ({ route }) => {
     };
 
     return (
-        <ScrollView style={styles.scrollView}>
+        <ScrollView style={[styles.scrollView, themeStyles.container]}>
             <View style={[globalStyles.container, themeStyles.container]}>
                 <Text style={[globalStyles.title, themeStyles.text]}>Detaliile Task-ului</Text>
 

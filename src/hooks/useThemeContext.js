@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext } from 'react';
 import { lightTheme, darkTheme } from '../styles/themeStyles';
 
+// TODO: add persistence to theme change so that app reloads maintain selected theme
+
 const ThemeContext = createContext({
     theme: lightTheme,
     toggleTheme: () => {},
