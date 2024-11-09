@@ -14,8 +14,16 @@ const Stack = createStackNavigator();
 
 export default function Altruism_si_Speranta() {
 
-  const { theme } = useThemeContext();
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
+}
 
+function AppContent() {
+
+  const { theme } = useThemeContext();
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
@@ -31,31 +39,29 @@ export default function Altruism_si_Speranta() {
   // useEffect(() => {
   //   console.log("Theme has changed:", theme);
   // }, [theme]);
-  
+
 
   // Check if the user is authenticated
   if (isAuthenticated === null) {
     // Show a loading indicator while checking authentication state
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#093A3E" />
+      <View style={[{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }]}>
+        <ActivityIndicator size="large" color="teal" />
       </View>
     );
   }
 
   return (
-    <ThemeProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <NavigationContainer theme={theme}>
-          <Stack.Navigator>
-            {isAuthenticated ? (
-              <Stack.Screen name="AuthenticatedStack" component={AuthenticatedStack} options={{ headerShown: false }} />
-            ) : (
-              <Stack.Screen name="LoginStack" component={LoginStack} options={{ headerShown: false }} />
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
-      </GestureHandlerRootView>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer theme={theme}>
+        <Stack.Navigator>
+          {isAuthenticated ? (
+            <Stack.Screen name="AuthenticatedStack" component={AuthenticatedStack} options={{ headerShown: false }} />
+          ) : (
+            <Stack.Screen name="LoginStack" component={LoginStack} options={{ headerShown: false }} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };

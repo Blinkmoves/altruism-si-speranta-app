@@ -6,16 +6,12 @@ import TasksStack from './TasksStack';
 import EventsStack from './EventsStack';
 import SettingsStack from './SettingsStack';
 import useThemeStyles from '../hooks/useThemeStyles';
-import { TouchableOpacity } from 'react-native';
-import { useThemeContext } from '../hooks/useThemeContext';
-
 
 const Tab = createBottomTabNavigator();
 
 function AuthenticatedStack() {
 
   const { themeStyles, colors } = useThemeStyles();
-  const { theme, toggleTheme } = useThemeContext();
 
   return (
     <Tab.Navigator
@@ -42,16 +38,6 @@ function AuthenticatedStack() {
         headerTitle: '',
         gestureEnabled: true,
         gestureResponseDistance: 200,
-        // headerShown: false,
-        headerRight: () => (
-          <TouchableOpacity onPress={toggleTheme} style={{ marginRight: 15 }}>
-            <MaterialCommunityIcons
-              name={theme.dark ? 'white-balance-sunny' : 'weather-night'}
-              size={24}
-              color={theme.colors.buttonText}
-            />
-          </TouchableOpacity>
-        ),
       })}
     >
       <Tab.Screen name="Home" component={HomePage} />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TouchableHighlight } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TouchableHighlight, ActivityIndicator } from 'react-native';
 import globalStyles from '../styles/globalStyles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { db } from '../services/firebaseConfig';
@@ -17,11 +17,10 @@ import useThemeStyles from '../hooks/useThemeStyles';
 // IDEA: add delete as in Files on iOS (deletion goes up until the left of the screen then the row disappears from the bottom to top)
 // Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
 
-// TODO: add activity indicator when loading tasks (otherwise tasks just appear and it looks bad)
-
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
 
   const { themeStyles, colors } = useThemeStyles();
 
@@ -43,6 +42,7 @@ export default function TaskWidget({ showFooter }) {
       } else {
         setTasks([]);
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -94,7 +94,7 @@ export default function TaskWidget({ showFooter }) {
         <View style={styles.row}>
           {/* Task Details */}
           <View style={styles.taskDetails}>
-            <Text style={ themeStyles.text }>{item.description}</Text>
+            <Text style={themeStyles.text}>{item.description}</Text>
             {/* Tags */}
             <View style={styles.chipContainer}>
               {item.tags && item.tags.length > 0 ? (
@@ -151,22 +151,28 @@ export default function TaskWidget({ showFooter }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <SwipeListView
-        data={filteredTasks}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        renderHiddenItem={renderHiddenItem}
-        leftOpenValue={75}
-        rightOpenValue={-150}
-        disableLeftSwipe={false}
-        disableRightSwipe={false}
-        ListFooterComponent={showFooter ? (
-          <View>
-            <Text style={[globalStyles.title, themeStyles.text, { paddingTop: 10 }]}>Evenimente</Text>
-            <EventsWidget />
-          </View>
-        ) : null}
-      />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="teal" />
+        </View>
+      ) : (
+        <SwipeListView
+          data={filteredTasks}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          renderHiddenItem={renderHiddenItem}
+          leftOpenValue={75}
+          rightOpenValue={-150}
+          disableLeftSwipe={false}
+          disableRightSwipe={false}
+          ListFooterComponent={showFooter ? (
+            <View>
+              <Text style={[globalStyles.title, themeStyles.text, { paddingTop: 10 }]}>Evenimente</Text>
+              <EventsWidget />
+            </View>
+          ) : null}
+        />
+      )}
       <Toast config={toastConfig} />
     </View>
   );

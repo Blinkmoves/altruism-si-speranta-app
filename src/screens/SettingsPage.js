@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Switch, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -9,10 +9,13 @@ import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import toastConfig from '../utils/toastConfig';
 import useThemeStyles from '../hooks/useThemeStyles';
+import { useThemeContext } from '../hooks/useThemeContext';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SettingsPage() {
 
   const { themeStyles, colors } = useThemeStyles();
+  const { theme, toggleTheme } = useThemeContext();
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -407,10 +410,44 @@ export default function SettingsPage() {
               </View>
             )}
           </View>
-
+          
+          {/* IDEA: Solve zIndex issue (at the moment it's harder to press the switch especially on the thumb part because the icons have higher zIndex) */}
+          {/* IDEA: Maybe use more customizable switch component (such as react native reanimated's switch https://docs.swmansion.com/react-native-reanimated/examples/switch/) */}
+          {/* IDEA: or  React Native custom switch: https://github.com/arshigtx/react-native-custom-switch*/}
+          
           {/* NOTIFICATIONS SETTINGS */}
-          {/* TODO add functionality */}
           <View elevation={5} clipToPadding={false} style={[styles.notificationContainer, themeStyles.notificationContainer]}>
+            <Text style={[styles.notificationsTitle, themeStyles.text]}>Aplicație</Text>
+            <View style={styles.notificationItem}>
+              <Text style={[styles.notificationsLabel, themeStyles.text]}>
+                Schimbă în modul {theme.dark ? 'luminos' : 'întunecat'}
+              </Text>
+              <View style={styles.switchContainer}>
+                {!theme.dark ? (
+                  <Ionicons
+                    name="sunny-outline"
+                    size={16}
+                    color={colors.text}
+                    style={styles.iconLeft}
+                  />
+                ) : (
+                  <Ionicons
+                    name="moon-outline"
+                    size={16}
+                    color={colors.primary}
+                    style={styles.iconRight}
+                  />
+                )}
+                <Switch
+                  value={theme.dark}
+                  onValueChange={toggleTheme}
+                  trackColor={{ false: 'transparent', true: colors.switchTrack }}
+                  ios_backgroundColor="transparent"
+                  style={styles.switch}
+                />
+              </View>
+            </View>
+            {/* TODO add functionality */}
             <Text style={[styles.notificationsTitle, themeStyles.text]}>Notificări</Text>
 
             <View style={styles.notificationItem}>
@@ -467,7 +504,7 @@ export default function SettingsPage() {
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
               <View style={styles.iconTextArea}>
                 <View style={{ width: '10%' }}>
-                  <MaterialCommunityIcons name="logout" size={26} color={'black'} />
+                  <MaterialCommunityIcons name="logout" size={26} color={colors.text} />
                 </View>
                 <View style={{ width: '90%' }}>
                   <Text style={[styles.bottomButtonText, themeStyles.text]}> Logout</Text>
@@ -564,5 +601,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     marginVertical: 8,
     marginLeft: 10,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
+    // paddingHorizontal: 30,
+  },
+  switch: {
+    zIndex: 1,
+    // transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
+  },
+  iconLeft: {
+    position: 'absolute',
+    zIndex: 2,
+    left: 7,
+  },
+  iconRight: {
+    position: 'absolute',
+    right: 6,
+    zIndex: 2,
   },
 });

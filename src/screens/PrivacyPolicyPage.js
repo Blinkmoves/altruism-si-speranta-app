@@ -8,7 +8,7 @@ export default function PrivacyPolicyPage() {
   const { themeStyles, colors } = useThemeStyles();
 
   return (
-    <View style={{ paddingVertical: 20 }}>
+    <View style={[themeStyles.container, { paddingVertical: 20 }]}>
     <ScrollView indicatorStyle={colors.scrollbar}>
       <View style={[globalStyles.container, themeStyles.container, { paddingVertical: 0 }]}>
         <View style={styles.section}>
