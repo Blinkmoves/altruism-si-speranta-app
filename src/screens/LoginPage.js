@@ -12,7 +12,7 @@ import useThemeStyles from '../hooks/useThemeStyles';
 
 export default function Login({ navigation }) {
 
-    // TODO fix toast disappearing after successful login. Toast should show up on the HomePage too
+    // FIXME fix toast disappearing after successful login. Toast should show up on the HomePage too
 
     const { themeStyles, colors } = useThemeStyles();
 

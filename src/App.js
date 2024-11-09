@@ -10,8 +10,6 @@ import { ThemeProvider, useThemeContext } from './hooks/useThemeContext';
 
 const Stack = createStackNavigator();
 
-// IDEA/TODO: add light and dark themes
-
 export default function Altruism_si_Speranta() {
 
   return (
@@ -35,11 +33,6 @@ function AppContent() {
       unsubscribeAuth();
     };
   }, []);
-
-  // useEffect(() => {
-  //   console.log("Theme has changed:", theme);
-  // }, [theme]);
-
 
   // Check if the user is authenticated
   if (isAuthenticated === null) {

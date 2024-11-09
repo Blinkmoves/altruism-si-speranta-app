@@ -5,6 +5,8 @@ import globalStyles from '../styles/globalStyles';
 import EventsWidget from '../components/EventsWidget';
 import useThemeStyles from '../hooks/useThemeStyles';
 
+// TODO
+
 export default function EventsPage() {
 
   const { themeStyles, colors } = useThemeStyles();

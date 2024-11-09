@@ -9,7 +9,7 @@ const ThemeContext = createContext({
 
 export const ThemeProvider = ({ children }) => {
 
-    const [theme, setTheme] = useState(lightTheme); // Initialize with light theme
+    const [theme, setTheme] = useState(lightTheme);
 
     useEffect(() => {
         const loadTheme = async () => {

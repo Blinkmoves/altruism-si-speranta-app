@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import globalStyles from '../styles/globalStyles';
 
+// TODO: make calendar view / event list view, add functionality
+
 export default function EventsWidget() {
   const currentDate = new Date().toISOString().split('T')[0];
   const maxDate = '9999-12-31';
@@ -32,4 +34,3 @@ export const styles = StyleSheet.create({
   },
 });
 
-// TODO: make calendar view / event list view, add functionality
