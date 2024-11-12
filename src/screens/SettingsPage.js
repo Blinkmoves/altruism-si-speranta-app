@@ -88,7 +88,7 @@ export default function SettingsPage() {
 
 
   // DELETE ACCOUNT LOGIC START
-
+  // TODO make it only disable account, not delete it
   const handleDeleteAccount = async () => {
     if (!user) {
       Toast.show({

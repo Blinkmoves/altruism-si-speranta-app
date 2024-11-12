@@ -17,6 +17,8 @@ import useThemeStyles from '../hooks/useThemeStyles';
 // IDEA: add delete as in Files on iOS (deletion goes up until the left of the screen then the row disappears from the bottom to top)
 // Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
 
+// TODO/IDEA add createdby to tasks
+
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);
   const navigation = useNavigation();

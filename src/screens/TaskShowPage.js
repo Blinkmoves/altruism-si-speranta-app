@@ -12,6 +12,8 @@ import Toast from 'react-native-toast-message';
 import toastConfig from '../utils/toastConfig';
 import useThemeStyles from '../hooks/useThemeStyles';
 
+// TODO add logic so only admins can delete/complete/edit tasks
+
 const TaskShowPage = ({ route }) => {
 
     const { themeStyles, colors } = useThemeStyles();

@@ -3,7 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard } 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../services/firebaseConfig';
+import { auth, db } from '../services/firebaseConfig';
+import { set, ref } from 'firebase/database';
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import toastConfig from '../utils/toastConfig';
@@ -29,9 +30,20 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
         Keyboard.dismiss(); // Hide the keyboard
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            await updateProfile(userCredential.user, { displayName: name });
+            const user = userCredential.user;
+            await updateProfile(user, { displayName: name });
+
+            // Store the users data in the database (including role)
+            await set(ref(db, `users/${user.uid}`), {
+                name: name,
+                email: email,
+                role: 'Voluntar',
+            });
+
+            // TODO/IDEA add email verification
 
             setError(''); // Clear error message after successful account creation
+            // FIXME: got this error LOG  [TypeError: setIsAuthenticated is not a function (it is undefined)]:
             setIsAuthenticated(true); // Set the authenticated state to true
             navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
             // FIXME toast not shown after account creation

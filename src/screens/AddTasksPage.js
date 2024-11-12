@@ -12,6 +12,8 @@ import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useThemeStyles from '../hooks/useThemeStyles';
 
+// Add admin logic so only admins can create tasks
+
 const AddTasksPage = () => {
 
     const { themeStyles, colors } = useThemeStyles();
