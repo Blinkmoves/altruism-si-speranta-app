@@ -18,6 +18,8 @@ import useThemeStyles from '../hooks/useThemeStyles';
 // Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
 
 // TODO/IDEA add createdby to tasks
+// TODO change isChecked to isCompleted everywhere
+// TODO add isDeleted to tasks and hide them from the list don't delete them from the database
 
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);
