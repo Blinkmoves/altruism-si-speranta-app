@@ -13,7 +13,7 @@ import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
 
 // TODO Add admin logic so only admins can create tasks
 
-// FIXME see why error permission denied when adding a task
+// IDEA/TODO Add a way to assign tasks to volunteers (maybe from a dropdown list of volunteers) if it's not too hard to implement
 
 const AddTasksPage = () => {
 

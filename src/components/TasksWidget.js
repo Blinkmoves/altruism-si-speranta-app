@@ -18,6 +18,10 @@ import useThemeStyles from '../hooks/useThemeStyles';
 
 // TODO add isDeleted to tasks and hide them from the list don't delete them from the database
 
+// TODO admins can see all tasks, volunteers can see only their tasks
+
+// IDEA: on HomePage, show only a few tasks and a button to see more tasks that navigates the user to the TasksPage
+
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);
   const navigation = useNavigation();
@@ -59,8 +63,8 @@ export default function TaskWidget({ showFooter }) {
     deleteTask(taskId, uid, setTasks);
   };
 
-  const handleEditTask = (taskId, uid, updatedTask) => {
-    editTask(taskId, uid, updatedTask);
+  const handleEditTask = (taskId, uid) => {
+    editTask(taskId, uid, navigation);
   };
 
   const formatDate = (dateString) => {
