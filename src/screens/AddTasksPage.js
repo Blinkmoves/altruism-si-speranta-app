@@ -6,14 +6,14 @@ import { useNavigation } from '@react-navigation/native';
 import { db } from '../services/firebaseConfig';
 import { ref, push, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
-import Toast from 'react-native-toast-message';
 import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useThemeStyles from '../hooks/useThemeStyles';
+import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
 
 // TODO Add admin logic so only admins can create tasks
 
-// FIXME CHECK WHY THIS CRASHES THE APP WITH NO ERROR, ALSO CHECK EDITTASKSPAGE
+// FIXME see why error permission denied when adding a task
 
 const AddTasksPage = () => {
 
@@ -44,21 +44,11 @@ const AddTasksPage = () => {
 
         // Validate the task description and responsible person fields
         if (!description) {
-            Toast.show({
-                type: 'error',
-                text1: 'Descrierea task-ului este un câmp obligatoriu!',
-                visibilityTime: 5000, // 5 seconds
-                topOffset: 20,
-            });
+            showErrorToast('Descrierea task-ului este un câmp obligatoriu!');
             return;
         }
         if (!responsiblePerson) {
-            Toast.show({
-                type: 'error',
-                text1: 'Responsabilul task-ului este un câmp obligatoriu!',
-                visibilityTime: 5000, // 5 seconds
-                topOffset: 20,
-            });
+            showErrorToast('Responsabilul task-ului este un câmp obligatoriu!');
             return;
         }
 
@@ -83,23 +73,13 @@ const AddTasksPage = () => {
                 setDeadline(new Date());
                 setResponsiblePerson('');
                 setIsCompleted(false);
-                Toast.show({
-                    type: 'success',
-                    text1: 'Task adăugat cu succes!',
-                    visibilityTime: 2000, // 2 seconds
-                    topOffset: 20,
-                });
-                // Navigate to the TasksPage after a delay
+
+                showSuccessToast('Task adăugat cu succes!');
                 setTimeout(() => {
                     navigation.navigate('TasksPage');
                 }, 2000);
             } catch (error) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'A apărut o eroare la adăugarea task-ului!',
-                    visibilityTime: 5000, // 5 seconds
-                    topOffset: 20,
-                });
+                showErrorToast('A apărut o eroare la adăugarea task-ului!');
                 console.error('Error adding task: ', error);
             }
         }

@@ -9,9 +9,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider, useThemeContext } from './hooks/useThemeContext';
 import Toast from 'react-native-toast-message';
 import toastConfig from './utils/toastConfig';
-
-// TODO check if can remove Toast from other pages and just keep it here to show up everywhere
-// TODO use KeyboardAvoidingView everywhere
+import { showSuccessToast, showErrorToast } from './utils/toastHelpers';
 
 const Stack = createStackNavigator();
 
@@ -46,20 +44,10 @@ function AppContent() {
     if (prevAuthState.current !== null) {
       if (!prevAuthState.current && isAuthenticated) {
         // User has just logged in
-        Toast.show({
-          type: 'success',
-          text1: 'Te-ai logat cu succes!',
-          visibilityTime: 2000,
-          topOffset: 60,
-        });
+        showSuccessToast('Te-ai logat cu succes!');
       } else if (prevAuthState.current && !isAuthenticated) {
         // User has just logged out
-        Toast.show({
-          type: 'success',
-          text1: 'Te-ai delogat cu succes!',
-          visibilityTime: 2000,
-          topOffset: 60,
-        });
+        showSuccessToast('Te-ai delogat cu succes!');
       }
     }
     // Update the prevAuthState to current state
@@ -95,7 +83,11 @@ function AppContent() {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-      <Toast config={toastConfig} />
+      <Toast
+        config={toastConfig}
+        topOffset={60}
+        visibilityTime={3000}
+      />
     </GestureHandlerRootView>
   );
 };

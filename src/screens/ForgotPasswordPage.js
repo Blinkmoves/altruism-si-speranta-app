@@ -4,10 +4,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import globalStyles from '../styles/globalStyles';
 import useThemeStyles from '../hooks/useThemeStyles';
+import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
 
 export default function ForgotPassword({ navigation }) {
 
@@ -15,8 +15,6 @@ export default function ForgotPassword({ navigation }) {
 
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
-
     const scrollRef = useRef(null);
     const emailInputRef = useRef(null);
 
@@ -24,24 +22,13 @@ export default function ForgotPassword({ navigation }) {
         Keyboard.dismiss(); // Hide the keyboard
         try {
             await sendPasswordResetEmail(auth, email);
-            Toast.show({
-                type: 'success',
-                text1: 'Un link de resetare a parolei a fost trimis la adresa de email specificată.',
-                visibilityTime: 5000, // 5 seconds
-                topOffset: 60,
-            });
-            setSuccess('Un link de resetare a parolei a fost trimis la adresa de email specificată.');
+
+            showSuccessToast('Un link de resetare a parolei a fost trimis la adresa de email specificată.');
             setError('');
         } catch (error) {
             const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
-            Toast.show({
-                type: 'error',
-                text1: friendlyErrorMessage,
-                visibilityTime: 5000, // 5 seconds
-                topOffset: 60,
-            });
+            showErrorToast(friendlyErrorMessage);
             setError(error.message);
-            setSuccess('');
         }
     };
 
@@ -68,7 +55,6 @@ export default function ForgotPassword({ navigation }) {
                 onChangeText={(text) => {
                     setEmail(text);
                     if (error) setError(''); // Clear error when user starts typing
-                    if (success) setSuccess(''); // Clear success message when user starts typing
                 }}
                 keyboardType="email-address"
                 autoCapitalize="none"

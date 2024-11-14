@@ -19,7 +19,6 @@ export default function EventsPage() {
       <View>
         <TouchableOpacity
           onPress={() => {
-            // TODO: Add Accept / Decline event buttons (also make sure answer can be edited after)
             console.log('Event added!');
           }}
           style={[globalStyles.button, themeStyles.button]}

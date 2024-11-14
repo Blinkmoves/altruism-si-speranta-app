@@ -5,7 +5,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { db } from '../services/firebaseConfig';
 import { ref, onValue } from 'firebase/database';
 import Toast from 'react-native-toast-message';
-import toastConfig from '../utils/toastConfig';
 import EventsWidget from './EventsWidget';
 import { useNavigation } from '@react-navigation/native';
 import { deleteTask, editTask, completeTask } from '../utils/taskActions';
@@ -15,7 +14,7 @@ import useThemeStyles from '../hooks/useThemeStyles';
 // IDEA: add filtering based on tags
 // IDEA: add animation when TaskWidget renders to show the hidden swipe buttons (like a bounce effect) (you can use react-native-animatable?)
 // IDEA: add delete as in Files on iOS (deletion goes up until the left of the screen then the row disappears from the bottom to top)
-// Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
+// IDEA: Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
 
 // TODO add isDeleted to tasks and hide them from the list don't delete them from the database
 
@@ -175,7 +174,6 @@ export default function TaskWidget({ showFooter }) {
           ) : null}
         />
       )}
-      <Toast config={toastConfig} />
     </View>
   );
 }

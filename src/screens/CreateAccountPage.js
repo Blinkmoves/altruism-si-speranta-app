@@ -5,10 +5,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '../services/firebaseConfig';
 import { set, ref } from 'firebase/database';
-import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import globalStyles from '../styles/globalStyles';
 import useThemeStyles from '../hooks/useThemeStyles';
+import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
 
 export default function CreateAccount({ navigation, setIsAuthenticated }) {
 
@@ -48,20 +48,10 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
             // navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
             
             // FIXME toast not shown after account creation
-            Toast.show({
-                type: 'success',
-                text1: 'Contul a fost creat cu succes!',
-                visibilityTime: 3000, // 2 seconds
-                topOffset: 20,
-            });
+            showSuccessToast('Contul a fost creat cu succes!');
         } catch (error) {
             const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
-            Toast.show({
-                type: 'error',
-                text1: friendlyErrorMessage,
-                visibilityTime: 5000, // 5 seconds
-                topOffset: 60,
-            });
+            showErrorToast(friendlyErrorMessage);
             setError(error.message);
             console.log(error);
         }

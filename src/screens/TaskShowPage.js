@@ -5,10 +5,9 @@ import { ref, onValue } from 'firebase/database';
 import { auth } from '../services/firebaseConfig';
 import globalStyles from '../styles/globalStyles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { deleteTask, editTask, completeTask } from '../utils/taskActions';
+import { deleteTask, completeTask } from '../utils/taskActions';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Toast from 'react-native-toast-message';
 import useThemeStyles from '../hooks/useThemeStyles';
 
 // TODO add logic so only admins can delete/complete/edit tasks

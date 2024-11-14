@@ -6,10 +6,10 @@ import { useNavigation, CommonActions } from '@react-navigation/native';
 import { db } from '../services/firebaseConfig';
 import { ref, update, get } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
-import Toast from 'react-native-toast-message';
 import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useThemeStyles from '../hooks/useThemeStyles';
+import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
 
 export default function EditTaskPage({ route }) {
 
@@ -48,12 +48,7 @@ export default function EditTaskPage({ route }) {
         if (uid !== currentUid) {
             setUidMismatch(true);
             setLoading(false);
-            Toast.show({
-                type: 'error',
-                text1: 'Accesul este interzis! Nu ești ownerul acestui task!',
-                visibilityTime: 5000, // 5 seconds
-                topOffset: 20,
-            });
+            showErrorToast('Accesul este interzis! Nu ești deținătorul acestui task!');
             navigation.goBack();
             return;
         }
@@ -78,21 +73,11 @@ export default function EditTaskPage({ route }) {
     const handleSave = async () => {
         Keyboard.dismiss();
         if (!description) {
-            Toast.show({
-                type: 'error',
-                text1: 'Descrierea task-ului este un câmp obligatoriu!',
-                visibilityTime: 5000, // 5 seconds
-                topOffset: 20,
-            });
+            showErrorToast('Descrierea task-ului este un câmp obligatoriu!');
             return;
         }
         if (!responsiblePerson) {
-            Toast.show({
-                type: 'error',
-                text1: 'Responsabilul task-ului este un câmp obligatoriu!',
-                visibilityTime: 5000, // 5 seconds
-                topOffset: 20,
-            });
+            showErrorToast('Responsabilul task-ului este un câmp obligatoriu!');
             return;
         }
 
@@ -106,23 +91,12 @@ export default function EditTaskPage({ route }) {
                     responsiblePerson,
                 });
 
-                Toast.show({
-                    type: 'success',
-                    text1: 'Task-ul a fost actualizat cu succes!',
-                    visibilityTime: 2000, // 2 seconds
-                    topOffset: 20,
-                });
-
+                showSuccessToast('Task-ul a fost actualizat cu succes!');
                 setTimeout(() => {
                     navigation.goBack();
                 }, 2000);
             } catch (error) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'A apărut o eroare la editarea task-ului!',
-                    visibilityTime: 5000, // 5 seconds
-                    topOffset: 20,
-                });
+                showErrorToast('A apărut o eroare la editarea task-ului!');
                 console.error('Error adding task: ', error);
             }
         }

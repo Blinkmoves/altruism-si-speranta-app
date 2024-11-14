@@ -5,11 +5,11 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getAuth, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider, updateProfile, updateEmail, updatePassword } from 'firebase/auth';
-import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import useThemeStyles from '../hooks/useThemeStyles';
 import { useThemeContext } from '../hooks/useThemeContext';
 import { Ionicons } from '@expo/vector-icons';
+import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
 
 export default function SettingsPage() {
 
@@ -29,14 +29,9 @@ export default function SettingsPage() {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isPushNotificationsEnabled, setPushNotificationsEnabled] = useState(false);
   const [isEmailNotificationsEnabled, setEmailNotificationsEnabled] = useState(false);
-  const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] = useState(false); // Manage password visibility state
-  const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false); // Manage password visibility state
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false); // Manage password visibility state
-
-
-  const buttonTextStyle = globalStyles.buttonText;
-  const fontSize = buttonTextStyle.fontSize || 16; // Default to 16 if fontSize is not defined
-
+  const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] = useState(false);
+  const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const scrollRef = useRef(null);
   const nameInputRef = useRef(null);
   const emailInputRef = useRef(null);
@@ -68,12 +63,7 @@ export default function SettingsPage() {
       await signOut(auth);
     } catch (error) {
       const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
-      Toast.show({
-        type: 'error',
-        text1: friendlyErrorMessage,
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 60,
-      });
+      showErrorToast(friendlyErrorMessage);
     }
   };
 
@@ -82,12 +72,7 @@ export default function SettingsPage() {
   // TODO make it only disable account, not delete it
   const handleDeleteAccount = async () => {
     if (!user) {
-      Toast.show({
-        type: 'error',
-        text1: 'Nu există niciun utilizator autentificat.',
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 60,
-      });
+      showErrorToast('Nu există niciun utilizator autentificat.');
       return;
     }
 
@@ -136,25 +121,13 @@ export default function SettingsPage() {
       const credential = EmailAuthProvider.credential(user.email, password);
       await reauthenticateWithCredential(user, credential);
 
-      // Delete the user
-      await deleteUser(user);
-      Toast.show({
-        type: 'success',
-        text1: 'Contul a fost șters cu succes!',
-        visibilityTime: 3000, // 2 seconds
-        topOffset: 60,
-      });
-      navigation.navigate('LoginStack', {
-        screen: 'Login',
-      });
+      showSuccessToast('Contul a fost șters cu succes!');
+      setTimeout(() => {
+        deleteUser(user);
+      }, 3000);
     } catch (error) {
       const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
-      Toast.show({
-        type: 'error',
-        text1: friendlyErrorMessage,
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 60,
-      });
+      showErrorToast(friendlyErrorMessage);
     }
   };
 
@@ -163,12 +136,7 @@ export default function SettingsPage() {
   // UPDATE ACCOUNT DATA AND PASSWORD LOGIC START
   const handleUpdateAccountData = async () => {
     if (!user) {
-      Toast.show({
-        type: 'error',
-        text1: 'Nu există niciun utilizator autentificat.',
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 60,
-      });
+      showErrorToast('Nu există niciun utilizator autentificat.');
       return;
     }
 
@@ -177,53 +145,28 @@ export default function SettingsPage() {
         displayName: name,
       });
       await updateEmail(user, email);
-      Toast.show({
-        type: 'success',
-        text1: 'Datele contului au fost actualizate cu succes!',
-        visibilityTime: 3000, // 3 seconds
-        topOffset: 60,
-      });
+      showSuccessToast('Datele contului au fost actualizate cu succes!');
     } catch (error) {
       const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
-      Toast.show({
-        type: 'error',
-        text1: friendlyErrorMessage,
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 60,
-      });
+      showErrorToast(friendlyErrorMessage);
     }
   }
 
   const handleChangePassword = async () => {
     if (!user) {
-      Toast.show({
-        type: 'error',
-        text1: 'Nu există niciun utilizator autentificat.',
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 60,
-      });
+      showErrorToast('Nu există niciun utilizator autentificat.');
       return;
     }
 
     // Check if the new password and confirm password match
     if (newPassword !== confirmPassword) {
-      Toast.show({
-        type: 'error',
-        text1: 'Parolele nu se potrivesc.',
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 60,
-      });
+      showErrorToast('Parolele nu se potrivesc.');
       return;
     }
 
     // Check if the new password is the same as the current password
     if (currentPassword === newPassword) {
-      Toast.show({
-        type: 'error',
-        text1: 'Parola nouă trebuie să fie diferită de parola actuală.',
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 60,
-      });
+      showErrorToast('Parola nouă trebuie să fie diferită de parola actuală.');
       return;
     }
 
@@ -231,23 +174,11 @@ export default function SettingsPage() {
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
-      // Sign out the user after changing the password
-      await signOut(auth);
-      Toast.show({
-        type: 'success',
-        text1: 'Parola a fost schimbată cu succes!',
-        visibilityTime: 3000, // 3 seconds
-        topOffset: 60,
-      });
+      showSuccessToast('Parola a fost schimbată cu succes!');
     } catch (error) {
       const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
       console.log(error);
-      Toast.show({
-        type: 'error',
-        text1: friendlyErrorMessage,
-        visibilityTime: 5000, // 5 seconds
-        topOffset: 60,
-      });
+      showErrorToast(friendlyErrorMessage);
     }
   };
 
@@ -401,11 +332,11 @@ export default function SettingsPage() {
               </View>
             )}
           </View>
-          
+
           {/* IDEA: Solve zIndex issue (at the moment it's harder to press the switch especially on the thumb part because the icons have higher zIndex) */}
           {/* IDEA: Maybe use more customizable switch component (such as react native reanimated's switch https://docs.swmansion.com/react-native-reanimated/examples/switch/) */}
           {/* IDEA: or  React Native custom switch: https://github.com/arshigtx/react-native-custom-switch*/}
-          
+
           {/* NOTIFICATIONS SETTINGS */}
           <View elevation={5} clipToPadding={false} style={[styles.notificationContainer, themeStyles.notificationContainer]}>
             <Text style={[styles.notificationsTitle, themeStyles.text]}>Aplicație</Text>

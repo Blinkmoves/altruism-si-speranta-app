@@ -3,14 +3,14 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard, S
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig';
-import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useThemeStyles from '../hooks/useThemeStyles';
+import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
 
 export default function Login({ navigation }) {
-    
+
     const { themeStyles, colors } = useThemeStyles();
 
     const [email, setEmail] = useState('');
@@ -26,20 +26,12 @@ export default function Login({ navigation }) {
     const handleLogin = async () => {
         Keyboard.dismiss(); // Hide the keyboard
         try {
-            await signInWithEmailAndPassword(auth, email, password);
-            
-            // navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
-
+            await signInWithEmailAndPassword(auth, email, password);         
             setError(''); // Clear error message after successful login
             console.log('Logged in successfully');
         } catch (error) {
             const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
-            Toast.show({
-                type: 'error',
-                text1: friendlyErrorMessage,
-                visibilityTime: 5000, // 5 seconds
-                topOffset: 60,
-            });
+            showErrorToast(friendlyErrorMessage);
             setError(error.message);
         }
     };
