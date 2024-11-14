@@ -7,7 +7,6 @@ import { db } from '../services/firebaseConfig';
 import { ref, update, get } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
-import toastConfig from '../utils/toastConfig';
 import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useThemeStyles from '../hooks/useThemeStyles';
@@ -198,7 +197,6 @@ export default function EditTaskPage({ route }) {
                     value={description}
                     onChangeText={(text) => setDescription(text)}
                     keyboardType="default"
-                    returnKeyType="return"
                     multiline={true} // Allow multiple lines of input
                     numberOfLines={4} // Set the initial number of lines
                     ref={descriereInputRef}
@@ -212,7 +210,6 @@ export default function EditTaskPage({ route }) {
                     value={tags}
                     onChangeText={(text) => setTags(text)}
                     keyboardType="default"
-                    returnKeyType="return"
                     ref={tagInputRef}
                     onFocus={() => scrollToInput(tagInputRef.current)}
                 />
@@ -268,7 +265,6 @@ export default function EditTaskPage({ route }) {
                     </TouchableOpacity>
                 </View>
             </View>
-            <Toast config={toastConfig} />
         </KeyboardAwareScrollView>
     );
 };

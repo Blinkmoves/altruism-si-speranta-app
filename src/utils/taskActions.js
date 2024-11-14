@@ -7,10 +7,10 @@ export const completeTask = async (taskId, uid, setTasks, tasks) => {
     try {
         const taskRef = ref(db, `tasks/${uid}/${taskId}`);
         console.log('Updating task:', taskId, 'for user:', uid);
-        await update(taskRef, { isChecked: true });
+        await update(taskRef, { isCompleted: true });
         setTasks(prevTasks => 
             prevTasks.map(task =>
-                task.id === taskId ? { ...task, isChecked: true } : task
+                task.id === taskId ? { ...task, isCompleted: true } : task
             )
         );
         Toast.show({

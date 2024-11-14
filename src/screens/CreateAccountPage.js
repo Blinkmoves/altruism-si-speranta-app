@@ -7,7 +7,6 @@ import { auth, db } from '../services/firebaseConfig';
 import { set, ref } from 'firebase/database';
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
-import toastConfig from '../utils/toastConfig';
 import globalStyles from '../styles/globalStyles';
 import useThemeStyles from '../hooks/useThemeStyles';
 
@@ -45,7 +44,9 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
             setError(''); // Clear error message after successful account creation
             // FIXME: got this error LOG  [TypeError: setIsAuthenticated is not a function (it is undefined)]:
             setIsAuthenticated(true); // Set the authenticated state to true
-            navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
+
+            // navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
+            
             // FIXME toast not shown after account creation
             Toast.show({
                 type: 'success',
@@ -147,7 +148,6 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
                     <Text style={styles.goToLoginText}>Înapoi la Login</Text>
                 </TouchableOpacity>
             </View>
-            <Toast config={toastConfig} />
         </KeyboardAwareScrollView>
     );
 }

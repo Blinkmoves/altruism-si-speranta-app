@@ -7,7 +7,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getAuth, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider, updateProfile, updateEmail, updatePassword } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
-import toastConfig from '../utils/toastConfig';
 import useThemeStyles from '../hooks/useThemeStyles';
 import { useThemeContext } from '../hooks/useThemeContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -66,22 +65,14 @@ export default function SettingsPage() {
 
   const handleLogout = async () => {
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds
       await signOut(auth);
-      Toast.show({
-        type: 'success',
-        text1: 'Te-ai delogat cu succes!',
-        visibilityTime: 2000, // 2 seconds
-        topOffset: 60,
-      });
-      navigation.navigate('LoginStack', { screen: 'Login' });
     } catch (error) {
       const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
       Toast.show({
         type: 'error',
         text1: friendlyErrorMessage,
         visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
     }
   };
@@ -95,7 +86,7 @@ export default function SettingsPage() {
         type: 'error',
         text1: 'Nu există niciun utilizator autentificat.',
         visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
       return;
     }
@@ -162,7 +153,7 @@ export default function SettingsPage() {
         type: 'error',
         text1: friendlyErrorMessage,
         visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
     }
   };
@@ -176,7 +167,7 @@ export default function SettingsPage() {
         type: 'error',
         text1: 'Nu există niciun utilizator autentificat.',
         visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
       return;
     }
@@ -190,7 +181,7 @@ export default function SettingsPage() {
         type: 'success',
         text1: 'Datele contului au fost actualizate cu succes!',
         visibilityTime: 3000, // 3 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
     } catch (error) {
       const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
@@ -198,7 +189,7 @@ export default function SettingsPage() {
         type: 'error',
         text1: friendlyErrorMessage,
         visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
     }
   }
@@ -209,7 +200,7 @@ export default function SettingsPage() {
         type: 'error',
         text1: 'Nu există niciun utilizator autentificat.',
         visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
       return;
     }
@@ -220,7 +211,7 @@ export default function SettingsPage() {
         type: 'error',
         text1: 'Parolele nu se potrivesc.',
         visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
       return;
     }
@@ -231,7 +222,7 @@ export default function SettingsPage() {
         type: 'error',
         text1: 'Parola nouă trebuie să fie diferită de parola actuală.',
         visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
       return;
     }
@@ -255,7 +246,7 @@ export default function SettingsPage() {
         type: 'error',
         text1: friendlyErrorMessage,
         visibilityTime: 5000, // 5 seconds
-        topOffset: 20,
+        topOffset: 60,
       });
     }
   };
@@ -513,7 +504,6 @@ export default function SettingsPage() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-        <Toast config={toastConfig} />
       </View>
     </KeyboardAwareScrollView>
   );

@@ -5,15 +5,12 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig';
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
-import toastConfig from '../utils/toastConfig';
 import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useThemeStyles from '../hooks/useThemeStyles';
 
 export default function Login({ navigation }) {
-
-    // FIXME fix toast disappearing after successful login. Toast should show up on the HomePage too
-
+    
     const { themeStyles, colors } = useThemeStyles();
 
     const [email, setEmail] = useState('');
@@ -30,15 +27,10 @@ export default function Login({ navigation }) {
         Keyboard.dismiss(); // Hide the keyboard
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
+            
+            // navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
+
             setError(''); // Clear error message after successful login
-            // FIXME toast lower even if topOffset is 0
-            Toast.show({
-                type: 'success',
-                text1: 'Te-ai logat cu succes!',
-                visibilityTime: 2000, // 2 seconds
-                topOffset: 0,
-            });
             console.log('Logged in successfully');
         } catch (error) {
             const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
@@ -143,7 +135,6 @@ export default function Login({ navigation }) {
                     </TouchableOpacity>
                 </View>
             </View>
-            <Toast config={toastConfig} />
         </KeyboardAwareScrollView>
     );
 }

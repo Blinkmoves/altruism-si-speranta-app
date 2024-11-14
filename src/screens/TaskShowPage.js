@@ -9,7 +9,6 @@ import { deleteTask, editTask, completeTask } from '../utils/taskActions';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-toast-message';
-import toastConfig from '../utils/toastConfig';
 import useThemeStyles from '../hooks/useThemeStyles';
 
 // TODO add logic so only admins can delete/complete/edit tasks
@@ -156,6 +155,14 @@ const TaskShowPage = ({ route }) => {
                     </View>
                 </View>
 
+                {/* Created by */}
+                <View style={styles.row}>
+                    <View style={styles.taskDetails}>
+                        <Text style={[styles.label, themeStyles.textGray]}>Creat de: </Text>
+                        <Text style={[styles.value, themeStyles.text]}>{task.createdBy}</Text>
+                    </View>
+                </View>
+
                 {/* Bottom buttons area */}
                 {/* Mark as completed */}
                 <View>
@@ -195,7 +202,6 @@ const TaskShowPage = ({ route }) => {
                     <Text style={styles.goBackText}>Înapoi la pagina de task-uri</Text>
                 </TouchableOpacity>
             </View >
-            <Toast config={toastConfig} />
         </ScrollView>
     );
 };

@@ -17,8 +17,6 @@ import useThemeStyles from '../hooks/useThemeStyles';
 // IDEA: add delete as in Files on iOS (deletion goes up until the left of the screen then the row disappears from the bottom to top)
 // Tutorial for this here: https://www.youtube.com/watch?v=k-Ra0tdCEOc
 
-// TODO/IDEA add createdby to tasks
-// TODO change isChecked to isCompleted everywhere
 // TODO add isDeleted to tasks and hide them from the list don't delete them from the database
 
 export default function TaskWidget({ showFooter }) {
@@ -73,8 +71,8 @@ export default function TaskWidget({ showFooter }) {
 
   // console.log(tasks);
 
-  // Check if isChecked is true and skip those tasks
-  const filteredTasks = tasks.filter(task => !task.isChecked);
+  // Check if isCompleted is true and skip those tasks
+  const filteredTasks = tasks.filter(task => !task.isCompleted);
 
   // Navigate to TaskShowPage
   const navigateToTaskShowPage = (task) => {

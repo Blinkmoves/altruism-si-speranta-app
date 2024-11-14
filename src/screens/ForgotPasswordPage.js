@@ -7,7 +7,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import { getFriendlyErrorMessage } from '../utils/errorMessages';
 import globalStyles from '../styles/globalStyles';
-import toastConfig from '../utils/toastConfig';
 import useThemeStyles from '../hooks/useThemeStyles';
 
 export default function ForgotPassword({ navigation }) {
@@ -86,7 +85,6 @@ export default function ForgotPassword({ navigation }) {
                     <Text style={styles.goToLoginText}>Înapoi la Login</Text>
                 </TouchableOpacity>
             </View>
-            <Toast config={toastConfig} />
         </KeyboardAwareScrollView>
     );
 }

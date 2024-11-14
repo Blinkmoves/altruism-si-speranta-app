@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Platform, Modal, Keyboard } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Platform, Modal, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
@@ -7,12 +7,13 @@ import { db } from '../services/firebaseConfig';
 import { ref, push, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
-import toastConfig from '../utils/toastConfig';
 import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useThemeStyles from '../hooks/useThemeStyles';
 
-// Add admin logic so only admins can create tasks
+// TODO Add admin logic so only admins can create tasks
+
+// FIXME CHECK WHY THIS CRASHES THE APP WITH NO ERROR, ALSO CHECK EDITTASKSPAGE
 
 const AddTasksPage = () => {
 
@@ -26,7 +27,7 @@ const AddTasksPage = () => {
     const [tags, setTags] = useState('');
     const [responsiblePerson, setResponsiblePerson] = useState('');
     const [tasks, setTasks] = useState([]);
-    const [isChecked, setIsChecked] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(false);
 
     const [deadline, setDeadline] = useState(new Date());
     const [showDatePickerModal, setShowDatePickerModal] = useState(false); // For modal display
@@ -62,7 +63,8 @@ const AddTasksPage = () => {
         }
 
         if (user) {
-            const uid = user.uid; // Get the authenticated user's ID
+            const uid = user.uid;
+            const displayName = user.displayName;
             try {
                 const taskRef = ref(db, `tasks/${uid}`); // Reference to the tasks collection for the authenticated user
                 const newTaskRef = push(taskRef);
@@ -71,8 +73,8 @@ const AddTasksPage = () => {
                     tags: tags.split(',').map(tag => tag.trim()),
                     deadline: deadline.toString(),
                     responsiblePerson,
-                    createdBy: uid,
-                    isChecked: false,
+                    createdBy: displayName,
+                    isCompleted: false,
                 };
                 await set(newTaskRef, newTask);
                 setTasks([...tasks, { id: newTaskRef.key, ...newTask }]);
@@ -80,7 +82,7 @@ const AddTasksPage = () => {
                 setTags('');
                 setDeadline(new Date());
                 setResponsiblePerson('');
-                setIsChecked(false);
+                setIsCompleted(false);
                 Toast.show({
                     type: 'success',
                     text1: 'Task adăugat cu succes!',
@@ -130,6 +132,7 @@ const AddTasksPage = () => {
         >
             <View style={[globalStyles.container,]}>
                 <Text style={[globalStyles.title, themeStyles.text, { marginBottom: 30 }]}>Adaugă un Task nou</Text>
+
                 {/* Task Description */}
                 <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Descrierea task-ului:</Text>
                 <TextInput
@@ -144,6 +147,7 @@ const AddTasksPage = () => {
                     onFocus={() => scrollToInput(descriereInputRef.current)}
                     onSubmitEditing={() => tagInputRef.current.focus()}
                 />
+
                 {/* Task Tags */}
                 <Text style={[styles.label, themeStyles.text]}>Scrie tag-urile separate prin virgulă (cum ar fi: lejer, urgent sau orice alt tag relevant):</Text>
                 <TextInput
@@ -151,15 +155,16 @@ const AddTasksPage = () => {
                     value={tags}
                     onChangeText={(text) => setTags(text)}
                     keyboardType="default"
-                    returnKeyType="return"
                     ref={tagInputRef}
                     onFocus={() => scrollToInput(tagInputRef.current)}
                 />
+
                 {/* Task Deadline */}
                 <Text style={[styles.label, themeStyles.text]}>Alege un deadline pentru task:</Text>
                 <TouchableOpacity onPress={showDatePicker} ref={deadlineInputRef} onFocus={() => scrollToInput(deadlineInputRef.current)}>
                     <Text style={[globalStyles.input, themeStyles.borderRadius]}>{deadline.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' })}</Text>
                 </TouchableOpacity>
+
                 {/* Date Picker Modal */}
                 <Modal
                     visible={showDatePickerModal}
@@ -184,6 +189,7 @@ const AddTasksPage = () => {
                         </View>
                     </TouchableWithoutFeedback>
                 </Modal>
+
                 {/* Task Responsible Person */}
                 <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Numele persoanei responsabile de acest task:</Text>
                 <TextInput
@@ -207,7 +213,6 @@ const AddTasksPage = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <Toast config={toastConfig} />
         </KeyboardAwareScrollView>
     );
 };
