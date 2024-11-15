@@ -22,6 +22,8 @@ import useThemeStyles from '../hooks/useThemeStyles';
 
 // IDEA: on HomePage, show only a few tasks and a button to see more tasks that navigates the user to the TasksPage
 
+// TODO hide swipe when focus changes
+
 export default function TaskWidget({ showFooter }) {
   const [tasks, setTasks] = useState([]);
   const navigation = useNavigation();
@@ -79,12 +81,9 @@ export default function TaskWidget({ showFooter }) {
 
   // Navigate to TaskShowPage
   const navigateToTaskShowPage = (task) => {
-    navigation.navigate('AuthenticatedStack', {
-      screen: 'Task-uri',
-      params: {
+    navigation.navigate('Task-uri', {
         screen: 'TaskShowPage',
         params: { taskId: task.id, uid: task.uid },
-      },
     });
   };
 

@@ -40,11 +40,8 @@ export const deleteTask = async (taskId, uid, setTasks) => {
 
 // Edit task function (used to navigate to edit page from swiping)
 export const editTask = (taskId, uid, navigation) => {
-    navigation.navigate('AuthenticatedStack', {
-        screen: 'Task-uri',
-        params: {
+    navigation.navigate('Task-uri', {
           screen: 'EditTaskPage',
           params: { taskId, uid },
-        },
       });
 };

@@ -43,12 +43,13 @@ export default function CreateAccount({ navigation, setIsAuthenticated }) {
 
             setError(''); // Clear error message after successful account creation
             // FIXME: got this error LOG  [TypeError: setIsAuthenticated is not a function (it is undefined)]:
-            setIsAuthenticated(true); // Set the authenticated state to true
-
+            showSuccessToast('Contul a fost creat cu succes!');
+            setTimeout(() => {
+                setIsAuthenticated(true);
+            }, 3000);
             // navigation.navigate('AuthenticatedStack', { screen: 'HomePage' });
             
             // FIXME toast not shown after account creation
-            showSuccessToast('Contul a fost creat cu succes!');
         } catch (error) {
             const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
             showErrorToast(friendlyErrorMessage);

@@ -1,19 +1,30 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { View, ActivityIndicator } from 'react-native';
-import LoginStack from './navigation/LoginStack';
-import AuthenticatedStack from './navigation/AuthenticatedStack';
-import { app, db, auth } from './services/firebaseConfig';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ThemeProvider, useThemeContext } from './hooks/useThemeContext';
-import Toast from 'react-native-toast-message';
-import toastConfig from './utils/toastConfig';
-import { showSuccessToast, showErrorToast } from './utils/toastHelpers';
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { View, ActivityIndicator } from "react-native";
+import LoginStack from "./navigation/LoginStack";
+import AuthenticatedStack from "./navigation/AuthenticatedStack";
+import { app, db, auth } from "./services/firebaseConfig";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ThemeProvider, useThemeContext } from "./hooks/useThemeContext";
+import Toast from "react-native-toast-message";
+import toastConfig from "./utils/toastConfig";
+import { showSuccessToast, showErrorToast } from "./utils/toastHelpers";
+import * as SplashScreen from 'expo-splash-screen';
 
 const Stack = createStackNavigator();
 
 export default function Altruism_si_Speranta() {
+
+  useEffect(() => {
+    // Prevent the splash screen from auto-hiding
+    SplashScreen.preventAutoHideAsync();
+
+    setTimeout(async () => {
+      // Hide the splash screen after the task is done
+      await SplashScreen.hideAsync();
+    }, 2000);
+  }, []);
 
   return (
     <ThemeProvider>
@@ -23,7 +34,6 @@ export default function Altruism_si_Speranta() {
 }
 
 function AppContent() {
-
   const { theme } = useThemeContext();
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const prevAuthState = useRef(null);
@@ -44,10 +54,10 @@ function AppContent() {
     if (prevAuthState.current !== null) {
       if (!prevAuthState.current && isAuthenticated) {
         // User has just logged in
-        showSuccessToast('Te-ai logat cu succes!');
+        showSuccessToast("Te-ai logat cu succes!");
       } else if (prevAuthState.current && !isAuthenticated) {
         // User has just logged out
-        showSuccessToast('Te-ai delogat cu succes!');
+        showSuccessToast("Te-ai delogat cu succes!");
       }
     }
     // Update the prevAuthState to current state
@@ -58,7 +68,16 @@ function AppContent() {
   if (isAuthenticated === null) {
     // Show a loading indicator while checking authentication state
     return (
-      <View style={[{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: theme.colors.background,
+          },
+        ]}
+      >
         <ActivityIndicator size="large" color="teal" />
       </View>
     );
@@ -83,11 +102,7 @@ function AppContent() {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-      <Toast
-        config={toastConfig}
-        topOffset={60}
-        visibilityTime={3000}
-      />
+      <Toast config={toastConfig} topOffset={60} visibilityTime={3000} />
     </GestureHandlerRootView>
   );
-};
+}

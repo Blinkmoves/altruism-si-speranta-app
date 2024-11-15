@@ -5,11 +5,21 @@
     "slug": "altruism-si-speranta",
     "version": "1.0.0",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./src/assets/splash-screen.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
-    },
-    "icon": "./src/assets/icon.png"
+    "icon": "./src/assets/icon.png",
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./src/assets/splash-screen.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "78039454-fe57-4419-b96d-e16aee70385a"
+      }
+    }
   }
 }
