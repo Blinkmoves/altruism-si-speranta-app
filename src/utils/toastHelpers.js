@@ -13,3 +13,10 @@ export const showErrorToast = (message) => {
         text1: message,
     });
 };
+
+export const showInfoToast = (message) => {
+    Toast.show({
+        type: 'info',
+        text1: message,
+    });
+};

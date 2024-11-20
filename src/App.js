@@ -34,10 +34,11 @@ export default function Altruism_si_Speranta() {
 }
 
 function AppContent() {
-  const { theme } = useThemeContext();
+  const { isReloading, theme } = useThemeContext();
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const prevAuthState = useRef(null);
 
+  
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
@@ -63,10 +64,28 @@ function AppContent() {
     // Update the prevAuthState to current state
     prevAuthState.current = isAuthenticated;
   }, [isAuthenticated]);
-
+  
   // Check if the user is authenticated
   if (isAuthenticated === null) {
     // Show a loading indicator while checking authentication state
+    return (
+      <View
+      style={[
+          {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: theme.colors.background,
+          },
+        ]}
+      >
+        <ActivityIndicator size="large" color="teal" />
+      </View>
+    );
+  }
+  
+  if (isReloading) {
+    // Display the Activity Indicator
     return (
       <View
         style={[
@@ -82,22 +101,22 @@ function AppContent() {
       </View>
     );
   }
-
+  
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer theme={theme}>
         <Stack.Navigator>
           {isAuthenticated ? (
             <Stack.Screen
-              name="AuthenticatedStack"
-              component={AuthenticatedStack}
-              options={{ headerShown: false }}
+            name="AuthenticatedStack"
+            component={AuthenticatedStack}
+            options={{ headerShown: false }}
             />
           ) : (
             <Stack.Screen
-              name="LoginStack"
-              component={LoginStack}
-              options={{ headerShown: false }}
+            name="LoginStack"
+            component={LoginStack}
+            options={{ headerShown: false }}
             />
           )}
         </Stack.Navigator>

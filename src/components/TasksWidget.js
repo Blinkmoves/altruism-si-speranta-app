@@ -169,12 +169,6 @@ export default function TaskWidget({ showFooter }) {
           rightOpenValue={-150}
           disableLeftSwipe={false}
           disableRightSwipe={false}
-          ListFooterComponent={showFooter ? (
-            <View>
-              <Text style={[globalStyles.title, themeStyles.text, { paddingTop: 10 }]}>Evenimente</Text>
-              <EventsWidget />
-            </View>
-          ) : null}
         />
       )}
     </View>

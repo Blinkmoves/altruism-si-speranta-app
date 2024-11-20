@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Calendar } from 'react-native-calendars';
 import globalStyles from '../styles/globalStyles';
 import EventsWidget from '../components/EventsWidget';
 import useThemeStyles from '../hooks/useThemeStyles';
@@ -11,10 +10,8 @@ export default function EventsPage() {
 
   const { themeStyles, colors } = useThemeStyles();
 
-  const [selectedDay, setSelectedDay] = useState(Date.now());
-
   return (
-    <View style={globalStyles.container}>
+    <View style={[globalStyles.container, themeStyles.container]}>
       <EventsWidget />
       <View>
         <TouchableOpacity

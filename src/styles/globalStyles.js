@@ -38,6 +38,14 @@ const globalStyles = StyleSheet.create({
         paddingHorizontal: 30,
         borderRadius: 8,
     },
+    infoToast: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#207fc9',
+        paddingVertical: 14,
+        paddingHorizontal: 30,
+        borderRadius: 8,
+    },
     toastText: {
         color: 'white',
         marginLeft: 10,

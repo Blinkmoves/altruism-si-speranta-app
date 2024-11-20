@@ -17,6 +17,12 @@ const toastConfig = {
             <Text style={globalStyles.toastText}>{text1}</Text>
         </View>
     ),
+    info: ({ text1, props }) => (
+        <View style={globalStyles.infoToast}>
+            <MaterialCommunityIcons name="information" size={24} color="white" />
+            <Text style={globalStyles.toastText}>{text1}</Text>
+        </View>
+    ),
 };
 
 export default toastConfig;

@@ -42,6 +42,25 @@ export const createThemeStyles = (theme) => {
         borderRadius: {
             borderRadius: theme.colors.borderRadius,
         },
+        calendar: {
+            backgroundColor: theme.colors.background,
+            calendarBackground: theme.colors.background,
+            textSectionTitleColor: theme.colors.text,
+            textSectionTitleDisabledColor: theme.colors.textGray,
+            todayTextColor: theme.colors.buttonText,
+            todayBackgroundColor: theme.colors.chip,
+            dayTextColor: theme.colors.text,
+            monthTextColor: theme.colors.text,
+            indicatorColor: theme.colors.text,
+            textMonthFontWeight: 'bold',
+            arrowColor: theme.colors.text,
+
+            reservationsBackgroundColor: theme.colors.background,  // Agenda's list background
+            agendaDayTextColor: theme.colors.text,
+            agendaDayNumColor: theme.colors.text,
+            agendaTodayColor: theme.colors.primary,
+            agendaKnobColor: theme.colors.text,
+        }
     });
 };
 
