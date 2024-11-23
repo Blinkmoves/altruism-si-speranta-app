@@ -4,6 +4,7 @@
     "name": "Altruism si Speranta App",
     "slug": "altruism-si-speranta",
     "version": "1.0.0",
+    "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "icon": "./src/assets/icon.png",
     "plugins": [

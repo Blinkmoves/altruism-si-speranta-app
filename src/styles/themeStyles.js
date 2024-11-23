@@ -49,6 +49,7 @@ export const createThemeStyles = (theme) => {
             textSectionTitleDisabledColor: theme.colors.textGray,
             todayTextColor: theme.colors.buttonText,
             todayBackgroundColor: theme.colors.chip,
+            selectedDayBackgroundColor: theme.colors.teal,
             dayTextColor: theme.colors.text,
             monthTextColor: theme.colors.text,
             indicatorColor: theme.colors.text,
@@ -58,8 +59,10 @@ export const createThemeStyles = (theme) => {
             reservationsBackgroundColor: theme.colors.background,  // Agenda's list background
             agendaDayTextColor: theme.colors.text,
             agendaDayNumColor: theme.colors.text,
-            agendaTodayColor: theme.colors.primary,
+            agendaTodayColor: theme.colors.text,
             agendaKnobColor: theme.colors.text,
+            textDisabledColor: theme.colors.agendaDisabledDay,
+            // textDayFontWeight: 'bold',
         }
     });
 };
@@ -85,6 +88,9 @@ export const lightTheme = {
         buttonText: '#fff',
         modal: '#121212',
         borderRadius: 5, // BorderRadius hack for dark theme
+        // agendaToday: 'teal',
+        agendaDay: '#525252',
+        teal: 'teal',
     },
 };
 
@@ -109,5 +115,8 @@ export const darkTheme = {
         buttonText: '#fff',
         modal: '#121212',
         borderRadius: 0, // BorderRadius hack for dark theme
+        // agendaToday: '#fff',
+        agendaDisabledDay: '#525252',
+        teal: 'teal',
     },
 };

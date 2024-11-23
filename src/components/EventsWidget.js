@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { Calendar, CalendarList, LocaleConfig, Agenda } from "react-native-calendars";
@@ -7,16 +7,16 @@ import { useThemeContext } from '../hooks/useThemeContext';
 import globalStyles from "../styles/globalStyles";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { showSuccessToast, showErrorToast, showInfoToast } from "../utils/toastHelpers";
+import { useNavigation } from '@react-navigation/native';
 
 // TODO when declaring events in firebase: add an optional field for the color of the event (that the dots will use or use a fallback color if no color specified)
 
-// FIXME: fix Agenda because it's not always working (works well when reloaded, until mount changes)
-// FIXME: make day bolder in Agenda list, check the padding/margin for events in the list
 // FIXME: use the other props such as loadItemsForMonth, onRefresh, onEndReached, etc. for the Agenda component
 // HACK: docs: https://wix.github.io/react-native-calendars/docs/Components/Agenda
 // HACK: docs: https://www.npmjs.com/package/react-native-calendars/v/1.1286.0
 
-// TODO: use multi-period marking instead and add option for events that span more days (and marked accordingly)
+// FIXME:  (NOBRIDGE) LOG  VirtualizedList: You have a large list that is slow to update - make sure your renderItem function renders components that follow React performance best practices like PureComponent, shouldComponentUpdate, etc. {"contentLength": 36360, "dt": 54096, "prevDt": 8280}
+// IDEA use onRefresh prop to fetch new data from the server here and in TaskWidget too
 
 // Local config for the calendar
 LocaleConfig.locales['ro'] = {
@@ -44,9 +44,9 @@ LocaleConfig.defaultLocale = 'ro';
 export default function EventsWidget() {
   const { themeStyles, colors } = useThemeStyles();
   const { theme, toggleTheme } = useThemeContext();
-  const [themeVersion, setThemeVersion] = useState(0);  // Used to force re-render of the Calendar component
 
-  const [viewMode, setViewMode] = useState("calendar"); // 'calendar' or 'list' view
+  const navigation = useNavigation();
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentMonth, setCurrentMonth] = useState('');
   const [selectedMonthYear, setSelectedMonthYear] = useState({
@@ -54,46 +54,110 @@ export default function EventsWidget() {
     year: new Date().getFullYear()
   });
 
-  useEffect(() => {
-    setThemeVersion((prevVersion) => prevVersion + 1);
-  }, [theme]);
-
   // Sample events data
-  const events = {
-    "2024-11-10": [
-      { id: 1, title: "Event 1", color: "magenta" },
-      { id: 2, title: "Event 2", color: "red" },
-      { id: 4, title: "Event 4", color: "blue" },
-      { id: 5, title: "Event 5", color: "cyan" },
-    ],
-    "2024-11-12": [
-      { id: 3, title: "Event 3", color: "yellow" },
-      { id: 6, title: "Event 6", color: "turquoise" },
-    ],
-  };
+  const events = [
+    {
+      id: '1',
+      title: 'Multi-Day Event 1',
+      startDate: '2024-12-10',
+      endDate: '2024-12-12',
+      color: '#50cebb',
+      responsible: 'Sara Cosarba',
+    },
+    {
+      id: '2',
+      title: 'Multi-Day Event 2',
+      startDate: '2024-11-01',
+      endDate: '2024-11-30',
+      color: 'magenta',
+      responsible: 'Paula Redes',
+    },
+    {
+      id: '3',
+      title: 'Event 14343',
+      startDate: '2024-11-23',
+      endDate: '2024-11-23',
+      color: 'yellow',
+      responsible: 'Clementina Mandarina',
+    },
+    {
+      id: '4',
+      title: 'Multi-Day Event 3',
+      startDate: '2024-11-15',
+      endDate: '2024-11-20',
+      color: 'orange',
+      responsible: 'Jonas Brothers',
+    }
+  ];
 
-
-  // Transform your events data to the format Agenda expects
+  // Transform events data to the format Agenda expects
   const transformEvents = () => {
     const transformedEvents = {};
+    const markedDates = {};
 
-    Object.keys(events).forEach(date => {
-      transformedEvents[date] = events[date].map(event => ({
-        ...event,
-        height: 50, // Required by Agenda
-        day: date,
-      }));
+    // Helper function to get the next date in 'YYYY-MM-DD' format
+    const getNextDate = (dateStr) => {
+      const [year, month, day] = dateStr.split('-');
+      const date = new Date(year, month - 1, day);
+      date.setDate(date.getDate() + 1);
+      const nextYear = date.getFullYear();
+      const nextMonth = String(date.getMonth() + 1).padStart(2, '0');
+      const nextDay = String(date.getDate()).padStart(2, '0');
+      return `${nextYear}-${nextMonth}-${nextDay}`;
+    };
+
+    // Helper function to format date to 'DD/MM/YYYY'
+    const formatDisplayDate = (dateStr) => {
+      const [year, month, day] = dateStr.split('-');
+      return `${day}/${month}/${year}`;
+    };
+
+    events.forEach((event) => {
+      let currentDate = event.startDate;
+      const endDate = event.endDate;
+
+      while (currentDate <= endDate) {
+        // Use 'YYYY-MM-DD' format (Agenda expects this format)
+        if (!transformedEvents[currentDate]) {
+          transformedEvents[currentDate] = [];
+        }
+
+        transformedEvents[currentDate].push({
+          ...event,
+          height: 50, // Required by Agenda
+          day: currentDate,
+          // Add formatted dates for display
+          formattedStartDate: formatDisplayDate(event.startDate),
+          formattedEndDate: formatDisplayDate(event.endDate),
+        });
+
+        if (!markedDates[currentDate]) {
+          markedDates[currentDate] = {
+            periods: [],
+          };
+        }
+
+        markedDates[currentDate].periods.push({
+          color: event.color,
+          startingDay: currentDate === event.startDate,
+          endingDay: currentDate === event.endDate,
+        });
+
+        currentDate = getNextDate(currentDate);
+      }
     });
 
-    return transformedEvents;
+    return { transformedEvents, markedDates };
   };
+
+  const { transformedEvents, markedDates } = transformEvents(events);
 
   // Handle initial month on mount and month changes
   useEffect(() => {
     const today = new Date();
     const initialMonth = LocaleConfig.locales['ro'].monthNames[today.getMonth()];
     setCurrentMonth(initialMonth);
-  }, []); // Empty dependency array - runs once on mount
+  }, []);
 
   // Get month and year from the Calendar component with onMonthChange prop
   const handleMonthChange = (monthData) => {
@@ -104,68 +168,42 @@ export default function EventsWidget() {
     setCurrentMonth(LocaleConfig.locales['ro'].monthNames[monthData.month - 1]);
   };
 
-  // Get filtered events based on selected date or month (for list view)
-  const getFilteredEvents = () => {
-    if (selectedDate) {
-      return events[selectedDate] || [];
-    }
-    return Object.keys(events)
-      .filter((date) => {
-        const eventDate = new Date(date);
-        return (
-          eventDate.getMonth() === selectedMonthYear.month &&
-          eventDate.getFullYear() === selectedMonthYear.year
-        );
-      })
-      .flatMap((date) => events[date]);
+  // Navigate to TaskShowPage
+  const navigateToEventShowPage = (event) => {
+    navigation.navigate('Evenimente', {
+      screen: 'EventShowPage',
+      // params: { eventId: event.id, uid: event.uid },
+    });
   };
 
-  // Prepare marked dates for the calendar
-  const markedDates = {};
-  Object.keys(events).forEach((date) => {
-    const dots = events[date].map((event, index) => ({
-      key: `event_${event.id}_${index}`,
-      color: event.color || "#60908C",
-      selectedDotColor: event.color || "#60908C",
-    }));
-    markedDates[date] = { dots };
+  // Render item component
+  const EventItem = memo(({ item }) => {
+    return (
+      <View style={[styles.eventItem, themeStyles.container]}>
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onPress={() => navigateToEventShowPage(item)}
+        >
+          <Text style={[styles.eventTitle, themeStyles.text]}>
+            {item.title}
+          </Text>
+          <Text style={[styles.eventText, themeStyles.textGray]}>
+            Responsabil:
+            <Text style={[styles.eventText, themeStyles.text]}> {item.responsible}</Text>
+          </Text>
+          <Text style={[styles.eventText, themeStyles.textGray]}>
+            Perioada:
+            <Text style={[styles.eventText, themeStyles.text]}> {item.formattedStartDate} - {item.formattedEndDate}</Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
   });
 
-  // Handle date selection
-  const onDayPress = (day) => {
-    const dateEvents = events[day.dateString];
-    if (dateEvents) {
-      setSelectedDate(day.dateString);
-      setViewMode('list');
-    } else {
-      showInfoToast('Nu există evenimente pentru această dată.');
-    }
+  const renderItem = (item) => {
+    if (!item) return null;
+    return <EventItem item={item} />;
   };
-
-  // Toggle view functions
-  const switchToCalendarView = () => {
-    setViewMode('calendar');
-    setSelectedDate(null);
-  };
-
-  const switchToListView = () => {
-    if (selectedDate) {
-      setViewMode('list');
-    } else {
-      // Show events for the current month
-      setViewMode('list');
-    }
-  };
-
-  // Render the component
-  const renderItem = (item) => (
-    <View style={[styles.eventItem, themeStyles.container]}>
-      <Text style={[styles.eventText, themeStyles.text]}>
-        {item.title}
-      </Text>
-      <Text>this</Text>
-    </View>
-  );
 
   // Render empty data
   const renderEmptyData = () => (
@@ -177,18 +215,53 @@ export default function EventsWidget() {
   )
 
   return (
-    <View style={globalStyles.container}>
+    <View style={styles.container}>
       <Agenda
-        // key={`agenda-${themeVersion}`} // Force re-render when theme changes
-        items={transformEvents()}
+        firstDay={1}
+        items={transformedEvents}
         renderItem={renderItem}
         renderEmptyData={renderEmptyData}
-        onDayPress={onDayPress}
         onMonthChange={handleMonthChange}
         markedDates={markedDates}
-        markingType="multi-dot"
-        theme={themeStyles.calendar}
+        markingType={"multi-period"}
+        theme={{
+          ...themeStyles.calendar,
+          'stylesheet.calendar.header': {
+            dayTextAtIndex5: {
+              color: '#c83030'
+            },
+            dayTextAtIndex6: {
+              color: '#c83030'
+            }
+          },
+          'stylesheet.agenda.list': {
+            // This makes the day bold in the Agenda list
+            dayNum: {
+              fontSize: 28,
+              fontWeight: 'bold',
+            },
+            // This hides the day part in the list view
+            day: {
+              display: 'none',
+            }
+          },
+          // TODO adjust knob Container (currently it cuts off the dates) to account for the multi period marking type or change to period marking type
+          // 'stylesheet.agenda.main': {
+          //   knobContainer: {
+          //     flex: 1,
+          //     position: 'absolute',
+          //     left: 0,
+          //     right: 0,
+          //     height: 24,
+          //     bottom: 0,
+          //     alignItems: 'center',
+          //   },
+          // },
+        }}
         showClosingKnob={true}
+        showOnlySelectedDayItems={true}
+        showScrollIndicator={true}
+        animateScroll={true}
         current={`${selectedMonthYear.year}-${String(selectedMonthYear.month + 1).padStart(2, '0')}-01`}
       />
     </View>
@@ -196,47 +269,36 @@ export default function EventsWidget() {
 }
 
 const styles = StyleSheet.create({
-  toggleContainer: {
-    flexDirection: 'row',
-    // justifyContent: 'flex-start',
-    marginBottom: 10,
-  },
-  toggleInnerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  toggleButton: {
-    marginLeft: 16,
+  container: {
+    flex: 1,
   },
   eventItem: {
-    padding: 16,
+    flex: 1,
+    paddingVertical: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+    marginTop: 14,
+    marginLeft: 10,
+    marginRight: 15,
+  },
+  eventTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingBottom: 5,
   },
   eventText: {
+    flex: 1,
     fontSize: 16,
+    paddingBottom: 4,
+  },
+  eventInfo: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
   },
   noEventsText: {
     textAlign: "center",
     marginTop: 20,
     fontSize: 16,
     color: "#999",
-  },
-  button: {
-    marginTop: 16,
-    backgroundColor: "#60908C",
-    padding: 12,
-    alignItems: "center",
-    borderRadius: 4,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    alignItems: "center",
-    alignContent: "center",
-  },
-  header: {
-    fontSize: 18,
-    marginBottom: 12,
   },
 });
