@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, useEffect, memo, useCallback } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { Calendar, CalendarList, LocaleConfig, Agenda } from "react-native-calendars";
@@ -68,7 +68,7 @@ export default function EventsWidget() {
       id: '2',
       title: 'Multi-Day Event 2',
       startDate: '2024-11-01',
-      endDate: '2024-11-30',
+      endDate: '2024-11-10',
       color: 'magenta',
       responsible: 'Paula Redes',
     },
@@ -90,11 +90,12 @@ export default function EventsWidget() {
     }
   ];
 
+  
   // Transform events data to the format Agenda expects
   const transformEvents = () => {
     const transformedEvents = {};
     const markedDates = {};
-
+    
     // Helper function to get the next date in 'YYYY-MM-DD' format
     const getNextDate = (dateStr) => {
       const [year, month, day] = dateStr.split('-');
@@ -105,13 +106,13 @@ export default function EventsWidget() {
       const nextDay = String(date.getDate()).padStart(2, '0');
       return `${nextYear}-${nextMonth}-${nextDay}`;
     };
-
+    
     // Helper function to format date to 'DD/MM/YYYY'
     const formatDisplayDate = (dateStr) => {
       const [year, month, day] = dateStr.split('-');
       return `${day}/${month}/${year}`;
     };
-
+    
     events.forEach((event) => {
       let currentDate = event.startDate;
       const endDate = event.endDate;
@@ -121,7 +122,7 @@ export default function EventsWidget() {
         if (!transformedEvents[currentDate]) {
           transformedEvents[currentDate] = [];
         }
-
+        
         transformedEvents[currentDate].push({
           ...event,
           height: 50, // Required by Agenda
@@ -130,7 +131,7 @@ export default function EventsWidget() {
           formattedStartDate: formatDisplayDate(event.startDate),
           formattedEndDate: formatDisplayDate(event.endDate),
         });
-
+        
         if (!markedDates[currentDate]) {
           markedDates[currentDate] = {
             periods: [],
@@ -142,7 +143,7 @@ export default function EventsWidget() {
           startingDay: currentDate === event.startDate,
           endingDay: currentDate === event.endDate,
         });
-
+        
         currentDate = getNextDate(currentDate);
       }
     });
@@ -151,14 +152,14 @@ export default function EventsWidget() {
   };
 
   const { transformedEvents, markedDates } = transformEvents(events);
-
+  
   // Handle initial month on mount and month changes
   useEffect(() => {
     const today = new Date();
     const initialMonth = LocaleConfig.locales['ro'].monthNames[today.getMonth()];
     setCurrentMonth(initialMonth);
   }, []);
-
+  
   // Get month and year from the Calendar component with onMonthChange prop
   const handleMonthChange = (monthData) => {
     setSelectedMonthYear({
@@ -167,7 +168,8 @@ export default function EventsWidget() {
     });
     setCurrentMonth(LocaleConfig.locales['ro'].monthNames[monthData.month - 1]);
   };
-
+  
+  // TODO add params when backend done
   // Navigate to TaskShowPage
   const navigateToEventShowPage = (event) => {
     navigation.navigate('Evenimente', {
@@ -175,15 +177,15 @@ export default function EventsWidget() {
       // params: { eventId: event.id, uid: event.uid },
     });
   };
-
+  
   // Render item component
-  const EventItem = memo(({ item }) => {
+  const EventItem = React.memo(({ item }) => {
     return (
       <View style={[styles.eventItem, themeStyles.container]}>
         <TouchableOpacity
           style={{ flex: 1 }}
           onPress={() => navigateToEventShowPage(item)}
-        >
+          >
           <Text style={[styles.eventTitle, themeStyles.text]}>
             {item.title}
           </Text>
@@ -199,7 +201,7 @@ export default function EventsWidget() {
       </View>
     );
   });
-
+  
   const renderItem = (item) => {
     if (!item) return null;
     return <EventItem item={item} />;
@@ -213,7 +215,7 @@ export default function EventsWidget() {
       </Text>
     </View>
   )
-
+  
   return (
     <View style={styles.container}>
       <Agenda
@@ -239,11 +241,12 @@ export default function EventsWidget() {
             dayNum: {
               fontSize: 28,
               fontWeight: 'bold',
+              color: colors.text,
             },
             // This hides the day part in the list view
-            day: {
-              display: 'none',
-            }
+            // day: {
+            //   display: 'none',
+            // }
           },
           // TODO adjust knob Container (currently it cuts off the dates) to account for the multi period marking type or change to period marking type
           // 'stylesheet.agenda.main': {
