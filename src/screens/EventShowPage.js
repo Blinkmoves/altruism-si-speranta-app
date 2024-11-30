@@ -1,32 +1,89 @@
-// TODO Sara
-
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { themeStyles } from '../styles/themeStyles';
-import useThemeStyles from "../hooks/useThemeStyles";
-import { useThemeContext } from '../hooks/useThemeContext';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { db } from '../services/firebaseConfig';
+import { ref, onValue } from 'firebase/database';
+import { auth } from '../services/firebaseConfig';
 import globalStyles from '../styles/globalStyles';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useNavigation, CommonActions } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import useThemeStyles from '../hooks/useThemeStyles';
 import { Calendar } from 'react-native-calendars';
 
-const EventShowPage = () => {
+// TODO finish this
 
-  const events = [
-    {
-      id: '1',
-      title: 'Multi-Day Event 1',
-      startDate: '2024-12-10',
-      endDate: '2024-12-12',
-      color: '#50cebb',
-      responsiblePerson: ['Sara Cosarba', 'Ion Popescu'],
-      description: 'Evenimentul va avea loc in Bucuresti, incepand cu ora 10:00.',
-      voluntari: ['Maria Ionescu'],
-    }
-  ];
-
-  // Access the first event from the array
-  const event = events[0];
+const EventShowPage = (route) => {
 
   const { themeStyles, colors } = useThemeStyles();
+
+  const { eventId } = route.params;
+
+  const [event, setEvent] = useState({});
+  const [transformedEvents, setTransformedEvents] = useState({});
+  const [markedDates, setMarkedDates] = useState({});
+
+  const navigation = useNavigation();
+
+  // Get user ID from Firebase Auth
+  const uid = auth.currentUser.uid;
+
+  useEffect(() => {
+    const eventRef = ref(db, `events/${uid}/${eventId}`);
+    const unsubscribe = onValue(taskRef, (snapshot) => {
+      const data = snapshot.val();
+      setTask(data);
+    });
+
+    return () => unsubscribe();
+  }, [eventId, uid]);
+
+  if (!event) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#093A3E" />
+      </View>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' });
+  };
+
+  // Navigate to EditEventPage
+  const handleEditEvent = (eventId, uid) => {
+    navigation.navigate('EditEventPage', {
+      eventId,
+      uid,
+    });
+  };
+
+  const goToEventsPage = () => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'AuthenticatedStack',
+            state: {
+              routes: [
+                {
+                  name: 'Evenimente',
+                  state: {
+                    routes: [
+                      {
+                        name: 'EventsPage',
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      })
+    );
+  };
 
   return (
     <ScrollView
@@ -61,18 +118,6 @@ const EventShowPage = () => {
             //   display: 'none',
             // }
           },
-          // TODO adjust knob Container (currently it cuts off the dates) to account for the multi period marking type or change to period marking type
-          // 'stylesheet.agenda.main': {
-          //   knobContainer: {
-          //     flex: 1,
-          //     position: 'absolute',
-          //     left: 0,
-          //     right: 0,
-          //     height: 24,
-          //     bottom: 0,
-          //     alignItems: 'center',
-          //   },
-          // },
         }}
         showClosingKnob={true}
         showOnlySelectedDayItems={true}

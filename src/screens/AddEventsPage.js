@@ -10,6 +10,9 @@ import globalStyles from '../styles/globalStyles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import useThemeStyles from '../hooks/useThemeStyles';
 import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
+import ColorPicker, { Panel1, Swatches, Preview, OpacitySlider, HueSlider } from 'reanimated-color-picker';
+
+// TODO add backend connection to add events to the database
 
 const AddEventsPage = () => {
     const { themeStyles } = useThemeStyles();
@@ -17,20 +20,33 @@ const AddEventsPage = () => {
     const navigation = useNavigation();
 
     const scrollRef = useRef(null);
-    const descriereInputRef = useRef(null); // Ref for descriere input
-    const tagInputRef = useRef(null); // Ref for tag input
-    const deadlineInputRef = useRef(null); // Ref for deadline input
+    const descriptionInputRef = useRef(null); // Ref for descriere input
+    const volunteerInputRef = useRef(null); // Ref for tag input
     const responsiblePersonInputRef = useRef(null); // Ref for responsible person input
-    const numeEvenimentInputRef = useRef(null); // Ref for responsible person input
+    const eventNameInputRef = useRef(null); // Ref for responsible person input
     const [showDatePicker, setShowDatePicker] = useState(false); // For modal display
     const [showDatePickerModal, setShowDatePickerModal] = useState(false); // For modal display
 
+    const [eventName, setEventName] = useState('');
     const [description, setDescription] = useState('');
-    const [tags, setTags] = useState('');
+    const [volunteers, setVolunteers] = useState('');
     const [responsiblePerson, setResponsiblePerson] = useState('');
-    const [numeEveniment, setNumeEveniment] = useState('');
 
-    const [deadline, setDeadline] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+
+    const getRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        do {
+            color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+        } while (color === '#000000');
+        return color;
+    };
+    const [color, setColor] = useState(getRandomColor()); // Default color is randomized
 
     const scrollToInput = (inputRef) => {
         if (inputRef && scrollRef.current) {
@@ -54,50 +70,41 @@ const AddEventsPage = () => {
                 <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Numele evenimentului:</Text>
                 <TextInput
                     style={globalStyles.input}
-                    value={numeEveniment}
-                    onChangeText={(text) => setNumeEveniment(text)}
+                    value={eventName}
+                    onChangeText={(text) => setEventName(text)}
                     keyboardType="default"
                     returnKeyType="next"
                     autoCapitalize='words'
-                    ref={numeEvenimentInputRef}
-                    onFocus={() => scrollToInput(numeEvenimentInputRef.current)}
-                    onSubmitEditing={() => descriereInputRef.current.focus()}
+                    ref={eventNameInputRef}
+                    onFocus={() => scrollToInput(eventNameInputRef.current)}
+                    onSubmitEditing={() => descriptionInputRef.current.focus()}
                 />
 
                 {/* Event Description */}
-                <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Descrierea evenimentului:</Text>
+                <Text style={[styles.label, themeStyles.text]}>Descrierea evenimentului:</Text>
                 <TextInput
                     style={[globalStyles.input, styles.messageBox]}
                     value={description}
                     onChangeText={(text) => setDescription(text)}
                     keyboardType="default"
-                    returnKeyType="next"
+                    // returnKeyType=""
                     multiline={true} // Allow multiple lines of input
                     numberOfLines={4} // Set the initial number of lines
-                    ref={descriereInputRef}
-                    onFocus={() => scrollToInput(descriereInputRef.current)}
-                    onSubmitEditing={() => tagInputRef.current.focus()}
+                    ref={descriptionInputRef}
+                    onFocus={() => scrollToInput(descriptionInputRef.current)}
+                    onSubmitEditing={() => responsiblePersonInputRef.current.focus()}
                 />
 
-                {/* Task Tags */}
-                <Text style={[styles.label, themeStyles.text]}>Scrie tag-urile separate prin virgulă (cum ar fi: lejer, urgent sau orice alt tag relevant):</Text>
-                <TextInput
-                    style={globalStyles.input}
-                    value={tags}
-                    onChangeText={(text) => setTags(text)}
-                    keyboardType="default"
-                    ref={tagInputRef}
-                    onFocus={() => scrollToInput(tagInputRef.current)}
-                />
+                {/* TODO add startDate picker and endDate picker with Modal */}
 
-                {/* Task Deadline */}
-                <Text style={[styles.label, themeStyles.text]}>Alege o dată/perioadă pentru eveniment:</Text>
-                <TouchableOpacity onPress={showDatePicker} ref={deadlineInputRef} onFocus={() => scrollToInput(deadlineInputRef.current)}>
-                    <Text style={[globalStyles.input, themeStyles.borderRadius]}>{deadline.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' })}</Text>
-                </TouchableOpacity>
+                {/* Task Deadline
+                // <Text style={[styles.label, themeStyles.text]}>Alege o dată/perioadă pentru eveniment:</Text>
+                // <TouchableOpacity onPress={showDatePicker} ref={deadlineInputRef} onFocus={() => scrollToInput(deadlineInputRef.current)}>
+                //     <Text style={[globalStyles.input, themeStyles.borderRadius]}>{deadline.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' })}</Text>
+                // </TouchableOpacity> */}
 
                 {/* Date Picker Modal */}
-                <Modal
+                {/* <Modal
                     visible={showDatePickerModal}
                     transparent={true}
                     animationType="fade"
@@ -119,28 +126,75 @@ const AddEventsPage = () => {
                             </TouchableOpacity>
                         </View>
                     </TouchableWithoutFeedback>
-                </Modal>
+                </Modal> */}
 
-                {/* Task Responsible Person */}
-                <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Numele persoanei responsabile de acest task:</Text>
+                {/* Event Responsible Person */}
+                <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Numele persoanelor responsabile de acest eveniment:</Text>
                 <TextInput
                     style={globalStyles.input}
                     value={responsiblePerson}
                     onChangeText={(text) => setResponsiblePerson(text)}
                     keyboardType="default"
-                    returnKeyType="done"
+                    returnKeyType="next"
                     autoCapitalize='words'
                     ref={responsiblePersonInputRef}
                     onFocus={() => scrollToInput(responsiblePersonInputRef.current)}
+                    onSubmitEditing={() => volunteerInputRef.current.focus()}
                 // onSubmitEditing={handleAddTask}
                 />
+
+                {/* Volunteers */}
+                <Text style={[styles.label, themeStyles.text]}>Scrie voluntarii care participă (separați prin virgulă) (Opțional):</Text>
+                <TextInput
+                    style={globalStyles.input}
+                    value={volunteers}
+                    onChangeText={(text) => setVolunteers(text)}
+                    keyboardType="default"
+                    ref={volunteerInputRef}
+                    onFocus={() => scrollToInput(volunteerInputRef.current)}
+                />
+
+                {/* Color Picker */}
+                <Text style={[styles.label, themeStyles.text]}>Selectează culoarea evenimentului (Opțional) - Apare în Calendar:</Text>
+                <ColorPicker
+                    value={color}
+                    onComplete={(color) => setColor(color.hex)}
+                    style={{ width: '100%', height: 150, marginTop: 20 }}
+                    boundedThumb={true}
+                >
+                    <View style={styles.colorPickerRow}>
+                        <Panel1
+                            style={{ flex: 1, borderRadius: 16, height: 150 }} 
+                        />
+                        <HueSlider
+                            style={{ marginLeft: 20, borderRadius: 16, height: 150 }}
+                            thumbShape='circle'
+                            useNativeDriver={true}
+                            vertical={true}
+                        />
+                    </View>
+                    {/* <Panel1 style={{ flex: 1 }} />
+                    <HueSlider
+                        style={{ marginTop: 20, borderRadius: 20 }}
+                        thumbShape='circle'
+                        useNativeDriver={true}
+                        vertical={true}
+                    /> */}
+                    {/* <OpacitySlider style={{ marginTop: 20 }} /> */}
+                    {/* <Preview style={{ marginTop: 20, height: 40 }} /> */}
+                    {/* <Swatches style={{ marginTop: 20 }} /> */}
+                </ColorPicker>
+                <TouchableOpacity onPress={() => setColor(getRandomColor())} style={[globalStyles.button, themeStyles.button, { backgroundColor: color }]}>
+                    <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Culoare random</Text>
+                </TouchableOpacity>
+
                 <View>
-                    <TouchableOpacity style={[globalStyles.button, themeStyles.button]}>
-                        <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Adaugă Task</Text>
+                    <TouchableOpacity style={[globalStyles.button, themeStyles.button]} onPress={() => console.log("Add Event button pressed")}>
+                        <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Adaugă Eveniment</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.linkGoBack} onPress={() => navigation.goBack()}>
                         <MaterialCommunityIcons name="chevron-left" size={16} color="#007BFF" />
-                        <Text style={styles.goBackText}>Înapoi la pagina de task-uri</Text>
+                        <Text style={styles.goBackText}>Înapoi la pagina de evenimente</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -157,6 +211,10 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         // marginBottom: 8,
+    },
+    colorPickerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     messageBox: {
         height: 100,

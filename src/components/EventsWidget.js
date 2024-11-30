@@ -11,8 +11,6 @@ import { useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { db } from '../services/firebaseConfig';
 
-// TODO when declaring events in firebase: add an optional field for the color of the event (that the dots will use or use a fallback color if no color specified)
-
 // FIXME:  (NOBRIDGE) LOG  VirtualizedList: You have a large list that is slow to update - make sure your renderItem function renders components that follow React performance best practices like PureComponent, shouldComponentUpdate, etc. {"contentLength": 36360, "dt": 54096, "prevDt": 8280}
 // IDEA use onRefresh prop to fetch new data from the server here and in TaskWidget too
 
@@ -77,7 +75,7 @@ export default function EventsWidget() {
       }
 
       setEvents(eventsList);
-      console.log('Fetched events:', eventsList);
+      // console.log('Fetched events:', eventsList);
     });
 
     // Cleanup subscription on unmount
@@ -85,42 +83,6 @@ export default function EventsWidget() {
       unsubscribe();
     };
   }, []);
-
-  // Sample events data
-  // const events = [
-  //   {
-  //     id: '1',
-  //     title: 'Multi-Day Event 1',
-  //     startDate: '2024-12-10',
-  //     endDate: '2024-12-12',
-  //     color: '#50cebb',
-  //     responsible: 'Sara Cosarba',
-  //   },
-  //   {
-  //     id: '2',
-  //     title: 'Multi-Day Event 2',
-  //     startDate: '2024-11-01',
-  //     endDate: '2024-11-10',
-  //     color: 'magenta',
-  //     responsible: 'Paula Redes',
-  //   },
-  //   {
-  //     id: '3',
-  //     title: 'Event 14343',
-  //     startDate: '2024-11-23',
-  //     endDate: '2024-11-23',
-  //     color: 'yellow',
-  //     responsible: 'Clementina Mandarina',
-  //   },
-  //   {
-  //     id: '4',
-  //     title: 'Multi-Day Event 3',
-  //     startDate: '2024-11-15',
-  //     endDate: '2024-11-20',
-  //     color: 'orange',
-  //     responsible: 'Jonas Brothers',
-  //   }
-  // ];
 
   useEffect(() => {
     const { transformedEvents, markedDates } = transformEvents(events);
