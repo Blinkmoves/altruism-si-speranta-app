@@ -18,14 +18,16 @@ const AddEventsPage = () => {
     const { themeStyles } = useThemeStyles();
 
     const navigation = useNavigation();
+    const auth = getAuth();
 
     const scrollRef = useRef(null);
     const descriptionInputRef = useRef(null); // Ref for descriere input
     const volunteerInputRef = useRef(null); // Ref for tag input
     const responsiblePersonInputRef = useRef(null); // Ref for responsible person input
     const eventNameInputRef = useRef(null); // Ref for responsible person input
-    const [showDatePicker, setShowDatePicker] = useState(false); // For modal display
-    const [showDatePickerModal, setShowDatePickerModal] = useState(false); // For modal display
+    // State variables for showing modals
+    const [showStartDatePickerModal, setShowStartDatePickerModal] = useState(false);
+    const [showEndDatePickerModal, setShowEndDatePickerModal] = useState(false);
 
     const [eventName, setEventName] = useState('');
     const [description, setDescription] = useState('');
@@ -54,6 +56,72 @@ const AddEventsPage = () => {
         }
     };
 
+    // Handler functions for setting start and end dates
+    const handleStartDateChange = (event, selectedDate) => {
+        const currentDate = selectedDate || startDate;
+        setStartDate(currentDate);
+    };
+
+    const handleEndDateChange = (event, selectedDate) => {
+        const currentDate = selectedDate || endDate;
+        setEndDate(currentDate);
+    };
+
+    const handleAddEvent = () => {
+        const user = auth.currentUser;
+        const displayName = user.displayName;
+
+        // Dismiss the keyboard
+        Keyboard.dismiss();
+
+        // Validate the mandatory fields
+        if (!eventName) {
+            showErrorToast('Numele evenimentului este un câmp obligatoriu!');
+            return;
+        }
+        if (!responsiblePerson) {
+            showErrorToast('Responsabilul evenimentului este un câmp obligatoriu!');
+            return;
+        }
+        if (!startDate || !endDate) {
+            showErrorToast('Data de început și data de sfârșit sunt câmpuri obligatorii!');
+            return;
+        }
+
+        if (user) {
+            const uid = user.uid;
+
+            // Prepare the event data
+            const eventData = {
+                color: color,
+                createdBy: displayName,
+                description: description,
+                name: eventName,
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString(),
+                responsiblePerson: responsiblePerson,
+                volunteers: [], // Sends an empty array
+            };
+
+            // Reference to the user's events
+            const eventsRef = ref(db, `events/${uid}`);
+
+            // Push a new event
+            const newEventRef = push(eventsRef);
+
+            // Set the event data
+            set(newEventRef, eventData)
+                .then(() => {
+                    showSuccessToast('Eveniment adăugat cu succes!');
+                    navigation.goBack(); // Navigate back or reset the form
+                })
+                .catch((error) => {
+                    showErrorToast('A apărut o eroare la adăugarea evenimentului!');
+                    console.error('Error adding event: ', error);
+                });
+        }
+    };
+
     return (
         <KeyboardAwareScrollView
             style={[themeStyles.container]}
@@ -74,7 +142,7 @@ const AddEventsPage = () => {
                     onChangeText={(text) => setEventName(text)}
                     keyboardType="default"
                     returnKeyType="next"
-                    autoCapitalize='words'
+                    // autoCapitalize='words'
                     ref={eventNameInputRef}
                     onFocus={() => scrollToInput(eventNameInputRef.current)}
                     onSubmitEditing={() => descriptionInputRef.current.focus()}
@@ -95,38 +163,84 @@ const AddEventsPage = () => {
                     onSubmitEditing={() => responsiblePersonInputRef.current.focus()}
                 />
 
-                {/* TODO add startDate picker and endDate picker with Modal */}
+                {/* Date Inputs in a Row */}
+                <View style={styles.dateRow}>
+                    <View style={[styles.dateColumn, { marginRight: 8 }]}>
+                        <Text style={[styles.label, themeStyles.text]}>Dată început:</Text>
+                        <TouchableOpacity
+                            onPress={() => setShowStartDatePickerModal(true)}
+                            style={[globalStyles.input, styles.dateInput]}
+                        >
+                            <Text style={[styles.dateText]}>
+                                {startDate.toLocaleDateString('ro-RO')}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
 
-                {/* Task Deadline
-                // <Text style={[styles.label, themeStyles.text]}>Alege o dată/perioadă pentru eveniment:</Text>
-                // <TouchableOpacity onPress={showDatePicker} ref={deadlineInputRef} onFocus={() => scrollToInput(deadlineInputRef.current)}>
-                //     <Text style={[globalStyles.input, themeStyles.borderRadius]}>{deadline.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' })}</Text>
-                // </TouchableOpacity> */}
+                    <View style={styles.dateColumn}>
+                        <Text style={[styles.label, themeStyles.text]}>Dată sfârșit:</Text>
+                        <TouchableOpacity
+                            onPress={() => setShowEndDatePickerModal(true)}
+                            style={[globalStyles.input, styles.dateInput]}
+                        >
+                            <Text style={[styles.dateText]}>
+                                {endDate.toLocaleDateString('ro-RO')}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
 
-                {/* Date Picker Modal */}
-                {/* <Modal
-                    visible={showDatePickerModal}
+                {/* Start Date Picker Modal */}
+                <Modal
+                    visible={showStartDatePickerModal}
                     transparent={true}
                     animationType="fade"
-                    onRequestClose={() => setShowDatePickerModal(false)} // Allows the back button to close the modal on Android
+                    onRequestClose={() => setShowStartDatePickerModal(false)}
                 >
-                    <TouchableWithoutFeedback onPress={() => setShowDatePickerModal(false)}>
+                    <TouchableWithoutFeedback onPress={() => setShowStartDatePickerModal(false)}>
                         <View style={[styles.modalContainer, themeStyles.modalContainer]}>
                             <DateTimePicker
-                                value={deadline}
+                                value={startDate}
                                 mode='date'
-                                display='spinner' // both iOS and Android get spinner style
-                                // onChange={handleDateChange}
+                                display='spinner'
+                                onChange={handleStartDateChange}
                                 minimumDate={new Date()}
                                 style={styles.datePicker}
                                 locale='ro-RO'
                             />
-                            <TouchableOpacity onPress={() => setShowDatePickerModal(false)} style={[globalStyles.button, themeStyles.button, { width: '50%' }]}>
-                                <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Selectează</Text>
+                            <TouchableOpacity
+                                onPress={() => setShowStartDatePickerModal(false)}
+                                style={[globalStyles.button, themeStyles.button, { marginTop: 20, justifyContent: 'center', alignItems: 'center' }]}>
+                                <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Selectează Dată Început</Text>
                             </TouchableOpacity>
                         </View>
                     </TouchableWithoutFeedback>
-                </Modal> */}
+                </Modal>
+
+                {/* End Date Picker Modal */}
+                <Modal
+                    visible={showEndDatePickerModal}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={() => setShowEndDatePickerModal(false)}
+                >
+                    <TouchableWithoutFeedback onPress={() => setShowEndDatePickerModal(false)}>
+                        <View style={[styles.modalContainer, themeStyles.modalContainer]}>
+                            <DateTimePicker
+                                value={endDate}
+                                mode='date'
+                                display='spinner'
+                                onChange={handleEndDateChange}
+                                minimumDate={startDate}
+                                style={[styles.datePicker, themeStyles.text]}
+                                locale='ro-RO'
+                            />
+                            <TouchableOpacity onPress={() => setShowEndDatePickerModal(false)} style={[globalStyles.button, themeStyles.button, { marginTop: 20, justifyContent: 'center', alignItems: 'center' }]}>
+                                <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Selectează Dată Sfârșit</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
 
                 {/* Event Responsible Person */}
                 <Text style={[styles.label, themeStyles.text]}><Text style={{ color: 'red' }}>*</Text> Numele persoanelor responsabile de acest eveniment:</Text>
@@ -144,7 +258,7 @@ const AddEventsPage = () => {
                 />
 
                 {/* Volunteers */}
-                <Text style={[styles.label, themeStyles.text]}>Scrie voluntarii care participă (separați prin virgulă) (Opțional):</Text>
+                {/* <Text style={[styles.label, themeStyles.text]}>Scrie voluntarii care participă (separați prin virgulă) (Opțional):</Text>
                 <TextInput
                     style={globalStyles.input}
                     value={volunteers}
@@ -152,7 +266,7 @@ const AddEventsPage = () => {
                     keyboardType="default"
                     ref={volunteerInputRef}
                     onFocus={() => scrollToInput(volunteerInputRef.current)}
-                />
+                /> */}
 
                 {/* Color Picker */}
                 <Text style={[styles.label, themeStyles.text]}>Selectează culoarea evenimentului (Opțional) - Apare în Calendar:</Text>
@@ -164,7 +278,7 @@ const AddEventsPage = () => {
                 >
                     <View style={styles.colorPickerRow}>
                         <Panel1
-                            style={{ flex: 1, borderRadius: 16, height: 150 }} 
+                            style={{ flex: 1, borderRadius: 16, height: 150 }}
                         />
                         <HueSlider
                             style={{ marginLeft: 20, borderRadius: 16, height: 150 }}
@@ -189,7 +303,7 @@ const AddEventsPage = () => {
                 </TouchableOpacity>
 
                 <View>
-                    <TouchableOpacity style={[globalStyles.button, themeStyles.button]} onPress={() => console.log("Add Event button pressed")}>
+                    <TouchableOpacity style={[globalStyles.button, themeStyles.button]} onPress={handleAddEvent}>
                         <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>Adaugă Eveniment</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.linkGoBack} onPress={() => navigation.goBack()}>
@@ -239,6 +353,22 @@ const styles = StyleSheet.create({
     goBackText: {
         color: '#007BFF',
         fontSize: 14,
+    },
+    dateRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 8,
+    },
+    dateColumn: {
+        flex: 1,
+    },
+    dateInput: {
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+    },
+    dateText: {
+        fontSize: 16,
     },
 });
 

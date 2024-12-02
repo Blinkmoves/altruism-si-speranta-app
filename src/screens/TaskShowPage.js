@@ -10,21 +10,19 @@ import { useNavigation, CommonActions } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import useThemeStyles from '../hooks/useThemeStyles';
 
-// TODO add logic so only admins can delete/complete/edit tasks
+// TODO add logic so only admins can delete/edit tasks
+// TODO but everyone can complete tasks
 
 const TaskShowPage = ({ route }) => {
 
     const { themeStyles, colors } = useThemeStyles();
 
-    const { taskId } = route.params;
+    const { taskId, uid } = route.params;
     // console.log('Task ID:', taskId);
     const [task, setTask] = useState([]);
     const [tasks, setTasks] = useState([]);
 
     const navigation = useNavigation();
-
-    // Get user ID from Firebase Auth
-    const uid = auth.currentUser.uid;
 
     useEffect(() => {
         const taskRef = ref(db, `tasks/${uid}/${taskId}`);

@@ -62,14 +62,16 @@ export default function EventsWidget() {
 
     const unsubscribe = onValue(eventsRef, (snapshot) => {
       const data = snapshot.val();
-      // console.log('Raw snapshot data:', data);
       const eventsList = [];
 
       if (data) {
-        // Assuming data structure: events > userId > eventId > eventDetails
-        Object.values(data).forEach((userEvents) => {
-          Object.values(userEvents).forEach((event) => {
-            eventsList.push(event);
+        Object.entries(data).forEach(([uid, userEvents]) => {
+          Object.entries(userEvents).forEach(([eventId, eventDetails]) => {
+            eventsList.push({
+              ...eventDetails,
+              id: eventId,
+              uid: uid,
+            });;
           });
         });
       }
@@ -84,69 +86,72 @@ export default function EventsWidget() {
     };
   }, []);
 
-  useEffect(() => {
-    const { transformedEvents, markedDates } = transformEvents(events);
-    setTransformedEvents(transformedEvents);
-    setMarkedDates(markedDates);
-  }, [events]);
-
-  // Transform events data to the format Agenda expects
+  // Transform events data to the format the Agenda expects
   const transformEvents = (events) => {
     const transformedEvents = {};
     const markedDates = {};
 
     // Helper function to get the next date in 'YYYY-MM-DD' format
-    const getNextDate = (dateStr) => {
-      const [year, month, day] = dateStr.split('-');
-      const date = new Date(year, month - 1, day);
-      date.setDate(date.getDate() + 1);
-      const nextYear = date.getFullYear();
-      const nextMonth = String(date.getMonth() + 1).padStart(2, '0');
-      const nextDay = String(date.getDate()).padStart(2, '0');
-      return `${nextYear}-${nextMonth}-${nextDay}`;
+    const getNextDate = (date) => {
+      const nextDate = new Date(date);
+      nextDate.setDate(nextDate.getDate() + 1);
+      return nextDate;
     };
 
-    // Helper function to format date to 'DD/MM/YYYY'
-    const formatDisplayDate = (dateStr) => {
-      const [year, month, day] = dateStr.split('-');
+    // Helper function to format display dates to 'DD/MM/YYYY'
+    const formatDisplayDate = (dateString) => {
+      const date = new Date(dateString);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+      const year = date.getFullYear();
       return `${day}/${month}/${year}`;
     };
 
     events.forEach((event) => {
-      let startDate = event.startDate;  // Use 'let' for the start date of the event because it's changing when getNextDate is called
-      const endDate = event.endDate;
 
-      while (startDate <= endDate) {
-        const uniqueId = `${event.id}-${startDate}`;
+      const { startDate, endDate } = event;
+      // Convert start and end dates to Date objects
+      let start = new Date(startDate);
+      let end = new Date(endDate);
+
+      // Iterate through each date from start to end
+      while (start <= end) {
+        const dateKey = start.toISOString().split('T')[0]; // 'YYYY-MM-DD'
 
         // Use 'YYYY-MM-DD' format (Agenda expects this format)
-        if (!transformedEvents[startDate]) {
-          transformedEvents[startDate] = [];
+        if (!transformedEvents[dateKey]) {
+          transformedEvents[dateKey] = [];
         }
 
-        transformedEvents[startDate].push({
-          ...event,
+        transformedEvents[dateKey].push({
+          name: event.name,
+          description: event.description,
+          color: event.color,
+          responsiblePerson: event.responsiblePerson,
+          day: dateKey,
           height: 50, // Required by Agenda
-          day: startDate,
-          id: uniqueId,
           // Add formatted dates for display
           formattedStartDate: formatDisplayDate(event.startDate),
           formattedEndDate: formatDisplayDate(event.endDate),
+          id: event.id,
+          uid: event.uid
         });
 
         // Prepare periods for markedDates
-        if (!markedDates[startDate]) {
-          markedDates[startDate] = { periods: [] };
+        if (!markedDates[dateKey]) {
+          markedDates[dateKey] = { periods: [] };
         }
+        const isStartingDay = dateKey === event.startDate.split('T')[0];
+        const isEndingDay = dateKey === event.endDate.split('T')[0];
 
-        markedDates[startDate].periods.push({
-          color: event.color.replace(/['"]+/g, ''),
-          startingDay: startDate === event.startDate,
-          endingDay: startDate === event.endDate,
+        markedDates[dateKey].periods.push({
+          startingDay: isStartingDay,
+          endingDay: isEndingDay,
+          color: event.color,
         });
 
         // Move to the next date
-        startDate = getNextDate(startDate);
+        start = getNextDate(start);
 
         // Prevent infinite loops
         const nextDate = new Date(startDate);
@@ -159,6 +164,11 @@ export default function EventsWidget() {
     return { transformedEvents, markedDates };
   };
 
+  useEffect(() => {
+    const { transformedEvents, markedDates } = transformEvents(events);
+    setTransformedEvents(transformedEvents);
+    setMarkedDates(markedDates);
+  }, [events]);
 
   // Handle initial month on mount and month changes
   useEffect(() => {

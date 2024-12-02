@@ -10,37 +10,87 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import useThemeStyles from '../hooks/useThemeStyles';
 import { Calendar } from 'react-native-calendars';
 
-// TODO finish this
-
-const EventShowPage = (route) => {
+const EventShowPage = ({ route }) => {
 
   const { themeStyles, colors } = useThemeStyles();
 
-  const { eventId } = route.params;
+  const { eventId, uid } = route.params;
 
-  const [event, setEvent] = useState({});
-  const [transformedEvents, setTransformedEvents] = useState({});
+  const [event, setEvent] = useState(null);
   const [markedDates, setMarkedDates] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const navigation = useNavigation();
 
-  // Get user ID from Firebase Auth
-  const uid = auth.currentUser.uid;
-
   useEffect(() => {
+
+    if (!eventId) {
+      console.warn('Missing eventId in route params.');
+      return;
+    }
+    if (!uid) {
+      console.warn('Missing uid in route params.');
+      return;
+    }
+
     const eventRef = ref(db, `events/${uid}/${eventId}`);
-    const unsubscribe = onValue(taskRef, (snapshot) => {
+    const unsubscribe = onValue(eventRef, (snapshot) => {
       const data = snapshot.val();
-      setTask(data);
+      setEvent(data);
+
+      // Prepare markedDates for the Calendar
+      if (data) {
+        const { startDate, endDate, color } = data;
+        const marked = {};
+        let start = new Date(startDate);
+        const end = new Date(endDate);
+
+        while (start <= end) {
+          const dateKey = start.toISOString().split('T')[0];
+
+          // Initialize periods array for this date if it doesn't exist
+          if (!marked[dateKey]) {
+            marked[dateKey] = {
+              periods: []
+            };
+          }
+
+          marked[dateKey].periods.push({
+            startingDay: dateKey === startDate.split('T')[0],
+            endingDay: dateKey === endDate.split('T')[0],
+            color: color || '#093A3E', // Fallback color if none provided
+          });
+
+          start.setDate(start.getDate() + 1);
+        }
+
+        setMarkedDates(marked);
+      } else {
+        setError('Evenimentul nu a fost găsit.');
+      }
+      setLoading(false); // Set loading to false after data is fetched
+    }, (err) => {
+      setError('Eroare la încărcarea datelor.');
+      setLoading(false);
+      console.error(err);
     });
 
     return () => unsubscribe();
   }, [eventId, uid]);
 
-  if (!event) {
+  if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#093A3E" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.centered, themeStyles.container]}>
+        <Text style={[styles.errorText, themeStyles.text]}>{error}</Text>
       </View>
     );
   }
@@ -85,47 +135,18 @@ const EventShowPage = (route) => {
     );
   };
 
+  // TODO add other info about the event such as name
+
   return (
     <ScrollView
       style={[globalStyles.container, themeStyles.container]}>
+      <Text style={[globalStyles.title, themeStyles.text, { marginBottom: 30 }]}>{event.name}</Text>
       <Calendar
         firstDay={1}
-        items={transformedEvents}
-        renderItem={renderItem}
-        renderEmptyData={renderEmptyData}
-        onMonthChange={handleMonthChange}
         markedDates={markedDates}
         markingType={"multi-period"}
-        theme={{
-          ...themeStyles.calendar,
-          'stylesheet.calendar.header': {
-            dayTextAtIndex5: {
-              color: '#c83030'
-            },
-            dayTextAtIndex6: {
-              color: '#c83030'
-            }
-          },
-          'stylesheet.agenda.list': {
-            // This makes the day bold in the Agenda list
-            dayNum: {
-              fontSize: 28,
-              fontWeight: 'bold',
-              color: colors.text,
-            },
-            // This hides the day part in the list view
-            // day: {
-            //   display: 'none',
-            // }
-          },
-        }}
-        showClosingKnob={true}
-        showOnlySelectedDayItems={true}
-        showScrollIndicator={true}
-        animateScroll={true}
-        headerStyle={colors.teal}
-
-        current={`${selectedMonthYear.year}-${String(selectedMonthYear.month + 1).padStart(2, '0')}-01`}
+        theme={themeStyles.calendar}
+        hideArrows={true}
       />
       <View style={[themeStyles.container]}>
         {/* Event Description */}
@@ -135,7 +156,7 @@ const EventShowPage = (route) => {
               Descriere:
             </Text>
             <Text style={[styles.value, themeStyles.text]}>
-              {event.description}
+              {event.description || 'Fără descriere'}
             </Text>
           </View>
         </View>
@@ -157,12 +178,12 @@ const EventShowPage = (route) => {
       {/* {event.responsible && event.responsible.length > 0 && ( */}
       <View style={styles.row}>
         <View style={styles.eventDetails}>
-          <Text style={[styles.label, themeStyles.textGray]}>Tag-uri:</Text>
+          <Text style={[styles.label, themeStyles.textGray]}>Voluntari:</Text>
           <View style={styles.chipContainer}>
             {/* {event.responsible.map((tag, index) => ( */}
             <View style={[styles.chip, themeStyles.chip]}>
               <Text style={[styles.chipText, themeStyles.buttonText]}>
-                {event.voluntari}
+                {event.volunteers}
               </Text>
             </View>
             {/* ))} */}
