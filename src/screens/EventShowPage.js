@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { db } from '../services/firebaseConfig';
-import { ref, onValue, update } from 'firebase/database';
+import { ref, onValue, set } from 'firebase/database';
 import { auth } from '../services/firebaseConfig';
 import globalStyles from '../styles/globalStyles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -42,12 +42,13 @@ const EventShowPage = ({ route }) => {
       const data = snapshot.val();
       setEvent(data);
 
-      // Check if the current user is a volunteer
-      const volunteers = data.volunteers || [];
-      setIsVolunteer(volunteers.includes(displayName));
-
       // Prepare markedDates for the Calendar
       if (data) {
+        const volunteers = Array.isArray(data.volunteers) ? data.volunteers : [];
+        setEvent({ ...data, volunteers });
+
+        setIsVolunteer(volunteers.includes(displayName));
+
         const { startDate, endDate, color } = data;
         const marked = {};
         let start = new Date(startDate);
@@ -120,10 +121,18 @@ const EventShowPage = ({ route }) => {
       return;
     }
 
-    const eventRef = ref(db, `events/${uid}/${eventId}`);
+    // Ensure volunteers is an array
+    const volunteers = Array.isArray(event.volunteers) ? event.volunteers : [];
+
+    if (volunteers.includes(displayName)) {
+      showErrorToast(`Ești deja înscris ca voluntar la evenimentul "${event.name}".`);
+      return;
+    }
+
+    const volunteersRef = ref(db, `events/${uid}/${eventId}/volunteers`);
     const updatedVolunteers = [...(event.volunteers || []), displayName];
 
-    update(eventRef, { volunteers: updatedVolunteers })
+    set(volunteersRef, updatedVolunteers)
       .then(() => {
         setIsVolunteer(true);
         setEvent({ ...event, volunteers: updatedVolunteers });
@@ -142,10 +151,13 @@ const EventShowPage = ({ route }) => {
       return;
     }
 
-    const eventRef = ref(db, `events/${uid}/${eventId}`);
-    const updatedVolunteers = (event.volunteers || []).filter((name) => name !== displayName);
+    // Ensure volunteers is an array
+    const volunteers = Array.isArray(event.volunteers) ? event.volunteers : [];
 
-    update(eventRef, { volunteers: updatedVolunteers })
+    const volunteersRef = ref(db, `events/${uid}/${eventId}/volunteers`);
+    const updatedVolunteers = volunteers.filter((name) => name !== displayName);
+
+    set(volunteersRef, updatedVolunteers)
       .then(() => {
         setIsVolunteer(false);
         setEvent({ ...event, volunteers: updatedVolunteers });
@@ -156,6 +168,8 @@ const EventShowPage = ({ route }) => {
         showErrorToast('A apărut o eroare. Încearcă din nou.');
       });
   };
+
+  // TODO: Implement the edit event functionality and delete event functionality (the latter only for admins)
 
   // Navigate to EditEventPage
   const handleEditEvent = (eventId, uid) => {
