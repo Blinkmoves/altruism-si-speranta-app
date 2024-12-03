@@ -186,7 +186,6 @@ export default function EventsWidget() {
     setCurrentMonth(LocaleConfig.locales['ro'].monthNames[monthData.month - 1]);
   };
 
-  // TODO add params when backend done
   // Navigate to TaskShowPage
   const navigateToEventShowPage = (event) => {
     navigation.navigate('Evenimente', {

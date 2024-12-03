@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { db } from '../services/firebaseConfig';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, update } from 'firebase/database';
 import { auth } from '../services/firebaseConfig';
 import globalStyles from '../styles/globalStyles';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -9,6 +9,7 @@ import { useNavigation, CommonActions } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import useThemeStyles from '../hooks/useThemeStyles';
 import { Calendar } from 'react-native-calendars';
+import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
 
 const EventShowPage = ({ route }) => {
 
@@ -20,8 +21,10 @@ const EventShowPage = ({ route }) => {
   const [markedDates, setMarkedDates] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isVolunteer, setIsVolunteer] = useState(false);
 
   const navigation = useNavigation();
+  const displayName = auth.currentUser.displayName;
 
   useEffect(() => {
 
@@ -38,6 +41,10 @@ const EventShowPage = ({ route }) => {
     const unsubscribe = onValue(eventRef, (snapshot) => {
       const data = snapshot.val();
       setEvent(data);
+
+      // Check if the current user is a volunteer
+      const volunteers = data.volunteers || [];
+      setIsVolunteer(volunteers.includes(displayName));
 
       // Prepare markedDates for the Calendar
       if (data) {
@@ -95,9 +102,59 @@ const EventShowPage = ({ route }) => {
     );
   }
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' });
+  // const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString('ro-RO', { year: 'numeric', month: 'short', day: '2-digit' });
+  // };
+
+  const handleParticipate = () => {
+    if (!displayName) {
+      console.warn('User is not logged in or does not have a display name.');
+      showErrorToast('Trebuie să fii autentificat pentru a participa la acest eveniment.');
+      return;
+    }
+
+    // Check if the responsible person is trying to volunteer (prevent self-volunteering)
+    if (displayName === event.responsiblePerson) {
+      showErrorToast('Responsabilul evenimentului nu poate fi și voluntar.');
+      return;
+    }
+
+    const eventRef = ref(db, `events/${uid}/${eventId}`);
+    const updatedVolunteers = [...(event.volunteers || []), displayName];
+
+    update(eventRef, { volunteers: updatedVolunteers })
+      .then(() => {
+        setIsVolunteer(true);
+        setEvent({ ...event, volunteers: updatedVolunteers });
+        showSuccessToast(`Te-ai înscris ca voluntar la evenimentul "${event.name}"!`);
+      })
+      .catch((error) => {
+        console.error('Error updating volunteers:', error);
+        showErrorToast('A apărut o eroare. Încearcă din nou.');
+      });
+  };
+
+  const handleWithdraw = () => {
+    if (!displayName) {
+      console.warn('User is not logged in or does not have a display name.');
+      showErrorToast('Trebuie să fii autentificat pentru a te retrage.');
+      return;
+    }
+
+    const eventRef = ref(db, `events/${uid}/${eventId}`);
+    const updatedVolunteers = (event.volunteers || []).filter((name) => name !== displayName);
+
+    update(eventRef, { volunteers: updatedVolunteers })
+      .then(() => {
+        setIsVolunteer(false);
+        setEvent({ ...event, volunteers: updatedVolunteers });
+        showSuccessToast(`Te-ai retras de la evenimentul "${event.name}".`);
+      })
+      .catch((error) => {
+        console.error('Error updating volunteers:', error);
+        showErrorToast('A apărut o eroare. Încearcă din nou.');
+      });
   };
 
   // Navigate to EditEventPage
@@ -134,8 +191,6 @@ const EventShowPage = ({ route }) => {
       })
     );
   };
-
-  // TODO add other info about the event such as name
 
   return (
     <ScrollView
@@ -174,23 +229,55 @@ const EventShowPage = ({ route }) => {
           </View>
         </View>
       </View>
-      {/* Tags */}
-      {/* {event.responsible && event.responsible.length > 0 && ( */}
+      {/* Volunteers */}
       <View style={styles.row}>
         <View style={styles.eventDetails}>
-          <Text style={[styles.label, themeStyles.textGray]}>Voluntari:</Text>
+          <Text style={[styles.label, themeStyles.textGray]}>Voluntari înscriși:</Text>
           <View style={styles.chipContainer}>
-            {/* {event.responsible.map((tag, index) => ( */}
-            <View style={[styles.chip, themeStyles.chip]}>
-              <Text style={[styles.chipText, themeStyles.buttonText]}>
-                {event.volunteers}
+            {event.volunteers && event.volunteers.length > 0 ? (
+              event.volunteers.map((volunteer, index) => (
+                <View key={index} style={[styles.chip, themeStyles.chip]}>
+                  <Text style={[styles.chipText, themeStyles.buttonText]}>
+                    {event.volunteers}
+                  </Text>
+                </View>
+              ))
+            ) : (
+              <Text style={[styles.value, themeStyles.text]}>
+                Niciun voluntar înscris.
               </Text>
-            </View>
-            {/* ))} */}
+            )}
           </View>
         </View>
       </View>
-      {/* )} */}
+      <View style={styles.buttonContainer}>
+        {!isVolunteer ? (
+          <TouchableOpacity
+            style={[globalStyles.button, { backgroundColor: 'green', marginRight: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}
+            onPress={handleParticipate}
+            activeOpacity={1}
+          >
+            <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>
+              Participă ca voluntar
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={[globalStyles.button, { flex: 1, backgroundColor: '#C03636', marginLeft: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}
+            onPress={handleWithdraw}
+            activeOpacity={1}
+          >
+            <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>
+              Retrage-te de la acest eveniment
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {/* Back button */}
+      <TouchableOpacity style={styles.linkGoBack} onPress={() => goToEventsPage()}>
+        <MaterialCommunityIcons name="chevron-left" size={16} color="#007BFF" />
+        <Text style={styles.goBackText}>Înapoi la pagina de evenimente</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -235,6 +322,20 @@ const styles = StyleSheet.create({
   },
   eventText: {
     fontSize: 24,
+  },
+  buttonContainer: {
+    marginVertical: 10,
+  },
+  linkGoBack: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    marginTop: 16,
+  },
+  goBackText: {
+    color: '#007BFF',
+    fontSize: 14,
   },
 });
 
