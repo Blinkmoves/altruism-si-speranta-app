@@ -116,7 +116,7 @@ const EventShowPage = ({ route }) => {
     }
 
     // Check if the responsible person is trying to volunteer (prevent self-volunteering)
-    if (displayName === event.responsiblePerson) {
+    if (displayName === event.responsiblePerson || event.createdBy === displayName) {
       showErrorToast('Responsabilul evenimentului nu poate fi și voluntar.');
       return;
     }
@@ -169,13 +169,12 @@ const EventShowPage = ({ route }) => {
       });
   };
 
-  // TODO: Implement the edit event functionality and delete event functionality (the latter only for admins)
-
-  // Navigate to EditEventPage
+  // TODO: Implement the delete event functionality only for admins
+  // Navigate to EventShowPage
   const handleEditEvent = (eventId, uid) => {
-    navigation.navigate('EditEventPage', {
-      eventId,
-      uid,
+    navigation.navigate('Evenimente', {
+      screen: 'EditEventPage',
+      params: { eventId, uid },
     });
   };
 
@@ -265,7 +264,18 @@ const EventShowPage = ({ route }) => {
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        {!isVolunteer ? (
+        {event.createdBy === displayName ? (
+          // Edit button
+          <TouchableOpacity
+            style={[globalStyles.button, themeStyles.button, { flex: 1 }]}
+            onPress={() => handleEditEvent(eventId, uid)}
+            activeOpacity={1}
+          >
+            <Text style={[globalStyles.buttonText, themeStyles.buttonText]}>
+              Editează Evenimentul
+            </Text>
+          </TouchableOpacity>
+        ) : !isVolunteer ? (
           <TouchableOpacity
             style={[globalStyles.button, { backgroundColor: 'green', marginRight: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}
             onPress={handleParticipate}

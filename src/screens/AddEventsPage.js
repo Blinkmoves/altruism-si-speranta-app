@@ -12,8 +12,6 @@ import useThemeStyles from '../hooks/useThemeStyles';
 import { showSuccessToast, showErrorToast } from '../utils/toastHelpers';
 import ColorPicker, { Panel1, Swatches, Preview, OpacitySlider, HueSlider } from 'reanimated-color-picker';
 
-// TODO add backend connection to add events to the database
-
 const AddEventsPage = () => {
     const { themeStyles } = useThemeStyles();
 
@@ -100,7 +98,7 @@ const AddEventsPage = () => {
                 startDate: startDate.toISOString(),
                 endDate: endDate.toISOString(),
                 responsiblePerson: responsiblePerson,
-                volunteers: [], // Sends an empty array
+                volunteers: [], // Initialize as an empty array
             };
 
             // Reference to the user's events

@@ -107,12 +107,21 @@ export default function EventsWidget() {
       return `${day}/${month}/${year}`;
     };
 
+    const currentDate = new Date();
+
     events.forEach((event) => {
 
       const { startDate, endDate } = event;
       // Convert start and end dates to Date objects
       let start = new Date(startDate);
       let end = new Date(endDate);
+
+      const isPastEvent = end < currentDate;
+
+      // TODO see if past event is greyed out
+
+      // Use grey color if the event is in the past
+      const eventColor = isPastEvent ? '#808080' : event.color || '#093A3E';
 
       // Iterate through each date from start to end
       while (start <= end) {
@@ -126,7 +135,7 @@ export default function EventsWidget() {
         transformedEvents[dateKey].push({
           name: event.name,
           description: event.description,
-          color: event.color,
+          color: eventColor,
           responsiblePerson: event.responsiblePerson,
           day: dateKey,
           height: 50, // Required by Agenda
@@ -186,7 +195,7 @@ export default function EventsWidget() {
     setCurrentMonth(LocaleConfig.locales['ro'].monthNames[monthData.month - 1]);
   };
 
-  // Navigate to TaskShowPage
+  // Navigate to EventShowPage
   const navigateToEventShowPage = (event) => {
     navigation.navigate('Evenimente', {
       screen: 'EventShowPage',
@@ -232,6 +241,16 @@ export default function EventsWidget() {
     </View>
   )
 
+  // TODO check why this is not showing up
+  // Custom knob for the Agenda component
+  const customKnob = () => {
+    return (
+      <View style={styles.knobContainer}>
+        <MaterialCommunityIcons name="arrow-down-bold" size={24} color={themeStyles.text} />
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Agenda
@@ -239,6 +258,7 @@ export default function EventsWidget() {
         items={transformedEvents}
         renderItem={renderItem}
         renderEmptyData={renderEmptyData}
+        renderKnob={customKnob}
         onMonthChange={handleMonthChange}
         // onDayPress={(day) => {
         //   setSelectedDate(day.dateString);
@@ -302,5 +322,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: "#999",
+  },
+  knobContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
   },
 });
