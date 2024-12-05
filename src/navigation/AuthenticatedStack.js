@@ -15,14 +15,12 @@ function AuthenticatedStack() {
 
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Task-uri"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Task-uri') {
+          if (route.name === 'Task-uri') {
             iconName = focused ? 'format-list-bulleted-type' : 'format-list-bulleted-type';
           } else if (route.name === 'Evenimente') {
             iconName = focused ? 'calendar-check' : 'calendar-check-outline';
@@ -40,7 +38,7 @@ function AuthenticatedStack() {
         gestureResponseDistance: 200,
       })}
     >
-      <Tab.Screen name="Home" component={HomePage} />
+      {/* <Tab.Screen name="Home" component={HomePage} /> */}
       {/* lazy: false to mount the screens on launch to prevent this error: when navigating to the TaskShowPage from the HomePage, the TaskPage can never be reset to top of the stack */}
       <Tab.Screen name="Task-uri" component={TasksStack} options={{ lazy: false }} />
       <Tab.Screen name="Evenimente" component={EventsStack} options={{ lazy: false }} />

@@ -241,15 +241,15 @@ export default function EventsWidget() {
     </View>
   )
 
-  // TODO check why this is not showing up
+  // IDEA maybe implement this custom knob
   // Custom knob for the Agenda component
-  const customKnob = () => {
-    return (
-      <View style={styles.knobContainer}>
-        <MaterialCommunityIcons name="arrow-down-bold" size={24} color={themeStyles.text} />
-      </View>
-    );
-  };
+  // const customKnob = () => {
+  //   return (
+  //     <View style={styles.knobContainer}>
+  //       <MaterialCommunityIcons name="arrow-expand-down" size={27} color={colors.text} />
+  //     </View>
+  //   );
+  // };
 
   return (
     <View style={styles.container}>
@@ -258,7 +258,7 @@ export default function EventsWidget() {
         items={transformedEvents}
         renderItem={renderItem}
         renderEmptyData={renderEmptyData}
-        renderKnob={customKnob}
+        // renderKnob={customKnob}
         onMonthChange={handleMonthChange}
         // onDayPress={(day) => {
         //   setSelectedDate(day.dateString);
@@ -326,6 +326,7 @@ const styles = StyleSheet.create({
   knobContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    // paddingVertical: 10,
+    // marginBottom: 10,
   },
 });

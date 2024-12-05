@@ -339,7 +339,7 @@ export default function SettingsPage() {
 
           {/* NOTIFICATIONS SETTINGS */}
           <View elevation={5} clipToPadding={false} style={[styles.notificationContainer, themeStyles.notificationContainer]}>
-            <Text style={[styles.notificationsTitle, themeStyles.text]}>Aplicație</Text>
+            <Text style={[styles.notificationsTitle, themeStyles.text]}>Setări Aplicație</Text>
             <View style={styles.notificationItem}>
               <Text style={[styles.notificationsLabel, themeStyles.text]}>
                 Schimbă în modul {theme.dark ? 'luminos' : 'întunecat'}
@@ -369,8 +369,8 @@ export default function SettingsPage() {
                 />
               </View>
             </View>
-            {/* TODO add functionality */}
-            <Text style={[styles.notificationsTitle, themeStyles.text]}>Notificări</Text>
+            {/* TODO add back and add functionality */}
+            {/* <Text style={[styles.notificationsTitle, themeStyles.text]}>Notificări</Text>
 
             <View style={styles.notificationItem}>
               <Text style={[styles.notificationsLabel, themeStyles.text]}>Notificări de tip Push</Text>
@@ -390,7 +390,7 @@ export default function SettingsPage() {
                 trackColor={{ false: 'transparent', true: colors.switchTrack }}
               // thumbColor={isEmailNotificationsEnabled ? 'white' : '#f4f3f4'}
               />
-            </View>
+            </View> */}
           </View>
 
           {/* BOTTOM BUTTONS SECTION */}
